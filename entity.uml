@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>ecommerce.api.entity</OriginalElement>
+  <nodes>
+    <node x="-192.0" y="2044.5">ecommerce.api.entity.product.Category</node>
+    <node x="48.0" y="233.5">ecommerce.api.entity.user.Account</node>
+    <node x="122.0" y="-47.5">ecommerce.api.entity.user.AuthToken</node>
+    <node x="242.0" y="598.5">ecommerce.api.entity.transaction.Payment</node>
+    <node x="3.5" y="1804.5">ecommerce.api.entity.product.Brand</node>
+    <node x="420.5" y="836.0">ecommerce.api.entity.transaction.Discount</node>
+    <node x="32.5" y="1393.5">ecommerce.api.entity.product.Product</node>
+    <node x="-25.0" y="624.5">ecommerce.api.entity.user.Admin</node>
+    <node x="134.5" y="1039.5">ecommerce.api.entity.transaction.Order</node>
+    <node x="402.0" y="1419.5">ecommerce.api.entity.transaction.Coupon</node>
+    <node x="-140.5" y="778.5">ecommerce.api.entity.transaction.OrderDetail</node>
+    <node x="10.5" y="1976.0">ecommerce.api.entity.user.SuperAdmin</node>
+    <node x="101.5" y="791.5">ecommerce.api.entity.user.Customer</node>
+    <node x="-190.5" y="-255.5">ecommerce.api.entity.base.EntityBase</node>
+    <node x="-113.5" y="-8.5">ecommerce.api.entity.user.Profile</node>
+    <node x="-213.5" y="1445.5">ecommerce.api.entity.product.OutlineInfo</node>
+    <node x="446.5" y="1104.5">ecommerce.api.entity.product.Tag</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="ecommerce.api.entity.user.Admin" target="ecommerce.api.entity.user.Account" relationship="GENERALIZATION">
+      <point x="0.0" y="-47.5" />
+      <point x="67.5" y="532.0" />
+      <point x="21.0" y="532.0" />
+      <point x="21.0" y="212.0" />
+      <point x="107.75" y="212.0" />
+      <point x="-59.75" y="-138.5" />
+    </edge>
+    <edge source="ecommerce.api.entity.product.Category" target="ecommerce.api.entity.product.Product" relationship="TO_MANY">
+      <point x="59.75" y="-47.5" />
+      <point x="-12.75" y="1952.0" />
+      <point x="261.0" y="1952.0" />
+      <point x="261.0" y="1932.0" />
+      <point x="301.0" y="1932.0" />
+      <point x="301.0" y="1692.0" />
+      <point x="361.0" y="1692.0" />
+      <point x="361.0" y="1372.0" />
+      <point x="110.0" y="1372.0" />
+      <point x="-77.5" y="-138.5" />
+    </edge>
+    <edge source="ecommerce.api.entity.transaction.Order" target="ecommerce.api.entity.transaction.Discount" relationship="TO_ONE">
+      <point x="-66.5" y="-112.5" />
+      <point x="201.0" y="952.0" />
+      <point x="487.5" y="952.0" />
+      <point x="0.0" y="16.0" />
+    </edge>
+    <edge source="ecommerce.api.entity.transaction.OrderDetail" target="ecommerce.api.entity.product.Product" relationship="TO_ONE">
+      <point x="0.0" y="73.5" />
+      <point x="-52.5" y="972.0" />
+      <point x="101.0" y="972.0" />
+      <point x="101.0" y="1312.0" />
+      <point x="110.0" y="1312.0" />
+      <point x="-77.5" y="-138.5" />
+    </edge>
+    <edge source="ecommerce.api.entity.user.Account" target="ecommerce.api.entity.user.AuthToken" relationship="TO_MANY">
+      <point x="59.75" y="-138.5" />
+      <point x="227.25" y="212.0" />
+      <point x="181.0" y="212.0" />
+      <point x="181.0" y="172.0" />
+      <point x="227.5" y="172.0" />
+      <point x="0.0" y="99.5" />
+    </edge>
+    <edge source="ecommerce.api.entity.product.Category" target="ecommerce.api.entity.product.OutlineInfo" relationship="GENERALIZATION">
+      <point x="-59.75" y="-47.5" />
+      <point x="-132.25" y="2012.0" />
+      <point x="-139.0" y="2012.0" />
+      <point x="-139.0" y="1632.0" />
+      <point x="-239.0" y="1632.0" />
+      <point x="-239.0" y="1412.0" />
+      <point x="-112.5" y="1412.0" />
+      <point x="0.0" y="-86.5" />
+    </edge>
+    <edge source="ecommerce.api.entity.product.Product" target="ecommerce.api.entity.product.Brand" relationship="TO_ONE">
+      <point x="-77.5" y="-138.5" />
+      <point x="110.0" y="1352.0" />
+      <point x="1.0" y="1352.0" />
+      <point x="1.0" y="1752.0" />
+      <point x="189.5" y="1752.0" />
+      <point x="62.0" y="-47.5" />
+    </edge>
+    <edge source="ecommerce.api.entity.user.Account" target="ecommerce.api.entity.base.EntityBase" relationship="GENERALIZATION">
+      <point x="-59.75" y="-138.5" />
+      <point x="107.75" y="192.0" />
+      <point x="-139.0" y="192.0" />
+      <point x="-139.0" y="-68.0" />
+      <point x="-92.5" y="-68.0" />
+      <point x="0.0" y="47.5" />
+    </edge>
+    <edge source="ecommerce.api.entity.user.AuthToken" target="ecommerce.api.entity.user.Account" relationship="TO_ONE">
+      <point x="0.0" y="99.5" />
+      <point x="227.5" y="192.0" />
+      <point x="227.25" y="192.0" />
+      <point x="59.75" y="-138.5" />
+    </edge>
+    <edge source="ecommerce.api.entity.transaction.OrderDetail" target="ecommerce.api.entity.transaction.Order" relationship="TO_ONE">
+      <point x="0.0" y="73.5" />
+      <point x="-52.5" y="972.0" />
+      <point x="201.0" y="972.0" />
+      <point x="-66.5" y="-112.5" />
+    </edge>
+    <edge source="ecommerce.api.entity.product.Product" target="ecommerce.api.entity.product.Tag" relationship="TO_MANY">
+      <point x="-77.5" y="-138.5" />
+      <point x="110.0" y="1332.0" />
+      <point x="421.0" y="1332.0" />
+      <point x="421.0" y="1312.0" />
+      <point x="547.5" y="1312.0" />
+      <point x="0.0" y="47.5" />
+    </edge>
+    <edge source="ecommerce.api.entity.product.Product" target="ecommerce.api.entity.product.Category" relationship="TO_ONE">
+      <point x="-77.5" y="-138.5" />
+      <point x="110.0" y="1352.0" />
+      <point x="1.0" y="1352.0" />
+      <point x="1.0" y="1752.0" />
+      <point x="-59.0" y="1752.0" />
+      <point x="-59.0" y="1932.0" />
+      <point x="-19.0" y="1932.0" />
+      <point x="-19.0" y="2012.0" />
+      <point x="-12.75" y="2012.0" />
+      <point x="59.75" y="-47.5" />
+    </edge>
+    <edge source="ecommerce.api.entity.transaction.Order" target="ecommerce.api.entity.user.Customer" relationship="TO_ONE">
+      <point x="-66.5" y="-112.5" />
+      <point x="201.0" y="1012.0" />
+      <point x="207.5" y="1012.0" />
+      <point x="0.0" y="60.5" />
+    </edge>
+    <edge source="ecommerce.api.entity.product.Brand" target="ecommerce.api.entity.product.OutlineInfo" relationship="GENERALIZATION">
+      <point x="-62.0" y="-47.5" />
+      <point x="65.5" y="1732.0" />
+      <point x="-139.0" y="1732.0" />
+      <point x="-139.0" y="1632.0" />
+      <point x="-239.0" y="1632.0" />
+      <point x="-239.0" y="1412.0" />
+      <point x="-112.5" y="1412.0" />
+      <point x="0.0" y="-86.5" />
+    </edge>
+    <edge source="ecommerce.api.entity.transaction.Order" target="ecommerce.api.entity.transaction.OrderDetail" relationship="TO_MANY">
+      <point x="-66.5" y="-112.5" />
+      <point x="201.0" y="952.0" />
+      <point x="-52.5" y="952.0" />
+      <point x="0.0" y="73.5" />
+    </edge>
+    <edge source="ecommerce.api.entity.user.Account" target="ecommerce.api.entity.user.Profile" relationship="TO_ONE">
+      <point x="59.75" y="-138.5" />
+      <point x="227.25" y="212.0" />
+      <point x="181.0" y="212.0" />
+      <point x="181.0" y="172.0" />
+      <point x="-12.5" y="172.0" />
+      <point x="0.0" y="60.5" />
+    </edge>
+    <edge source="ecommerce.api.entity.user.AuthToken" target="ecommerce.api.entity.base.EntityBase" relationship="GENERALIZATION">
+      <point x="0.0" y="-99.5" />
+      <point x="227.5" y="-68.0" />
+      <point x="-92.5" y="-68.0" />
+      <point x="0.0" y="47.5" />
+    </edge>
+    <edge source="ecommerce.api.entity.product.Brand" target="ecommerce.api.entity.product.Product" relationship="TO_MANY">
+      <point x="62.0" y="-47.5" />
+      <point x="189.5" y="1712.0" />
+      <point x="301.0" y="1712.0" />
+      <point x="301.0" y="1692.0" />
+      <point x="361.0" y="1692.0" />
+      <point x="361.0" y="1372.0" />
+      <point x="110.0" y="1372.0" />
+      <point x="-77.5" y="-138.5" />
+    </edge>
+    <edge source="ecommerce.api.entity.user.Customer" target="ecommerce.api.entity.user.Account" relationship="GENERALIZATION">
+      <point x="0.0" y="-60.5" />
+      <point x="207.5" y="612.0" />
+      <point x="61.0" y="612.0" />
+      <point x="61.0" y="532.0" />
+      <point x="21.0" y="532.0" />
+      <point x="21.0" y="212.0" />
+      <point x="107.75" y="212.0" />
+      <point x="-59.75" y="-138.5" />
+    </edge>
+    <edge source="ecommerce.api.entity.product.Product" target="ecommerce.api.entity.transaction.Order" relationship="TO_MANY">
+      <point x="-77.5" y="-138.5" />
+      <point x="110.0" y="1332.0" />
+      <point x="421.0" y="1332.0" />
+      <point x="421.0" y="992.0" />
+      <point x="201.0" y="992.0" />
+      <point x="-66.5" y="-112.5" />
+    </edge>
+    <edge source="ecommerce.api.entity.product.Tag" target="ecommerce.api.entity.base.EntityBase" relationship="GENERALIZATION">
+      <point x="0.0" y="-47.5" />
+      <point x="547.5" y="1072.0" />
+      <point x="621.0" y="1072.0" />
+      <point x="621.0" y="-68.0" />
+      <point x="-92.5" y="-68.0" />
+      <point x="0.0" y="47.5" />
+    </edge>
+    <edge source="ecommerce.api.entity.product.Product" target="ecommerce.api.entity.base.EntityBase" relationship="GENERALIZATION">
+      <point x="77.5" y="-138.5" />
+      <point x="265.0" y="1292.0" />
+      <point x="661.0" y="1292.0" />
+      <point x="661.0" y="-68.0" />
+      <point x="-92.5" y="-68.0" />
+      <point x="0.0" y="47.5" />
+    </edge>
+    <edge source="ecommerce.api.entity.user.Profile" target="ecommerce.api.entity.base.EntityBase" relationship="GENERALIZATION">
+      <point x="0.0" y="-60.5" />
+      <point x="-12.5" y="-68.0" />
+      <point x="-92.5" y="-68.0" />
+      <point x="0.0" y="47.5" />
+    </edge>
+    <edge source="ecommerce.api.entity.transaction.Order" target="ecommerce.api.entity.transaction.Payment" relationship="TO_ONE">
+      <point x="-66.5" y="-112.5" />
+      <point x="201.0" y="952.0" />
+      <point x="347.5" y="952.0" />
+      <point x="0.0" y="73.5" />
+    </edge>
+    <edge source="ecommerce.api.entity.transaction.Order" target="ecommerce.api.entity.base.EntityBase" relationship="GENERALIZATION">
+      <point x="66.5" y="-112.5" />
+      <point x="334.0" y="972.0" />
+      <point x="581.0" y="972.0" />
+      <point x="581.0" y="-68.0" />
+      <point x="-92.5" y="-68.0" />
+      <point x="0.0" y="47.5" />
+    </edge>
+    <edge source="ecommerce.api.entity.transaction.Payment" target="ecommerce.api.entity.base.EntityBase" relationship="GENERALIZATION">
+      <point x="0.0" y="-73.5" />
+      <point x="347.5" y="572.0" />
+      <point x="361.0" y="572.0" />
+      <point x="361.0" y="-68.0" />
+      <point x="-92.5" y="-68.0" />
+      <point x="0.0" y="47.5" />
+    </edge>
+    <edge source="ecommerce.api.entity.product.OutlineInfo" target="ecommerce.api.entity.base.EntityBase" relationship="GENERALIZATION">
+      <point x="0.0" y="-86.5" />
+      <point x="-112.5" y="1392.0" />
+      <point x="-179.0" y="1392.0" />
+      <point x="-179.0" y="-68.0" />
+      <point x="-92.5" y="-68.0" />
+      <point x="0.0" y="47.5" />
+    </edge>
+    <edge source="ecommerce.api.entity.product.Category" target="ecommerce.api.entity.product.Brand" relationship="TO_MANY">
+      <point x="59.75" y="-47.5" />
+      <point x="-12.75" y="1952.0" />
+      <point x="261.0" y="1952.0" />
+      <point x="261.0" y="1732.0" />
+      <point x="189.5" y="1732.0" />
+      <point x="62.0" y="-47.5" />
+    </edge>
+    <edge source="ecommerce.api.entity.product.Brand" target="ecommerce.api.entity.product.Category" relationship="TO_MANY">
+      <point x="62.0" y="-47.5" />
+      <point x="189.5" y="1772.0" />
+      <point x="-19.0" y="1772.0" />
+      <point x="-19.0" y="2012.0" />
+      <point x="-12.75" y="2012.0" />
+      <point x="59.75" y="-47.5" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Compact" zoom="0.6709825124172186" showDependencies="true" x="363.92532048193044" y="1474.6826795180734" />
+  <SelectedNodes>
+    <node>ecommerce.api.entity.transaction.Order</node>
+    <node>ecommerce.api.entity.user.Account</node>
+    <node>ecommerce.api.entity.user.Profile</node>
+    <node>ecommerce.api.entity.user.AuthToken</node>
+    <node>ecommerce.api.entity.product.Category</node>
+    <node>ecommerce.api.entity.base.EntityBase</node>
+    <node>ecommerce.api.entity.transaction.OrderDetail</node>
+    <node>ecommerce.api.entity.product.Brand</node>
+    <node>ecommerce.api.entity.product.Tag</node>
+    <node>ecommerce.api.entity.user.Admin</node>
+    <node>ecommerce.api.entity.product.OutlineInfo</node>
+    <node>ecommerce.api.entity.transaction.Payment</node>
+    <node>ecommerce.api.entity.product.Product</node>
+    <node>ecommerce.api.entity.user.SuperAdmin</node>
+    <node>ecommerce.api.entity.transaction.Coupon</node>
+    <node>ecommerce.api.entity.transaction.Discount</node>
+    <node>ecommerce.api.entity.user.Customer</node>
+  </SelectedNodes>
+  <Categories>
+    <Category>Fields</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
