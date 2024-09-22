@@ -1,15 +1,40 @@
 package ecommerce.api.entity;
 
 import ecommerce.api.entity.base.EntityBase;
-import jakarta.persistence.Column;
+import ecommerce.api.entity.user.Profile;
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
+@EqualsAndHashCode(callSuper = true)
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Entity
+@Table(name = "blog_posts")
 public class BlogPost extends EntityBase<String> {
+
+    @ColumnDefault("''")
+    @Column(name = "title", length = Integer.MAX_VALUE)
     private String title;
+
+    @ColumnDefault("now()")
+    @Column(name = "subtitle", length = Integer.MAX_VALUE)
     private String subtitle;
 
+    @Column(name = "author_id")
+    private String authorId;
 
-    @Column(columnDefinition = "text")
+    @ColumnDefault("''")
+    @Column(name = "content", length = Integer.MAX_VALUE)
     private String content;
 
+    @Column(name = "is_html")
+    private Boolean isHtml;
+
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.REFRESH,CascadeType.DETACH})
+    @JoinColumn(name = "author_id")
+    private Profile author;
 
 }

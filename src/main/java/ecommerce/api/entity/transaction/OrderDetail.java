@@ -1,25 +1,41 @@
 package ecommerce.api.entity.transaction;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import ecommerce.api.entity.compositekey.OrderDetailId;
 import ecommerce.api.entity.product.Product;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Transient;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 
+import java.math.BigDecimal;
+
+@Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Table(name = "order_details")
+@IdClass(OrderDetailId.class)
 public class OrderDetail {
+    @Id
+    @Column(name = "order_id", nullable = false)
     private String orderId;
-    private int quantity;
 
+    @Id
+    @Column(name = "product_id", nullable = false)
+    private String productId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnore
-    @Transient
-    private Order order;
+    @Column(name = "quantity")
+    private Integer quantity;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnore
-    @Transient
+    @Column(name = "gross_total", precision = 10, scale = 2)
+    private BigDecimal grossTotal;
+
+    @Column(name = "net_total", precision = 10, scale = 2)
+    private BigDecimal netTotal;
+
+    @NotNull
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH, CascadeType.REFRESH}, optional = false)
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
-
 
 }
