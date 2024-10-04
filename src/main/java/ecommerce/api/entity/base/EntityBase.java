@@ -18,15 +18,12 @@ import java.util.Date;
 @NoArgsConstructor
 public abstract class EntityBase<T> {
     @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected T id;
 
-    @NotNull
     @ColumnDefault("now()")
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at",insertable = false,updatable = false)
     protected Instant createdAt;
 
     @Column(name = "deleted_at")
     protected Instant deletedAt;
-
 }

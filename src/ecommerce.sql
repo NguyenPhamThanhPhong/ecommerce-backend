@@ -15,9 +15,9 @@ create table accounts
     role         varchar            default 'ANONYMOUS'
 );
 create index accounts_email_hash_index
-    on accounts(email) where email is not null;
+    on accounts (email) where email is not null;
 create index accounts_login_id_hash_index
-    on accounts(login_id) where login_id is not null;
+    on accounts (login_id) where login_id is not null;
 
 create table tokens
 (
@@ -28,7 +28,9 @@ create table tokens
     access_token   varchar   not null,
     refresh_token  varchar   not null,
     access_expiry  timestamp not null,
-    refresh_expiry timestamp not null
+    refresh_expiry timestamp not null,
+    constraint FK_tokens_accountId FOREIGN KEY (account_id) references accounts (id)
+        ON DELETE CASCADE
 );
 
 
@@ -41,6 +43,7 @@ create table profiles
     phone         varchar(11),
     date_of_birth varchar(10),
     constraint FK_account_admin_id FOREIGN KEY (id) references accounts (id)
+        ON DELETE cascade
 );
 
 create table blog_posts
@@ -55,6 +58,7 @@ create table blog_posts
     is_html    boolean,
     --MUST BE PROFILES -> IF NOT, THERE'S NO NAME TO DISPLAY
     constraint FK_blogPosts_authorId_profiles_id FOREIGN KEY (author_id) references profiles (id)
+        ON DELETE set NULL
 );
 
 create table brands
@@ -98,7 +102,7 @@ create table discounts
     description   varchar,
     enable_date   timestamp,
     disable_date  timestamp,
-    discount_type varchar check ( discount_type in ('percent', 'fixed', 'promotion'))
+    discount_type varchar check ( discount_type in ('PERCENT', 'FIXED', 'PROMOTION'))
 );
 
 create table products
@@ -123,7 +127,7 @@ create table products
 
 create table promotion_discounts
 (
-    id                serial primary key,
+    id                int primary key,
     required_quantity smallint,
     reward_quantity   smallint,
     reward_product_id int,
@@ -134,7 +138,7 @@ create table promotion_discounts
 
 create table percent_discounts
 (
-    id               serial primary key,
+    id               int primary key,
     min_condition    numeric(10, 2),
     discount_percent numeric(3, 2) check (discount_percent >= 0 and discount_percent <= 100),
     max_discount     numeric(10, 2),
@@ -143,7 +147,7 @@ create table percent_discounts
 
 create table fixed_discounts
 (
-    id             serial primary key,
+    id             int primary key,
     min_condition  numeric(10, 2),
     fixed_discount numeric(10, 2),
     constraint FK_promotions_discountId FOREIGN KEY (id) references discounts (id)
@@ -164,16 +168,16 @@ create table products_discounts
 create table payments
 (
     id             serial primary key,
-    created_at     timestamp not null default now(),
+    created_at     timestamp   not null default now(),
     deleted_at     timestamp,
-    account_id     uuid,
+    account_id     uuid unique not null,
     status         varchar,
     payment_method varchar
 );
 
 create table vnpay_payments
 (
-    id          serial primary key,
+    id          int primary key,
     amount      numeric(10, 2),
     bank_code   varchar,
     order_info  varchar,
@@ -183,7 +187,7 @@ create table vnpay_payments
 
 create table cash_payments
 (
-    id          serial primary key,
+    id          int primary key,
     amount      numeric(10, 2),
     paid        numeric(10, 2),
     exchange    numeric(10, 2),
@@ -201,9 +205,9 @@ create table orders
     address     varchar,
     status      varchar,
     --the one who responsible for the order creation
-    profile_id  uuid,
+    issuer_id   uuid,
     payment_id  int,
-    constraint FK_orders_accountId FOREIGN KEY (profile_id) references profiles (id),
+    constraint FK_orders_accountId FOREIGN KEY (issuer_id) references profiles (id),
     constraint FK_orders_paymentId FOREIGN KEY (payment_id) references payments (id),
     constraint FK_orders_discountId FOREIGN KEY (discount_id) references discounts (id)
 );
@@ -219,6 +223,7 @@ create table order_details
     constraint FK_order_detail_productId FOREIGN KEY (product_id) references products (id)
 );
 COMMIT;
+
 
 
 abort;

@@ -17,11 +17,6 @@ import lombok.experimental.SuperBuilder;
 @Table(name = "fixed_discounts")
 @PrimaryKeyJoinColumn(name = "id")
 public class FixedDiscount extends Discount {
-//    @MapsId
-//    @OneToOne(fetch = FetchType.LAZY, optional = false)
-//    @ColumnDefault("nextval('fixed_discounts_id_seq')")
-//    @JoinColumn(name = "id", nullable = false)
-//    private Discount discounts;
 
     @Column(name = "min_condition")
     private float minCondition;

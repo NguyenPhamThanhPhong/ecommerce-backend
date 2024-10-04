@@ -32,6 +32,6 @@ public class Discount extends EntityBase<Integer> {
     @Column(name = "disable_date")
     private Instant disableDate;
 
-    @Column(name = "discount_type", length = Integer.MAX_VALUE)
-    private String discountType;
+    @Column(name = "discount_type", insertable = false, updatable = false)
+    private String discountType;  // Now this field is queryable
 }

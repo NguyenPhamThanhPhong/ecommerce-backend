@@ -3,7 +3,9 @@ package ecommerce.api.entity.transaction;
 import ecommerce.api.entity.compositekey.OrderDetailId;
 import ecommerce.api.entity.product.Product;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -33,7 +35,6 @@ public class OrderDetail {
     @Column(name = "net_total", precision = 10, scale = 2)
     private BigDecimal netTotal;
 
-    @NotNull
     @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH, CascadeType.REFRESH}, optional = false)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;

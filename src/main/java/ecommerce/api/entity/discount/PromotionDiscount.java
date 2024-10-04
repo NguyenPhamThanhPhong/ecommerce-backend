@@ -14,11 +14,6 @@ import lombok.experimental.SuperBuilder;
 @Table(name = "promotion_discounts")
 @PrimaryKeyJoinColumn(name = "id")
 public class PromotionDiscount extends Discount {
-//    @MapsId
-//    @OneToOne(fetch = FetchType.LAZY, optional = false)
-//    @ColumnDefault("nextval('promotion_discounts_id_seq')")
-//    @JoinColumn(name = "id", nullable = false)
-//    private Discount discounts;
 
     @Column(name = "required_quantity")
     private Integer requiredQuantity;
@@ -29,10 +24,9 @@ public class PromotionDiscount extends Discount {
     @Column(name = "reward_quantity")
     private Integer rewardQuantity;
 
-
 //IGNORE WHEN INSERT BUT FETCH WHEN SELECT
     @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH,CascadeType.REFRESH})
-    @JoinColumn(name = "reward_product_id")
+    @JoinColumn(name = "reward_product_id", insertable = false, updatable = false)
     private Product rewardProduct;
 
 }

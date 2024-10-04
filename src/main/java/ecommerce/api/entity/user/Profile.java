@@ -7,21 +7,21 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.UUID;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
 @Table(name = "profiles")
-public class Profile extends EntityBase<String> {
-    @MapsId
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "id", nullable = false)
-    private Account accounts;
+public class Profile{
+    @Id
+    private UUID id;
 
     @Size(max = 40)
     @Column(name = "full_name", length = 40)
@@ -38,9 +38,8 @@ public class Profile extends EntityBase<String> {
     @Column(name = "phone", length = 11)
     private String phone;
 
-    @Size(max = 10)
-    @Column(name = "date_of_birth", length = 10)
-    private String dateOfBirth;
+    @Column(name = "date_of_birth")
+    private Instant dateOfBirth;
 
     @OneToMany(targetEntity = BlogPost.class, mappedBy = "author")
     @Transient
@@ -48,6 +47,8 @@ public class Profile extends EntityBase<String> {
 
     @OneToMany(mappedBy = "profile", fetch = FetchType.LAZY)
     @Transient
+    @Builder.Default
     private Set<Order> orders = new LinkedHashSet<>();
+
 
 }

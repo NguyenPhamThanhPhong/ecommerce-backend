@@ -1,26 +1,26 @@
 package ecommerce.api.entity.user;
 
-import ecommerce.api.constants.AccountStatus;
 import ecommerce.api.entity.base.EntityBase;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.Date;
 import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @Entity
 @Table(name = "accounts")
 public class Account extends EntityBase<UUID> {
+
+    @Builder.Default
+    private UUID id = UUID.randomUUID();
 
     @Column(name = "enable_date")
     private Date enableDate;
@@ -28,7 +28,6 @@ public class Account extends EntityBase<UUID> {
     @Column(name = "disable_date")
     private Date disableDate;
 
-    @NotNull
     @Column(name = "email", nullable = false, length = Integer.MAX_VALUE)
     private String email;
 
@@ -53,18 +52,15 @@ public class Account extends EntityBase<UUID> {
     @Column(name = "role", length = Integer.MAX_VALUE)
     private String role;
 
-    @OneToOne(mappedBy = "account",fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST,CascadeType.REFRESH})
+    @PrimaryKeyJoinColumn
     private Profile profile;
 
+    @PrePersist
+    private void prePersist() {
+        if (this.profile != null) {
+            this.profile.setId(this.id);
+        }
+    }
+
 }
-//    private String email;
-//    private String password;
-//    private String loginId;
-//    private AccountStatus status;
-//
-//    private List<String> roles;
-//    private String OTP;
-//
-//
-//    private Profile profile;
-//    private List<AuthToken> tokens;

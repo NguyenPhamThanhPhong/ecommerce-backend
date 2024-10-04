@@ -66,6 +66,7 @@ public class Product extends EntityBase<String> {
     @JoinTable(name = "products_discounts",
             joinColumns = @JoinColumn(name = "product_id"),
             inverseJoinColumns = @JoinColumn(name = "discount_id"))
+    @Builder.Default
     private Set<Discount> discounts = new LinkedHashSet<>();
 
 }

@@ -30,10 +30,4 @@ public class Brand extends OutlineInfo {
     @Column(name = "name", length = 40)
     private String name;
 
-    @Column(name = "sold")
-    private Integer sold;
-
-    @Column(name = "stock")
-    private Integer stock;
-
 }

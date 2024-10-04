@@ -19,12 +19,6 @@ import java.math.BigDecimal;
 @Table(name = "percent_discounts")
 @PrimaryKeyJoinColumn(name = "id")
 public class PercentDiscount extends Discount {
-//    @MapsId
-//    @OneToOne(fetch = FetchType.LAZY, optional = false)
-//    @ColumnDefault("nextval('percent_discounts_id_seq')")
-//    @JoinColumn(name = "id", nullable = false)
-//    private Discount discounts;
-
     @Column(name = "min_condition")
     private BigDecimal minCondition;
 

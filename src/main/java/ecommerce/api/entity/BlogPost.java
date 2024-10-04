@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.util.UUID;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
@@ -13,7 +15,7 @@ import org.hibernate.annotations.ColumnDefault;
 @Builder
 @Entity
 @Table(name = "blog_posts")
-public class BlogPost extends EntityBase<String> {
+public class BlogPost extends EntityBase<UUID> {
 
     @ColumnDefault("''")
     @Column(name = "title", length = Integer.MAX_VALUE)
@@ -34,7 +36,6 @@ public class BlogPost extends EntityBase<String> {
     private Boolean isHtml;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.REFRESH,CascadeType.DETACH})
-    @JoinColumn(name = "author_id")
+    @JoinColumn(name = "author_id", insertable = false, updatable = false)
     private Profile author;
-
 }

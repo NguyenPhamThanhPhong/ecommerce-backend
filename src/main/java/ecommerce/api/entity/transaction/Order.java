@@ -31,7 +31,7 @@ public class Order extends EntityBase<Integer> {
     @Column(name = "discount_id", insertable = false, updatable = false)
     private Integer discountId;
 
-    @Column(name = "profile_id", insertable = false, updatable = false)
+    @Column(name = "issuer_id", insertable = false, updatable = false)
     private String profileId;
 
     @Column(name = "description", length = Integer.MAX_VALUE)
@@ -45,13 +45,13 @@ public class Order extends EntityBase<Integer> {
     @JoinColumn(name = "payment_id", nullable = false)
     private Payment payment;
 
-    @JoinColumn(name = "profile_id")
-    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.REFRESH,CascadeType.DETACH})
+    @JoinColumn(name = "issuer_id")
+    @Transient
     private Profile profile;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "order")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "order_id")
     private Set<OrderDetail> orderDetails = new LinkedHashSet<>();
-
 }
 
