@@ -3,13 +3,16 @@ package ecommerce.api.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.core.jackson.ModelResolver;
 import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.media.DateTimeSchema;
+import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.Schema;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.media.StringSchema;
+import io.swagger.v3.oas.models.parameters.Parameter;
 import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.beans.factory.annotation.Value;
@@ -67,6 +70,20 @@ public class OpenApiConfig {
     public OpenApiCustomizer customOpenApiCustomizer() {
         return openApi -> {
             // SET PROPERTIES OF EACH SCHEMAS
+            openApi.getPaths().forEach((path, pathItem) -> {
+                pathItem.readOperations().forEach(operation -> {
+                    operation.getResponses().forEach((responseCode, apiResponse) -> {
+                        if (apiResponse.getContent() != null) {
+                            apiResponse.getContent().forEach((mediaType, mediaTypeObject) -> {
+                                if (mediaTypeObject.getSchema() != null) {
+
+                                }
+                            });
+                        }
+                    });
+                });
+            });
+
             for (Map.Entry<String, Schema> schema : openApi.getComponents().getSchemas().entrySet()) {
                 LinkedHashMap<String, Object> propertiesMap = (LinkedHashMap<String, Object>) schema.getValue().getProperties();
                 for (var entry : propertiesMap.entrySet()) {

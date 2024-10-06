@@ -1,5 +1,6 @@
 package ecommerce.api.entity.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import ecommerce.api.entity.BlogPost;
 import ecommerce.api.entity.base.EntityBase;
 import ecommerce.api.entity.transaction.Order;
@@ -27,9 +28,6 @@ public class Profile{
     @Column(name = "full_name", length = 40)
     private String fullName;
 
-    @Column(name = "age")
-    private Short age;
-
     @Size(max = 2048)
     @Column(name = "avatar_url", length = 2048)
     private String avatarUrl;
@@ -49,6 +47,4 @@ public class Profile{
     @Transient
     @Builder.Default
     private Set<Order> orders = new LinkedHashSet<>();
-
-
 }

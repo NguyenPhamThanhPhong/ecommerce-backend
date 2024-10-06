@@ -3,6 +3,7 @@ package ecommerce.api.mapper;
 
 import ecommerce.api.dto.UserDetailDTO;
 import ecommerce.api.dto.account.AccountCreateRequest;
+import ecommerce.api.dto.account.ProfileResponse;
 import ecommerce.api.dto.account.ProfileUpdateRequest;
 import ecommerce.api.entity.user.Account;
 import ecommerce.api.entity.user.Profile;
@@ -19,4 +20,6 @@ public interface AccountMapper {
     Account fromCreateRequestToEntity(AccountCreateRequest request);
     Profile fromUpdateRequestToEntity(ProfileUpdateRequest request);
     UserDetailDTO fromEntityToUserDetailDTO(Account account);
+
+    ProfileResponse fromEntityToProfileResponse(Profile profile);
 }

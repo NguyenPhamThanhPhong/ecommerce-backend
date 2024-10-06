@@ -1,6 +1,7 @@
 package ecommerce.api.repository;
 
 import ecommerce.api.entity.user.Account;
+import ecommerce.api.entity.user.Profile;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -15,12 +16,15 @@ public interface IAccountRepository extends JpaRepository<Account,UUID> {
     @Modifying
     @Query(
             """
-            update Account a set a.profile.fullName = :fullName, a.profile.dateOfBirth = :birthDate,
-             a.profile.phone = :phone
-            where a.id = :id
+            update Profile a set
+            a.fullName = :#{#profile.fullName},
+            a.dateOfBirth = :#{#profile.dateOfBirth},
+            a.phone = :#{#profile.phone},
+            a.avatarUrl = :#{#profile.avatarUrl}
+            where a.id = :#{#profile.id}
             """
     )
-    void updateProfile(UUID id, String fullName, Date birthDate, String phone);
+    void updateProfile(@Param("profile") Profile profile);
 
     Account findByEmailOrLoginId(String s, String s1);
 }

@@ -112,6 +112,11 @@
             <version>1.5.2.Final</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-storage-blob</artifactId>
+            <version>12.15.0</version>
+        </dependency>
     </dependencies>
 
     <build>
