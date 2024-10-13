@@ -1,4 +1,4 @@
-package ecommerce.api.component;
+package ecommerce.api.config.property;
 
 import lombok.Getter;
 import lombok.Setter;

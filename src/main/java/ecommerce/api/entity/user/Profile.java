@@ -1,14 +1,11 @@
 package ecommerce.api.entity.user;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import ecommerce.api.entity.BlogPost;
-import ecommerce.api.entity.base.EntityBase;
 import ecommerce.api.entity.transaction.Order;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-import java.time.Instant;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -17,10 +14,9 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Entity
 @Table(name = "profiles")
-public class Profile{
+public class Profile {
     @Id
     private UUID id;
 
@@ -37,7 +33,7 @@ public class Profile{
     private String phone;
 
     @Column(name = "date_of_birth")
-    private Instant dateOfBirth;
+    private Date dateOfBirth;
 
     @OneToMany(targetEntity = BlogPost.class, mappedBy = "author")
     @Transient
@@ -45,6 +41,5 @@ public class Profile{
 
     @OneToMany(mappedBy = "profile", fetch = FetchType.LAZY)
     @Transient
-    @Builder.Default
     private Set<Order> orders = new LinkedHashSet<>();
 }

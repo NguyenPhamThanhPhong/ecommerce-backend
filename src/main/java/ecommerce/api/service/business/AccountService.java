@@ -1,12 +1,16 @@
 package ecommerce.api.service.business;
 
-import ecommerce.api.dto.account.AccountCreateRequest;
-import ecommerce.api.dto.account.ProfileResponse;
-import ecommerce.api.dto.account.ProfileUpdateRequest;
+import ecommerce.api.dto.account.request.AccountCreateRequest;
+import ecommerce.api.dto.account.response.AccountResponse;
+import ecommerce.api.dto.account.response.ProfileResponse;
+import ecommerce.api.dto.account.request.ProfileUpdateRequest;
 import ecommerce.api.entity.user.Account;
 import ecommerce.api.entity.user.Profile;
+import ecommerce.api.exception.ResourceNotFoundException;
 import ecommerce.api.mapper.AccountMapper;
 import ecommerce.api.repository.IAccountRepository;
+import ecommerce.api.service.azure.CloudinaryService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -22,39 +26,48 @@ import java.util.UUID;
 public class AccountService implements UserDetailsService {
     private final IAccountRepository accountRepository;
     private final AccountMapper accountMapper;
-    private final AzureBlobService blobService;
+    private final CloudinaryService blobService;
+    private final CloudinaryService cloudinaryService;
 
-    public Account createAccount(AccountCreateRequest request) throws IOException {
+    @Transactional
+    public AccountResponse createAccount(AccountCreateRequest request) throws IOException {
         Account account = accountMapper.fromCreateRequestToEntity(request);
         MultipartFile file = request.getProfile().getAvatar();
-        String blobName = "avatar-" + account.getId();
-        String blobUrl = blobService.uploadBlob(blobName, file.getInputStream(), file.getSize(), true);
-        account.getProfile().setAvatarUrl(blobUrl);
-        return accountRepository.save(account);
+        if (file != null) {
+            String blobUrl = blobService.uploadFile(file, cloudinaryService.ACCOUNT_DIR, account.getId().toString());
+            account.getProfile().setAvatarUrl(blobUrl);
+        }
+        return accountMapper.fromEntityToAccountResponse(accountRepository.save(account));
     }
 
-    public Account getAccount(UUID id) {
-        return accountRepository.findById(id).orElse(null);
+    public AccountResponse getAccount(UUID id) {
+        Account account = accountRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Account not found"));
+        return accountMapper.fromEntityToAccountResponse(account);
     }
 
+    @Transactional
     public ProfileResponse updateProfile(ProfileUpdateRequest request) throws IOException {
         Profile profile = accountMapper.fromUpdateRequestToEntity(request);
-        if(request.getAvatar() != null) {
-            String blobName = "avatar-" + request.getId();
-            String blobUrl = blobService.uploadBlob(blobName, request.getAvatar().getInputStream(), request.getAvatar().getSize(), true);
+        if (request.getAvatar() != null) {
+            String blobUrl = blobService.uploadFile(request.getAvatar(),
+                    cloudinaryService.ACCOUNT_DIR, request.getId().toString());
             profile.setAvatarUrl(blobUrl);
         }
         accountRepository.updateProfile(profile);
         return accountMapper.fromEntityToProfileResponse(profile);
     }
 
-    public void deleteAccount(UUID id) {
-        accountRepository.deleteById(id);
+    @Transactional
+    public int deleteAccount(UUID id, boolean isSoft) {
+        if (isSoft) {
+            return accountRepository.updateAccountDeletedAt(id);
+        }
+        return accountRepository.deleteAccountById(id);
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Account account = accountRepository.findByEmailOrLoginId(String.valueOf(username), String.valueOf(username));
+        Account account = accountRepository.findByEmailOrLoginId(username);
         return accountMapper.fromEntityToUserDetailDTO(account);
     }
 }

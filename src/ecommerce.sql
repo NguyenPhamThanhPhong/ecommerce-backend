@@ -1,4 +1,14 @@
 BEGIN;
+create table profiles
+(
+    id            uuid primary key,
+    full_name     varchar(40),
+    age           smallint,
+    avatar_url    varchar(2048),
+    phone         varchar(11),
+    date_of_birth varchar(10)
+);
+
 create table accounts
 (
     id           uuid primary key,
@@ -12,8 +22,11 @@ create table accounts
     is_verified  boolean,
     otp          varchar(6),
     otp_expiry   timestamp,
-    role         varchar            default 'ANONYMOUS'
+    role         varchar            default 'ANONYMOUS',
+    constraint FK_profiles_id FOREIGN KEY (id) references profiles (id)
+        ON DELETE cascade
 );
+
 create index accounts_email_hash_index
     on accounts (email) where email is not null;
 create index accounts_login_id_hash_index
@@ -34,27 +47,17 @@ create table tokens
 );
 
 
-create table profiles
-(
-    id            uuid primary key,
-    full_name     varchar(40),
-    age           smallint,
-    avatar_url    varchar(2048),
-    phone         varchar(11),
-    date_of_birth varchar(10),
-    constraint FK_account_admin_id FOREIGN KEY (id) references accounts (id)
-        ON DELETE cascade
-);
 
 create table blog_posts
 (
     id         uuid primary key,
     created_at timestamp not null default now(),
     deleted_at timestamp,
+    image_url  varchar(2048),
     title      varchar            default '',
     author_id  uuid,
     subtitle   varchar            default now(),
-    content    varchar            default '',
+    content    text            default '',
     is_html    boolean,
     --MUST BE PROFILES -> IF NOT, THERE'S NO NAME TO DISPLAY
     constraint FK_blogPosts_authorId_profiles_id FOREIGN KEY (author_id) references profiles (id)

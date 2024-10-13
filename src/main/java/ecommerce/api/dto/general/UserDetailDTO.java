@@ -1,6 +1,7 @@
-package ecommerce.api.dto;
+package ecommerce.api.dto.general;
 
-import ecommerce.api.constants.RoleConstants;
+import ecommerce.api.constants.AccountRolesEnum;
+import ecommerce.api.constants.AuthRoleConstants;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -8,9 +9,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.UUID;
 
 @Data
 public class UserDetailDTO implements UserDetails {
+    private UUID id;
     private Date enableDate;
 
     private Date disableDate;
@@ -27,11 +30,12 @@ public class UserDetailDTO implements UserDetails {
 
     private Date otpExpiry;
 
-    private String role;
+    private AccountRolesEnum role;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Arrays.stream(RoleConstants.processRoles(role))
+        return Arrays.stream(AuthRoleConstants.processRoles(role.name()))
                 .map(role -> (GrantedAuthority) () -> role)
                 .toList();
     }

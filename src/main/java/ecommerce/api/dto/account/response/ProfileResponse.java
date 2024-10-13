@@ -1,8 +1,8 @@
-package ecommerce.api.dto.account;
+package ecommerce.api.dto.account.response;
 
 import lombok.Data;
 
-import java.time.Instant;
+import java.util.Date;
 
 @Data
 public class ProfileResponse {
@@ -12,5 +12,5 @@ public class ProfileResponse {
 
     private String phone;
 
-    private Instant dateOfBirth;
+    private Date dateOfBirth;
 }

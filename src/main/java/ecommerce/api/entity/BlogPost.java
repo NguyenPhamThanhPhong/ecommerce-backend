@@ -10,7 +10,6 @@ import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
@@ -25,6 +24,10 @@ public class BlogPost extends EntityBase<UUID> {
     @Column(name = "subtitle", length = Integer.MAX_VALUE)
     private String subtitle;
 
+    @ColumnDefault("''")
+    @Column(name = "image_url", length = Integer.MAX_VALUE)
+    private String imageUrl;;
+
     @Column(name = "author_id")
     private String authorId;
 
@@ -35,7 +38,11 @@ public class BlogPost extends EntityBase<UUID> {
     @Column(name = "is_html")
     private Boolean isHtml;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.REFRESH,CascadeType.DETACH})
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
     @JoinColumn(name = "author_id", insertable = false, updatable = false)
     private Profile author;
+
+    public BlogPost() {
+        this.id = UUID.randomUUID();
+    }
 }

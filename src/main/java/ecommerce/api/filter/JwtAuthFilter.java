@@ -1,7 +1,7 @@
 package ecommerce.api.filter;
 
 import ecommerce.api.service.business.AccountService;
-import ecommerce.api.utils.JwtUtils;
+import ecommerce.api.service.auth.JwtService;
 import io.micrometer.common.lang.NonNull;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -18,10 +18,10 @@ import java.io.IOException;
 @Component
 public class JwtAuthFilter extends org.springframework.web.filter.OncePerRequestFilter {
 
-    private final JwtUtils jwtUtil;
+    private final JwtService jwtUtil;
     private final AccountService accountService;
 
-    public JwtAuthFilter(JwtUtils jwtUtil, AccountService accountService) {
+    public JwtAuthFilter(JwtService jwtUtil, AccountService accountService) {
         this.jwtUtil = jwtUtil;
         this.accountService = accountService;
     }
@@ -34,7 +34,6 @@ public class JwtAuthFilter extends org.springframework.web.filter.OncePerRequest
             @NonNull FilterChain chain)
             throws ServletException, IOException {
         String authorizationHeader = request.getHeader("Authorization");
-
         String username = null;
         String jwt = null;
 

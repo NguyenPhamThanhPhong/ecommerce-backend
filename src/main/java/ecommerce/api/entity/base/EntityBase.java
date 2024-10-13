@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.ColumnDefault;
 
-import java.time.Instant;
 import java.util.Date;
 
 @MappedSuperclass
@@ -21,9 +20,9 @@ public abstract class EntityBase<T> {
     protected T id;
 
     @ColumnDefault("now()")
-    @Column(name = "created_at",insertable = false,updatable = false)
-    protected Instant createdAt;
+    @Column(name = "created_at", insertable = false, updatable = false)
+    protected Date createdAt;
 
     @Column(name = "deleted_at")
-    protected Instant deletedAt;
+    protected Date deletedAt;
 }

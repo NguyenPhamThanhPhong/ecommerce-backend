@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.time.Instant;
 import java.util.Date;
 import java.util.UUID;
 
@@ -31,11 +30,11 @@ public class AuthToken extends EntityBase<String> {
 
     @NotNull
     @Column(name = "access_expiry", nullable = false)
-    private Instant accessExpiry;
+    private Date accessExpiry;
 
     @NotNull
     @Column(name = "refresh_expiry", nullable = false)
-    private Instant refreshExpiry;
+    private Date refreshExpiry;
 
 }
 //    private String accountId;

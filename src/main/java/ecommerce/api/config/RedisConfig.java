@@ -20,6 +20,8 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.lang.Nullable;
 
 import java.time.Duration;
+import java.util.UUID;
+
 @Configuration
 @PropertySource("classpath:redis.yml")
 @EnableCaching
@@ -67,9 +69,12 @@ public class RedisConfig implements CachingConfigurer {
             StringBuilder sb = new StringBuilder();
             sb.append(target.getClass().getSimpleName());
             sb.append("_");
-            sb.append(method.getName());
+//            sb.append(method.getName());
             for (Object param : params) {
-                sb.append("_").append(param.toString());
+                if (param instanceof UUID) {
+                    sb.append("_").append(param);
+                    break;
+                }
             }
             return sb.toString();
         };

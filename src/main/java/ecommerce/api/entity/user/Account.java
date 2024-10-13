@@ -1,11 +1,14 @@
 package ecommerce.api.entity.user;
 
+import ecommerce.api.constants.AccountRolesEnum;
 import ecommerce.api.entity.base.EntityBase;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.util.Date;
 import java.util.UUID;
@@ -14,12 +17,9 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @Entity
 @Table(name = "accounts")
 public class Account extends EntityBase<UUID> {
-
-    @Builder.Default
     private UUID id = UUID.randomUUID();
 
     @Column(name = "enable_date")
@@ -50,17 +50,17 @@ public class Account extends EntityBase<UUID> {
 
     @ColumnDefault("'ANONYMOUS'")
     @Column(name = "role", length = Integer.MAX_VALUE)
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private AccountRolesEnum role;
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST,CascadeType.REFRESH})
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
     private Profile profile;
 
-    @PrePersist
-    private void prePersist() {
-        if (this.profile != null) {
-            this.profile.setId(this.id);
+    public void setProfile(Profile profile) {
+        this.profile = profile;
+        if (profile != null) {
+            profile.setId(this.id);
         }
     }
-
 }

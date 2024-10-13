@@ -1,3 +1,12 @@
-select * from accounts join profiles on accounts.id = profiles.id;
+select *
+from accounts
+         join profiles on accounts.id = profiles.id;
 
-delete from accounts;
+UPDATE accounts
+SET role = 'ROLE_ADMIN';
+
+
+
+delete
+from profiles e
+where e.id = (select a.id from accounts a order by id desc limit 1);

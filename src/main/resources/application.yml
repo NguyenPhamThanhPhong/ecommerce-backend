@@ -7,8 +7,23 @@ spring:
     password: ThanhPhong1507
     driver-class-name: org.postgresql.Driver
   jpa:
+#    show-sql: ${APP_ENABLE_SHOW_SQL:true}
+#    properties:
+#      hibernate:
+#        format_sql: ${APP_ENABLE_SHOW_SQL:true}
+#        use_sql_comments: ${APP_ENABLE_SHOW_SQL:true}
     hibernate:
       ddl-auto: none
+
+logging:
+  level:
+    net:
+      ttddyy:
+        dsproxy:
+          listener: debug
+    root: info
+    sql: info
+
 
 authentication:
   configs:
@@ -26,9 +41,15 @@ openapi:
     server: "http://localhost:8080"
     group: "PHONG ECOMMERCE API"
 
-logging:
-  level:
-    net:
-      ttddyy:
-        dsproxy:
-          listener: DEBUG
+
+
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: "httpexchanges,beans"
+
+

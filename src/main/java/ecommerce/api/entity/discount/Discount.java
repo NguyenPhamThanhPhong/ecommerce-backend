@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.time.Instant;
+import java.util.Date;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
@@ -27,10 +27,10 @@ public class Discount extends EntityBase<Integer> {
     private String description;
 
     @Column(name = "enable_date")
-    private Instant enableDate;
+    private Date enableDate;
 
     @Column(name = "disable_date")
-    private Instant disableDate;
+    private Date disableDate;
 
     @Column(name = "discount_type", insertable = false, updatable = false)
     private String discountType;  // Now this field is queryable

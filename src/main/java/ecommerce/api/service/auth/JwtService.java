@@ -1,10 +1,11 @@
-package ecommerce.api.utils;
+package ecommerce.api.service.auth;
 
-import ecommerce.api.component.JwtProperties;
+import ecommerce.api.config.property.JwtProperties;
 import ecommerce.api.entity.user.Account;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
@@ -13,12 +14,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class JwtUtils {
+@EnableConfigurationProperties(JwtProperties.class)
+public class JwtService {
     private final JwtProperties jwtProperties;
     private final Key acccessSecretKey;
     private final Key refreshSecretKey;
 
-    public JwtUtils(JwtProperties jwtProperties) {
+    public JwtService(JwtProperties jwtProperties) {
         this.jwtProperties = jwtProperties;
         acccessSecretKey = Keys.hmacShaKeyFor(jwtProperties.getAccessTokenSecret().getBytes());
         refreshSecretKey = Keys.hmacShaKeyFor(jwtProperties.getRefreshTokenSecret().getBytes());

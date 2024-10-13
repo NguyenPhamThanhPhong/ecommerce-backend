@@ -1,6 +1,6 @@
 package ecommerce.api.constants;
 
-public class RoleConstants {
+public class AuthRoleConstants {
     public static final String ROLE_ADMIN = "ROLE_ADMIN";
     public static final String ROLE_DEFAULT = "ROLE_DEFAULT";
     public static final String ROLE_STAFF = "ROLE_STAFF";

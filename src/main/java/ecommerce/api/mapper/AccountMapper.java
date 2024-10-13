@@ -1,10 +1,11 @@
 package ecommerce.api.mapper;
 
 
-import ecommerce.api.dto.UserDetailDTO;
-import ecommerce.api.dto.account.AccountCreateRequest;
-import ecommerce.api.dto.account.ProfileResponse;
-import ecommerce.api.dto.account.ProfileUpdateRequest;
+import ecommerce.api.dto.general.UserDetailDTO;
+import ecommerce.api.dto.account.request.AccountCreateRequest;
+import ecommerce.api.dto.account.response.AccountResponse;
+import ecommerce.api.dto.account.response.ProfileResponse;
+import ecommerce.api.dto.account.request.ProfileUpdateRequest;
 import ecommerce.api.entity.user.Account;
 import ecommerce.api.entity.user.Profile;
 import org.mapstruct.Mapper;
@@ -21,5 +22,7 @@ public interface AccountMapper {
     Profile fromUpdateRequestToEntity(ProfileUpdateRequest request);
     UserDetailDTO fromEntityToUserDetailDTO(Account account);
 
+
     ProfileResponse fromEntityToProfileResponse(Profile profile);
+    AccountResponse fromEntityToAccountResponse(Account account);
 }

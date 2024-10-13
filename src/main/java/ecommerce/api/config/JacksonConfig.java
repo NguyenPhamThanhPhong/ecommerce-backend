@@ -17,7 +17,6 @@ public class JacksonConfig {
             //SET DATE FORMAT GLOBALLY TO YYYY-MM-DD HH:MM:SS
 //            jacksonObjectMapperBuilder.featuresToEnable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 //            jacksonObjectMapperBuilder.featuresToDisable(SerializationFeature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS);
-            jacksonObjectMapperBuilder.propertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
             SimpleModule module = new SimpleModule();
             module.addDeserializer(Byte.class, new NumberDeserializers.ByteDeserializer(Byte.class, null));
             jacksonObjectMapperBuilder.modules(module);
