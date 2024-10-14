@@ -54,7 +54,7 @@ public class Account extends EntityBase<UUID> {
     private AccountRolesEnum role;
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @PrimaryKeyJoinColumn
+    @PrimaryKeyJoinColumn(name = "id", referencedColumnName = "id")
     private Profile profile;
 
     public void setProfile(Profile profile) {

@@ -25,8 +25,7 @@ public interface IAccountRepository extends JpaRepository<Account, UUID> {
     )
     void updateProfile(@Param("profile") Profile profile);
 
-    @Query("select a from Account a where a.email = :data or a.loginId = :data")
-//    @QueryHints(value = { @QueryHint(name = "hibernate.query.passDistinctThrough", value = "false") })
+    @Query("select a,b from Account a join Profile b on a.id=b.id where a.email = :data or a.loginId = :data")
     Account findByEmailOrLoginId(String data);
 
     @Modifying

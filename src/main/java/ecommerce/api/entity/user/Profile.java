@@ -35,6 +35,10 @@ public class Profile {
     @Column(name = "date_of_birth")
     private Date dateOfBirth;
 
+//    @OneToOne(mappedBy = "profile",cascade = CascadeType.REMOVE)
+//    @JoinColumn(name = "id",insertable = false, updatable = false)
+//    private Account account;
+
     @OneToMany(targetEntity = BlogPost.class, mappedBy = "author")
     @Transient
     private Set<BlogPost> blogPost;
