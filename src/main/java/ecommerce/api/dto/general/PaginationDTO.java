@@ -14,6 +14,10 @@ public class PaginationDTO<T> {
     private int elementCounts;
     private List<T> data;
 
+    public static <T,D> Page<T> fromSourcePageToTargetPage(Page<D> page){
+        return page.map(e -> (T) e);
+    }
+
     public static <T> PaginationDTO<T> fromPage(Page<T> page){
         return PaginationDTO.<T>builder()
                 .totalInstances((int) page.getTotalElements())

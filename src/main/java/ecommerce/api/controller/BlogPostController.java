@@ -3,10 +3,12 @@ package ecommerce.api.controller;
 import ecommerce.api.dto.blogpost.request.BlogPostCreateRequest;
 import ecommerce.api.dto.blogpost.request.BlogPostUpdateRequest;
 import ecommerce.api.service.business.BlogPostService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -29,6 +31,8 @@ public class BlogPostController {
     }
 
     @PostMapping("")
+    @PreAuthorize("hasRole(T(ecommerce.api.constants.AuthRoleConstants).ROLE_ADMIN)")
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<?> createBlogPost(@RequestBody BlogPostCreateRequest blogPostResponse) throws IOException {
         return ResponseEntity.ok(blogPostService.createBlogPost(blogPostResponse));
     }

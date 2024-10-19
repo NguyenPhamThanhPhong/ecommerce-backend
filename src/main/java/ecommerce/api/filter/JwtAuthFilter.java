@@ -42,6 +42,7 @@ public class JwtAuthFilter extends org.springframework.web.filter.OncePerRequest
             username = jwtUtil.extractUsername(jwt, true);
         }
 
+        //TODO: credentials are apiKeys --> need to be checked
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             if (!jwtUtil.isTokenExpired(jwt, true)) {
                 UserDetails account = accountService.loadUserByUsername(username);

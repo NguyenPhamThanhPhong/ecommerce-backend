@@ -4,6 +4,7 @@ import ecommerce.api.dto.account.request.AccountCreateRequest;
 import ecommerce.api.dto.account.response.AccountResponse;
 import ecommerce.api.dto.account.response.ProfileResponse;
 import ecommerce.api.dto.account.request.ProfileUpdateRequest;
+import ecommerce.api.dto.general.PaginationDTO;
 import ecommerce.api.entity.user.Account;
 import ecommerce.api.entity.user.Profile;
 import ecommerce.api.exception.ResourceNotFoundException;
@@ -12,6 +13,8 @@ import ecommerce.api.repository.IAccountRepository;
 import ecommerce.api.service.azure.CloudinaryService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -43,6 +46,12 @@ public class AccountService implements UserDetailsService {
     public AccountResponse getAccount(UUID id) {
         Account account = accountRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Account not found"));
         return accountMapper.fromEntityToAccountResponse(account);
+    }
+
+    public PaginationDTO<AccountResponse> getAccount(Pageable pageable) {
+        Page<Account> accounts = accountRepository.findAll(pageable);
+        Page<AccountResponse> accountResponses = accounts.map(accountMapper::fromEntityToAccountResponse);
+        return PaginationDTO.fromPage(accountResponses);
     }
 
     @Transactional

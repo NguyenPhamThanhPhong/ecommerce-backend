@@ -1,6 +1,7 @@
 package ecommerce.api.dto.account.request;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;

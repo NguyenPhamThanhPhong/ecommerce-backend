@@ -15,7 +15,6 @@ import java.util.UUID;
 public class UserDetailDTO implements UserDetails {
     private UUID id;
     private Date enableDate;
-
     private Date disableDate;
 
     private String email;

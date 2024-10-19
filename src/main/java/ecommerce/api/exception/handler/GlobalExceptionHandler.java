@@ -4,6 +4,7 @@ import ecommerce.api.dto.exception.ErrorResponse;
 import ecommerce.api.dto.exception.FieldErrorResponse;
 import ecommerce.api.exception.BadRequestException;
 import ecommerce.api.exception.ResourceNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -23,20 +24,20 @@ public class GlobalExceptionHandler {
         return String.format(COMMON_ERROR_MESSAGE_TEMPLATE, ex.getClass().getName(), ex.getMessage());
     }
 
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse<?> handleUnCaughtException(Exception ex, WebRequest webRequest) {
-        log.error(buildErrorMessage(ex));
-        return new ErrorResponse<>(webRequest.getContextPath(), ex.getMessage(), null);
-    }
+//    @ExceptionHandler(Exception.class)
+//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+//    public ErrorResponse<?> handleUnCaughtException(Exception ex, WebRequest webRequest) {
+//        log.error(buildErrorMessage(ex));
+//        return new ErrorResponse<>(webRequest.getContextPath(), ex.getMessage(), null);
+//    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse<List<FieldErrorResponse>> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex, WebRequest webRequest) {
+    public ErrorResponse<List<FieldErrorResponse>> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex, HttpServletRequest request) {
         log.error(buildErrorMessage(ex));
         List<FieldErrorResponse> errorDTOs = ex.getBindingResult().getFieldErrors().stream()
                 .map(error -> new FieldErrorResponse(error.getField(), String.valueOf(error.getRejectedValue()))).toList();
-        return new ErrorResponse<>(webRequest.getContextPath(), ex.getMessage(), errorDTOs);
+        return new ErrorResponse<List<FieldErrorResponse>>(request.getContextPath(), ex.getMessage(), errorDTOs);
     }
 
     @ExceptionHandler(BadRequestException.class)

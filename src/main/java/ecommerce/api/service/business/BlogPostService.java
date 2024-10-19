@@ -80,7 +80,7 @@ public class BlogPostService {
         catch (IOException e){
             throw new BadRequestException("Failed to upload image");
         }
-        blogPost = blogPostRepository.save(blogPost);
-        return new ModificationResponse<>(blogPost.getId(), blogPost.getCreatedAt(), Map.of("image_url", blogPost.getImageUrl()));
+        BlogPost result = blogPostRepository.save(blogPost);
+        return new ModificationResponse<>(result.getId(), result.getCreatedAt(), Map.of("image_url", result.getImageUrl()));
     }
 }

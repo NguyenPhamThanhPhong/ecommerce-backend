@@ -16,6 +16,9 @@ import java.util.UUID;
 @Table(name = "blog_posts")
 public class BlogPost extends EntityBase<UUID> {
 
+    @Builder.Default
+    private UUID id = UUID.randomUUID();
+
     @ColumnDefault("''")
     @Column(name = "title", length = Integer.MAX_VALUE)
     private String title;
@@ -29,7 +32,7 @@ public class BlogPost extends EntityBase<UUID> {
     private String imageUrl;;
 
     @Column(name = "author_id")
-    private String authorId;
+    private UUID authorId;
 
     @ColumnDefault("''")
     @Column(name = "content", length = Integer.MAX_VALUE)

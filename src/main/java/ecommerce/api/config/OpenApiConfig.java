@@ -101,9 +101,9 @@ public class OpenApiConfig {
             }
         };
     }
+
     private Map<String, Schema<?>> extractFieldsFromModel(Schema<?> schema, Components components) {
         Map<String, Schema<?>> parts = new LinkedHashMap<>();
-
         // Loop through the properties of the schema and handle each field
         if (schema.getProperties() != null) {
             schema.getProperties().forEach((fieldName, fieldSchema) -> {

@@ -11,6 +11,8 @@ import ecommerce.api.service.business.AccountService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -38,6 +40,13 @@ public class AccountController {
     public ResponseEntity<AccountResponse> getAccount(@PathVariable UUID id) {
         AccountResponse account = accountService.getAccount(id);
         return ResponseEntity.ok(account);
+    }
+
+    @GetMapping("")
+    @PreAuthorize("hasRole(T(ecommerce.api.constants.AuthRoleConstants).ROLE_ADMIN)")
+    @SecurityRequirement(name = "bearerAuth")
+    public ResponseEntity<?> getAllAccounts(@ParameterObject Pageable pageable) {
+        return ResponseEntity.ok(accountService.getAccount(pageable));
     }
 
     @PostMapping("/tokens")

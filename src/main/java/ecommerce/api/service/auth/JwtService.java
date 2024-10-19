@@ -41,8 +41,8 @@ public class JwtService {
                 .compact();
     }
 
-    public String generateRefreshToken(String username) {
-        return Jwts.builder().setSubject(username).setIssuer(jwtProperties.getIssuer())
+    public String generateRefreshToken(String id) {
+        return Jwts.builder().setSubject(id).setIssuer(jwtProperties.getIssuer())
                 .setAudience(jwtProperties.getAudience())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getAccessTokenExpirationMinutes() * 60 * 1000))

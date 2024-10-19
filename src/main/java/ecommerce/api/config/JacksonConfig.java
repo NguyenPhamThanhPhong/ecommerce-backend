@@ -20,6 +20,7 @@ public class JacksonConfig {
             SimpleModule module = new SimpleModule();
             module.addDeserializer(Byte.class, new NumberDeserializers.ByteDeserializer(Byte.class, null));
             jacksonObjectMapperBuilder.modules(module);
+//            jacksonObjectMapperBuilder.propertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
         };
     }
 }
