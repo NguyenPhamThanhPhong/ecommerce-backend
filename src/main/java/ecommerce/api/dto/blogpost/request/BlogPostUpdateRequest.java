@@ -13,7 +13,7 @@ public class BlogPostUpdateRequest {
 
     private String subtitle;
 
-    private String authorId;
+    private UUID authorId;
 
     private String content;
 

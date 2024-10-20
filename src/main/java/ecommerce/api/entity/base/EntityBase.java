@@ -9,15 +9,17 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.util.Date;
+import java.util.UUID;
 
 @MappedSuperclass
 @Data
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public abstract class EntityBase<T> {
+public abstract class EntityBase {
     @Id
-    protected T id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    protected UUID id;
 
     @ColumnDefault("now()")
     @Column(name = "created_at", insertable = false, updatable = false)

@@ -14,7 +14,7 @@ import java.util.UUID;
 @Builder
 @Entity
 @Table(name = "blog_posts")
-public class BlogPost extends EntityBase<UUID> {
+public class BlogPost extends EntityBase {
 
     @ColumnDefault("''")
     @Column(name = "title", length = Integer.MAX_VALUE)
@@ -29,7 +29,7 @@ public class BlogPost extends EntityBase<UUID> {
     private String imageUrl;;
 
     @Column(name = "author_id")
-    private String authorId;
+    private UUID authorId;
 
     @ColumnDefault("''")
     @Column(name = "content", length = Integer.MAX_VALUE)

@@ -15,12 +15,13 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
 @Table(name = "orders")
-public class Order extends EntityBase<Integer> {
+public class Order extends EntityBase {
     @Column(name = "address")
     private String address;
 
@@ -29,10 +30,10 @@ public class Order extends EntityBase<Integer> {
     private OrderStatus status;
 
     @Column(name = "discount_id", insertable = false, updatable = false)
-    private Integer discountId;
+    private UUID discountId;
 
     @Column(name = "issuer_id", insertable = false, updatable = false)
-    private String profileId;
+    private UUID profileId;
 
     @Column(name = "description", length = Integer.MAX_VALUE)
     private String description;

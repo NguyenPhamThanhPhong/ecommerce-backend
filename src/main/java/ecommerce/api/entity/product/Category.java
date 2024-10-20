@@ -1,5 +1,6 @@
 package ecommerce.api.entity.product;
 
+import ecommerce.api.entity.base.EntityBase;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -17,7 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @SuperBuilder
 @Table(name = "categories")
-public class Category extends OutlineInfo {
+public class Category extends EntityBase {
 
     @Column(name = "description", length = Integer.MAX_VALUE)
     private String description;

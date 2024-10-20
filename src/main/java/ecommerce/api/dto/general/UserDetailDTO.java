@@ -22,7 +22,7 @@ public class UserDetailDTO implements UserDetails {
 
     private String password;
 
-    private String loginId;
+    private UUID loginId;
 
     private Boolean isVerified;
 

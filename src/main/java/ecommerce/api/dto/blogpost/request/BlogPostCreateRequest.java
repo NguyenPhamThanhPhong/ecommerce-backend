@@ -3,6 +3,8 @@ package ecommerce.api.dto.blogpost.request;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.UUID;
+
 @Data
 public class BlogPostCreateRequest {
     private String title;
@@ -11,7 +13,7 @@ public class BlogPostCreateRequest {
 
     private String subtitle;
 
-    private String authorId;
+    private UUID authorId;
 
     private String content;
 
