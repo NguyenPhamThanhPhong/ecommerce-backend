@@ -28,7 +28,7 @@ public class Brand extends EntityBase {
     private String imageUrl;
 
     @Size(max = 40)
-    @Column(name = "name", length = 40)
+    @Column(name = "name", length = 40 , unique = true)
     private String name;
 
 }

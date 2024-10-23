@@ -23,11 +23,16 @@ public class Category extends EntityBase {
     @Column(name = "description", length = Integer.MAX_VALUE)
     private String description;
 
-    @Size(max = 2048)
-    @Column(name = "image_url", length = 2048)
-    private String imageUrl;
 
     @Size(max = 40)
-    @Column(name = "name", length = 40)
+    @Column(name = "name", length = 40 , unique = true)
     private String name;
+
+    @ManyToOne
+    @JoinColumn(name = "parent_id")
+    private Category parent;
+
+    @Column(name = "children_ids")
+    @OneToMany(mappedBy = "id")
+    private List<Category> children;
 }

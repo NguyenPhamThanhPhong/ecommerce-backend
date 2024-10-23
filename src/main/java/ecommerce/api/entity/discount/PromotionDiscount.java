@@ -28,7 +28,7 @@ public class PromotionDiscount extends Discount {
 
 //IGNORE WHEN INSERT BUT FETCH WHEN SELECT
     @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH,CascadeType.REFRESH})
-    @JoinColumn(name = "reward_product_id", insertable = false, updatable = false)
+    @JoinColumn(name = "reward_product_id", insertable = false, updatable = true)
     private Product rewardProduct;
 
 }
