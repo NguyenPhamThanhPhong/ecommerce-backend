@@ -15,10 +15,8 @@ import java.util.UUID;
 @Data
 @SuperBuilder
 @AllArgsConstructor
-@NoArgsConstructor
 public abstract class EntityBase {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     protected UUID id;
 
     @ColumnDefault("now()")
@@ -27,4 +25,9 @@ public abstract class EntityBase {
 
     @Column(name = "deleted_at")
     protected Date deletedAt;
+
+
+    public EntityBase() {
+        this.id = UUID.randomUUID();
+    }
 }

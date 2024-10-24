@@ -1,5 +1,6 @@
 package ecommerce.api.entity.product;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import ecommerce.api.entity.base.EntityBase;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
@@ -30,9 +31,9 @@ public class Category extends EntityBase {
 
     @ManyToOne
     @JoinColumn(name = "parent_id")
+    @JsonIgnore
     private Category parent;
 
-    @Column(name = "children_ids")
-    @OneToMany(mappedBy = "id")
+    @OneToMany(mappedBy = "parent" , cascade = CascadeType.ALL)
     private List<Category> children;
 }

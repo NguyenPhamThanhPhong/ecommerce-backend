@@ -1,5 +1,7 @@
 package ecommerce.api.dto.product.request;
 
+import aj.org.objectweb.asm.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import ecommerce.api.entity.discount.Discount;
 import ecommerce.api.entity.product.Brand;
 import ecommerce.api.entity.product.Category;
@@ -15,6 +17,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -41,11 +44,12 @@ public class ProductCreateRequest {
 
     private Integer stock;
 
-    private Map<String, Object> attributes;
+    private Map<String , Object> attributes;
 
-   private String brandName;
+    private String brandName;
 
-   private String categoryName;
+    private String categoryName;
 
     private String productNo;
+
 }

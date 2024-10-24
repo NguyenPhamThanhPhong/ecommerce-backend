@@ -1,9 +1,13 @@
-package ecommerce.api.dto.product.response;
+package ecommerce.api.dto.brand.response;
 
 import lombok.Data;
 
+import java.util.UUID;
+
 @Data
 public class BrandResponse {
+
+    private UUID id;
 
     private String description;
 
