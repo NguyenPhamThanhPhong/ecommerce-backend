@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.util.UUID;
+
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
@@ -19,7 +21,7 @@ public class PromotionDiscount extends Discount {
     private Integer requiredQuantity;
 
     @Column(name = "reward_product_id")
-    private String rewardProductId;
+    private UUID rewardProductId;
 
     @Column(name = "reward_quantity")
     private Integer rewardQuantity;

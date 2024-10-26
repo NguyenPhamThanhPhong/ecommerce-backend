@@ -15,7 +15,7 @@ public class BlogPostDisplayResponse {
     private String subtitle;
     private String imageUrl;
 
-    private String authorId;
+    private UUID authorId;
 
     private Profile author;
 }

@@ -16,7 +16,7 @@ import java.util.UUID;
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "payments")
 @DiscriminatorColumn(name = "payment_method")
-public class Payment extends EntityBase<Integer> {
+public class Payment extends EntityBase {
 
     @Column(name = "account_id")
     private UUID accountId;

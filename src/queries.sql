@@ -5,6 +5,7 @@ from accounts
 UPDATE accounts
 SET role = 'ROLE_ADMIN';
 
+select * from categories;
 
 
 delete

@@ -15,7 +15,7 @@ import java.util.UUID;
 @Builder
 @Entity
 @Table(name = "tokens")
-public class AuthToken extends EntityBase<String> {
+public class AuthToken extends EntityBase {
     @NotNull
     @Column(name = "account_id", nullable = false)
     private UUID accountId;

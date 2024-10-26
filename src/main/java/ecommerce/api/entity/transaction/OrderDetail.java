@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -20,11 +21,11 @@ import java.math.BigDecimal;
 public class OrderDetail {
     @Id
     @Column(name = "order_id", nullable = false)
-    private String orderId;
+    private UUID orderId;
 
     @Id
     @Column(name = "product_id", nullable = false)
-    private String productId;
+    private UUID productId;
 
     @Column(name = "quantity")
     private Integer quantity;

@@ -19,7 +19,7 @@ import java.util.Date;
 @Table(name = "discounts")
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "discount_type")
-public class Discount extends EntityBase<Integer> {
+public class Discount extends EntityBase {
     @Column(name = "title", length = Integer.MAX_VALUE)
     private String title;
 

@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -16,12 +17,12 @@ import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @SuperBuilder
 @Entity
 @Table(name = "products")
-public class Product extends EntityBase<String> {
+public class Product extends EntityBase {
     @Size(max = 255)
     @Column(name = "name")
     private String name;
@@ -62,11 +63,16 @@ public class Product extends EntityBase<String> {
     private Category category;
 
 
+    @Column(name = "product_no")
+    @ColumnDefault(value = "0")
+    private String productNo;
+
     @ManyToMany
     @JoinTable(name = "products_discounts",
             joinColumns = @JoinColumn(name = "product_id"),
             inverseJoinColumns = @JoinColumn(name = "discount_id"))
     @Builder.Default
     private Set<Discount> discounts = new LinkedHashSet<>();
+
 
 }

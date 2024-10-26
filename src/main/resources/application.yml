@@ -27,8 +27,8 @@ logging:
       ttddyy:
         dsproxy:
           listener: debug
-    root: info
-    sql: info
+    root: error
+    sql: error
 
 
 authentication:

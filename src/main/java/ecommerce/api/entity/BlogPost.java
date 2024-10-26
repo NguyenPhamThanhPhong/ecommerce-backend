@@ -14,7 +14,7 @@ import java.util.UUID;
 @Builder
 @Entity
 @Table(name = "blog_posts")
-public class BlogPost extends EntityBase<UUID> {
+public class BlogPost extends EntityBase {
 
     @Builder.Default
     private UUID id = UUID.randomUUID();

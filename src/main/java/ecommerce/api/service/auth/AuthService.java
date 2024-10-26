@@ -22,7 +22,7 @@ public class AuthService {
         if (account != null && account.getPassword().equals(request.getPassword())) {
             return LoginResponse.builder()
                     .accessToken(jwtService.generateAccessToken(account))
-                    .refreshToken(jwtService.generateRefreshToken(account.getLoginId())).build();
+                    .refreshToken(jwtService.generateRefreshToken(String.valueOf(account.getLoginId()))).build();
         }
         throw new UnAuthorisedException("Invalid username or password");
     }

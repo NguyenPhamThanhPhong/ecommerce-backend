@@ -19,7 +19,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @Table(name = "accounts")
-public class Account extends EntityBase<UUID> {
+public class Account extends EntityBase {
     private UUID id = UUID.randomUUID();
 
     @Column(name = "enable_date")

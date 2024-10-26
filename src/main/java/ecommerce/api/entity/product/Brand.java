@@ -1,5 +1,6 @@
 package ecommerce.api.entity.product;
 
+import ecommerce.api.entity.base.EntityBase;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -17,7 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @SuperBuilder
 @Table(name = "brands")
-public class Brand extends OutlineInfo {
+public class Brand extends EntityBase {
 
     @Column(name = "description", length = Integer.MAX_VALUE)
     private String description;
@@ -27,7 +28,7 @@ public class Brand extends OutlineInfo {
     private String imageUrl;
 
     @Size(max = 40)
-    @Column(name = "name", length = 40)
+    @Column(name = "name", length = 40 , unique = true)
     private String name;
 
 }

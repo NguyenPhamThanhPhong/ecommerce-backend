@@ -15,6 +15,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -35,6 +36,7 @@ public class AccountService implements UserDetailsService {
     @Transactional
     public AccountResponse createAccount(AccountCreateRequest request) throws IOException {
         Account account = accountMapper.fromCreateRequestToEntity(request);
+
         MultipartFile file = request.getProfile().getAvatar();
         if (file != null) {
             String blobUrl = blobService.uploadFile(file, cloudinaryService.ACCOUNT_DIR, account.getId().toString());

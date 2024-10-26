@@ -7,11 +7,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderDetailId implements Serializable {
-    private String orderId;
-    private String productId;
+    private UUID orderId;
+    private UUID productId;
 }
