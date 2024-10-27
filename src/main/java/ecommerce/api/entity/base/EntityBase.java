@@ -1,10 +1,8 @@
 package ecommerce.api.entity.base;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.ColumnDefault;
 
@@ -26,6 +24,9 @@ public abstract class EntityBase {
     @Column(name = "deleted_at")
     protected Date deletedAt;
 
+    //in case we exceed the limit of 6 digits, we will use the base32 encoding
+    @Column(name = "code",insertable = false, updatable = false)
+    protected Integer code;
 
     public EntityBase() {
         this.id = UUID.randomUUID();

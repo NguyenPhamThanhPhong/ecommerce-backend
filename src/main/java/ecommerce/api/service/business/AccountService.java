@@ -5,12 +5,14 @@ import ecommerce.api.dto.account.response.AccountResponse;
 import ecommerce.api.dto.account.response.ProfileResponse;
 import ecommerce.api.dto.account.request.ProfileUpdateRequest;
 import ecommerce.api.dto.general.PaginationDTO;
+import ecommerce.api.dto.general.SearchSpecification;
 import ecommerce.api.entity.user.Account;
 import ecommerce.api.entity.user.Profile;
 import ecommerce.api.exception.ResourceNotFoundException;
 import ecommerce.api.mapper.AccountMapper;
 import ecommerce.api.repository.IAccountRepository;
 import ecommerce.api.service.azure.CloudinaryService;
+import ecommerce.api.utils.DynamicSpecificationUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,6 +25,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -43,6 +47,12 @@ public class AccountService implements UserDetailsService {
             account.getProfile().setAvatarUrl(blobUrl);
         }
         return accountMapper.fromEntityToAccountResponse(accountRepository.save(account));
+    }
+
+    public PaginationDTO<AccountResponse> search(Set<SearchSpecification> searchSpec, Pageable pageable) {
+        Specification<Account> spec = DynamicSpecificationUtils.buildSpecification(searchSpec);
+        Page<Account> accounts = accountRepository.findAll(spec, pageable);
+        return PaginationDTO.fromPage(accounts.map(accountMapper::fromEntityToAccountResponse));
     }
 
     public AccountResponse getAccount(UUID id) {

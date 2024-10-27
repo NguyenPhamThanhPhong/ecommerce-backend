@@ -21,7 +21,7 @@ public class AccountIdentityValidator implements ConstraintValidator<AccountVali
     public boolean isValid(AccountCreateRequest value, ConstraintValidatorContext context) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication instanceof AnonymousAuthenticationToken) {
-            if (value.getRole() != AccountRolesEnum.ROLES_CUSTOMER) {
+            if (value.getRole() != AccountRolesEnum.ROLE_CUSTOMER) {
                 return false;
             }
         }

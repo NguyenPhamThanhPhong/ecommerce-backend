@@ -21,7 +21,7 @@ public enum AccountRolesEnum {
             AuthRoleConstants.ROLE_DEFAULT,
             AuthRoleConstants.ROLE_VIEW_SALARY
     )),
-    ROLES_CUSTOMER(Set.of(
+    ROLE_CUSTOMER(Set.of(
             AuthRoleConstants.ROLE_DEFAULT
     ));
     private final Set<String> roles;

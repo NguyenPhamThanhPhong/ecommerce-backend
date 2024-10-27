@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.NumberFormat;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
@@ -17,7 +18,8 @@ public class ProfileCreateRequest {
     private String fullName;
 
     private MultipartFile avatar; // File input for avatar
-    private Integer phone;
+    @NumberFormat
+    private String phone;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private Date dateOfBirth;

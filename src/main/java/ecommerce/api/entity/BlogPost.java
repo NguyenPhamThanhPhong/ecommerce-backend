@@ -5,6 +5,8 @@ import ecommerce.api.entity.user.Profile;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.UUID;
 
@@ -14,6 +16,8 @@ import java.util.UUID;
 @Builder
 @Entity
 @Table(name = "blog_posts")
+@DynamicInsert
+@DynamicUpdate
 public class BlogPost extends EntityBase {
 
     @Builder.Default

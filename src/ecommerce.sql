@@ -1,234 +1,284 @@
 BEGIN;
-create table profiles
-(
-    id            uuid primary key,
-    full_name     varchar(40),
-    age           smallint,
-    avatar_url    varchar(2048),
-    phone         varchar(11),
-    date_of_birth varchar(10)
-);
 
 create table accounts
 (
-    id           uuid primary key,
-    created_at   timestamp not null default now(),
-    deleted_at   timestamp,
-    enable_date  timestamp,
-    disable_date timestamp,
-    email        varchar unique,
-    password     varchar,
-    login_id     varchar unique,
+    id           uuid        not null
+        constraint accounts_pkey
+            primary key,
+    created_at   timestamp(6) default now(),
+    deleted_at   timestamp(6),
+    disable_date timestamp(6),
+    email        varchar(40) not null,
+    enable_date  timestamp(6),
     is_verified  boolean,
+    login_id     varchar(40),
     otp          varchar(6),
-    otp_expiry   timestamp,
-    role         varchar            default 'ANONYMOUS',
-    constraint FK_profiles_id FOREIGN KEY (id) references profiles (id)
-        ON DELETE cascade
+    otp_expiry   timestamp(6),
+    password     varchar(40) not null,
+    role         varchar(40)  default 'ANONYMOUS'::text,
+    code         serial
 );
 
-create index accounts_email_hash_index
-    on accounts (email) where email is not null;
-create index accounts_login_id_hash_index
-    on accounts (login_id) where login_id is not null;
-
-create table tokens
+create table profiles
 (
-    id             uuid primary key,
-    account_id     uuid      not null,
-    created_at     timestamp not null default now(),
-    deleted_at     timestamp,
-    access_token   varchar   not null,
-    refresh_token  varchar   not null,
-    access_expiry  timestamp not null,
-    refresh_expiry timestamp not null,
-    constraint FK_tokens_accountId FOREIGN KEY (account_id) references accounts (id)
-        ON DELETE CASCADE
+    id            uuid not null
+        constraint profiles_pkey
+            primary key,
+    avatar_url    varchar(2048),
+    date_of_birth timestamp(6),
+    full_name     varchar(40),
+    phone         varchar(11)
+);
+
+create table brands
+(
+    id          uuid not null
+        constraint brands_pkey
+            primary key,
+    created_at  timestamp(6) default now(),
+    deleted_at  timestamp(6),
+    description varchar,
+    image_url   varchar(2048),
+    name        varchar(40)
+        constraint uk_brands_tbl_name
+            unique,
+    code        serial
+);
+
+create table categories
+(
+    id          uuid not null
+        constraint categories_pkey
+            primary key,
+    created_at  timestamp(6) default now(),
+    deleted_at  timestamp(6),
+    description varchar(255),
+    name        varchar(40)
+        constraint uk_categories_tbl_name
+            unique,
+    parent_id   uuid
+        constraint fk_categories_tbl_categories_id
+            references categories,
+    code        serial
+);
+
+create table discounts
+(
+    id            uuid        not null
+        constraint discounts_pkey
+            primary key,
+    discount_type varchar(31) not null,
+    created_at    timestamp(6) default now(),
+    deleted_at    timestamp(6),
+    description   text,
+    disable_date  timestamp(6),
+    enable_date   timestamp(6),
+    title         text,
+    code          serial
+);
+
+create table fixed_discounts
+(
+    fixed_discount real,
+    min_condition  real,
+    id             uuid not null
+        constraint fixed_discounts_pkey
+            primary key
+        constraint fk_fixed_discounts_tbl_discounts_id
+            references discounts
+);
+
+create table payments
+(
+    payment_method varchar(31) not null,
+    id             uuid        not null
+        constraint payments_pkey
+            primary key,
+    created_at     timestamp(6) default now(),
+    deleted_at     timestamp(6),
+    account_id     uuid,
+    status         text,
+    code           serial
+);
+
+create table cash_payments
+(
+    amount      numeric(10, 2),
+    cash_method text,
+    exchange    numeric(10, 2),
+    paid        numeric(10, 2),
+    id          uuid not null
+        constraint cash_payments_pkey
+            primary key
+        constraint fk_cash_payments_tbl_payments_id
+            references payments
+);
+
+create table orders
+(
+    id          uuid not null
+        constraint orders_pkey
+            primary key,
+    created_at  timestamp(6) default now(),
+    deleted_at  timestamp(6),
+    address     varchar(255),
+    description text,
+    discount_id uuid
+        constraint fk_orders_tbl_discounts_id
+            references discounts,
+    issuer_id   uuid,
+    status      varchar(255)
+        constraint orders_status_check
+            check ((status)::text = ANY
+                   ((ARRAY ['PROCESSING'::character varying, 'SHIPPING'::character varying, 'DELIVERED'::character varying, 'CANCELLED'::character varying])::text[])),
+    payment_id  uuid not null
+        constraint uk_orders_tbl_payments_id
+            unique
+        constraint fk_orders_tbl_payments_id
+            references payments,
+    code        serial
+);
+
+create table percent_discounts
+(
+    discount_percent numeric(3, 2),
+    max_discount     numeric(38, 2),
+    min_condition    numeric(38, 2),
+    id               uuid not null
+        constraint percent_discounts_pkey
+            primary key
+        constraint fk_percent_discounts_tbl_discounts_id
+            references discounts
+);
+
+create table products
+(
+    id          uuid not null
+        constraint products_pkey
+            primary key,
+    created_at  timestamp(6) default now(),
+    deleted_at  timestamp(6),
+    attributes  jsonb,
+    description text,
+    image_url   varchar(2048),
+    name        varchar(255),
+    price       numeric(10, 2),
+    product_no  varchar(255) default 0,
+    quantity    integer,
+    sku         varchar(10),
+    sold        integer,
+    stock       integer,
+    brand_id    uuid
+        constraint fk_products_tbl_brands_id
+            references brands,
+    category_id uuid
+        constraint fk_products_tbl_categories_id
+            references categories,
+    code        serial
+);
+
+create table order_details
+(
+    order_id    uuid not null
+        constraint fk_order_details_tbl_orders_id
+            references orders
+            on delete cascade,
+    product_id  uuid not null
+        constraint fk_products_tbl_orders_id
+            references products,
+    gross_total numeric(10, 2),
+    net_total   numeric(10, 2),
+    quantity    integer,
+    constraint order_details_pkey
+        primary key (order_id, product_id)
+);
+
+create table products_discounts
+(
+    product_id  uuid not null
+        constraint fk_products_discounts_tbl_products_id
+            references products,
+    discount_id uuid not null
+        constraint fk_products_discounts_tbl_discounts_id
+            references discounts,
+    constraint products_discounts_pkey
+        primary key (product_id, discount_id)
 );
 
 
 
 create table blog_posts
 (
-    id         uuid primary key,
-    created_at timestamp not null default now(),
-    deleted_at timestamp,
-    image_url  varchar(2048),
-    title      varchar            default '',
-    author_id  uuid,
-    subtitle   varchar            default now(),
-    content    text            default '',
+    id         uuid not null
+        constraint blog_posts_pkey
+            primary key,
+    created_at timestamp(6) default now(),
+    deleted_at timestamp(6),
+    author_id  uuid
+        constraint blog_posts_tbl_profiles_id
+            references profiles,
+    content    text         default ''::text,
+    image_url  text         default ''::text,
     is_html    boolean,
-    --MUST BE PROFILES -> IF NOT, THERE'S NO NAME TO DISPLAY
-    constraint FK_blogPosts_authorId_profiles_id FOREIGN KEY (author_id) references profiles (id)
-        ON DELETE set NULL
-);
-
-create table brands
-(
-    id          uuid primary key,
-    created_at  timestamp not null default now(),
-    deleted_at  timestamp,
-    description varchar,
-    image_url   varchar(2048),
-    name        varchar(40),
-    sold        int,
-    stock       int
-);
-
-create table categories
-(
-    id          uuid primary key,
-    created_at  timestamp not null default now(),
-    deleted_at  timestamp,
-    description varchar,
-    image_url   varchar(2048),
-    name        varchar(40),
-    sold        int,
-    stock       int
-);
-create table brands_categories
-(
-    brand_id    uuid,
-    category_id uuid,
-    constraint PK_brands_categories_brandId_categoryId primary key (brand_id, category_id),
-    constraint FK_brands_categories_brandId FOREIGN KEY (brand_id) references brands (id),
-    constraint FK_brands_categories_categoryId FOREIGN KEY (brand_id) references categories (id)
-);
-
-create table discounts
-(
-    id            serial primary key,
-    created_at    timestamp not null default now(),
-    deleted_at    timestamp,
-    title         varchar,
-    description   varchar,
-    enable_date   timestamp,
-    disable_date  timestamp,
-    discount_type varchar check ( discount_type in ('PERCENT', 'FIXED', 'PROMOTION'))
-);
-
-create table products
-(
-    id          serial primary key,
-    sku         varchar(10), -- Stock Keeping Unit
-    created_at  timestamp not null default now(),
-    deleted_at  timestamp,
-    name        varchar(255),
-    description varchar,
-    price       numeric(10, 2),
-    brand_id    uuid,
-    category_id uuid,
-    image_url   varchar(2048),
-    quantity    int,
-    stock       int,
-    sold        int,         -- TRIGGER
-    attributes  jsonb,
-    constraint FK_products_categoryId FOREIGN KEY (category_id) references categories (id),
-    constraint FK_products_brandId FOREIGN KEY (brand_id) references brands (id)
+    subtitle   text         default now(),
+    title      text         default ''::text,
+    is_draft   boolean,
+    code       serial
 );
 
 create table promotion_discounts
 (
-    id                int primary key,
-    required_quantity smallint,
-    reward_quantity   smallint,
-    reward_product_id int,
-    constraint FK_promotions_discountId FOREIGN KEY (id) references discounts (id),
-    constraint FK_promotions_rewardProductId FOREIGN KEY (reward_product_id) references products (id)
+    required_quantity integer,
+    reward_product_id uuid
+        constraint products_discounts_tbl_products_id
+            references products,
+    reward_quantity   integer,
+    id                uuid not null
+        constraint promotion_discounts_pkey
+            primary key
+        constraint fk_promotion_discounts_tbl_discounts_id
+            references discounts
 );
 
-
-create table percent_discounts
+create table tokens
 (
-    id               int primary key,
-    min_condition    numeric(10, 2),
-    discount_percent numeric(3, 2) check (discount_percent >= 0 and discount_percent <= 100),
-    max_discount     numeric(10, 2),
-    constraint FK_promotions_discountId FOREIGN KEY (id) references discounts (id)
-);
-
-create table fixed_discounts
-(
-    id             int primary key,
-    min_condition  numeric(10, 2),
-    fixed_discount numeric(10, 2),
-    constraint FK_promotions_discountId FOREIGN KEY (id) references discounts (id)
-);
-
-
-
-create table products_discounts
-(
-    product_id  int,
-    discount_id int,
-    constraint PK_products_discounts_productId_discountId primary key (product_id, discount_id),
-    constraint FK_products_discounts_productId FOREIGN KEY (product_id) references products (id),
-    constraint FK_products_discounts_discountId FOREIGN KEY (discount_id) references discounts (id)
-);
-
-
-create table payments
-(
-    id             serial primary key,
-    created_at     timestamp   not null default now(),
-    deleted_at     timestamp,
-    account_id     uuid unique not null,
-    status         varchar,
-    payment_method varchar
+    id             uuid         not null
+        constraint tokens_pkey
+            primary key,
+    created_at     timestamp(6) default now(),
+    deleted_at     timestamp(6),
+    access_expiry  timestamp(6) not null,
+    access_token   text         not null,
+    account_id     uuid         not null,
+    refresh_expiry timestamp(6) not null,
+    refresh_token  text         not null,
+    code           varchar(6)
 );
 
 create table vnpay_payments
 (
-    id          int primary key,
     amount      numeric(10, 2),
-    bank_code   varchar,
-    order_info  varchar,
-    card_method varchar,
-    constraint FK_vnpay_payment_paymentId FOREIGN KEY (id) references payments (id)
+    bank_code   text,
+    card_method text,
+    order_info  text,
+    id          uuid not null
+        constraint vnpay_payments_pkey
+            primary key
+        constraint vnpay_payments_tbl_payments_id
+            references payments
 );
 
-create table cash_payments
-(
-    id          int primary key,
-    amount      numeric(10, 2),
-    paid        numeric(10, 2),
-    exchange    numeric(10, 2),
-    cash_method varchar,
-    constraint FK_cash_payment_paymentId FOREIGN KEY (id) references payments (id)
-);
-
-create table orders
-(
-    id          serial primary key,
-    created_at  timestamp not null default now(),
-    deleted_at  timestamp,
-    discount_id int,
-    description varchar,
-    address     varchar,
-    status      varchar,
-    --the one who responsible for the order creation
-    issuer_id   uuid,
-    payment_id  int,
-    constraint FK_orders_accountId FOREIGN KEY (issuer_id) references profiles (id),
-    constraint FK_orders_paymentId FOREIGN KEY (payment_id) references payments (id),
-    constraint FK_orders_discountId FOREIGN KEY (discount_id) references discounts (id)
-);
-
-create table order_details
-(
-    order_id    int not null,
-    product_id  int not null,
-    quantity    int,
-    gross_total numeric(10, 2),
-    net_total   numeric(10, 2),
-    constraint FK_order_detail_orderId FOREIGN KEY (order_id) references orders (id),
-    constraint FK_order_detail_productId FOREIGN KEY (product_id) references products (id)
-);
 COMMIT;
 
+BEGIN;
+insert into accounts (id, email, password, role)
+values ('00000000-0000-0000-0000-000000000000', 'admin@gmail.com', 'string', 'ROLE_ADMIN'),
+       ('00000000-0000-0000-0000-000000000001', 'customer@gmail.com','string','ROLE_CUSTOMER'),
+       ('00000000-0000-0000-0000-000000000002', 'staff@gmail.com','string','ROLE_STAFF');
 
+insert into profiles (id,date_of_birth, full_name, phone)
+values ('00000000-0000-0000-0000-000000000000', now() - INTERVAL '18 years', 'Phong', '0123456789'),
+       ('00000000-0000-0000-0000-000000000001', now() - INTERVAL '17 years', 'Phong', '098765432'),
+       ('00000000-0000-0000-0000-000000000002', now() - INTERVAL '18 years', 'Phong', '0995555555');
 
-abort;
-
-
+COMMIT ;

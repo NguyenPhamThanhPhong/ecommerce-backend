@@ -29,7 +29,6 @@ public class BlogPostCreateRequest implements IdentityCriteria {
     }
 
     @Override
-    @JsonIgnore
     public void setIdentity(UUID identity) {
         this.authorId = identity;
     }

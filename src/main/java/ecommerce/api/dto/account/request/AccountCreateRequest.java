@@ -9,9 +9,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.lang.Nullable;
 
 import java.util.Date;
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -26,6 +26,8 @@ public class AccountCreateRequest implements DateRangeCriteria {
     private String email;
     @Length(min = 6, max = 40)
     private String password;
+
+    @Nullable
     @Length(min = 6, max = 40)
     private String loginId;
     private Boolean isVerified;

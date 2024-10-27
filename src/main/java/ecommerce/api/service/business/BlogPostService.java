@@ -1,28 +1,31 @@
 package ecommerce.api.service.business;
 
+import ecommerce.api.dto.account.response.AccountResponse;
 import ecommerce.api.dto.blogpost.response.BlogPostDisplayResponse;
 import ecommerce.api.dto.blogpost.response.BlogPostResponse;
 import ecommerce.api.dto.general.ModificationResponse;
 import ecommerce.api.dto.general.PaginationDTO;
 import ecommerce.api.dto.blogpost.request.BlogPostCreateRequest;
 import ecommerce.api.dto.blogpost.request.BlogPostUpdateRequest;
+import ecommerce.api.dto.general.SearchSpecification;
 import ecommerce.api.entity.BlogPost;
+import ecommerce.api.entity.user.Account;
 import ecommerce.api.exception.BadRequestException;
 import ecommerce.api.exception.ResourceNotFoundException;
 import ecommerce.api.mapper.BlogPostMapper;
 import ecommerce.api.repository.IBlogPostRepository;
 import ecommerce.api.service.azure.CloudinaryService;
+import ecommerce.api.utils.DynamicSpecificationUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +34,7 @@ public class BlogPostService {
     private final BlogPostMapper blogPostMapper;
     private final CloudinaryService cloudinaryService;
 
-    public ModificationResponse<UUID> createBlogPost(BlogPostCreateRequest request){
+    public ModificationResponse<UUID> createBlogPost(BlogPostCreateRequest request) {
         BlogPost blogPost = blogPostMapper.fromCreateRequestToEntity(request);
         return upsertAndReturnChanges(blogPost, request.getImage(), blogPost.getId());
     }
@@ -46,14 +49,11 @@ public class BlogPostService {
                 .orElseThrow(() -> new ResourceNotFoundException("Blog post not found by id " + id));
     }
 
-    public PaginationDTO<BlogPostDisplayResponse> getBlogPostsPageable(Pageable pageable, boolean includeDeleted) {
-        Page<BlogPost> blogPosts;
-        if (!includeDeleted)
-            blogPosts = blogPostRepository.findAll(pageable);
-        else
-            blogPosts = blogPostRepository.findAllByDeletedAtIsNotNull(pageable);
-        Page<BlogPostDisplayResponse> displayResponses = blogPosts.map(blogPostMapper::fromEntityToDisplayResponse);
-        return PaginationDTO.fromPage(displayResponses);
+    public PaginationDTO<BlogPostDisplayResponse> search(Set<SearchSpecification> searchSpec, Pageable pageable) {
+        Specification<BlogPost> spec = DynamicSpecificationUtils.buildSpecification(searchSpec);
+        Page<BlogPost> blogPosts = blogPostRepository.findAll(spec, pageable);
+        var res = blogPosts.map(blogPostMapper::fromEntityToDisplayResponse);
+        return PaginationDTO.fromPage(res);
     }
 
     @Transactional
@@ -65,19 +65,18 @@ public class BlogPostService {
     }
 
     @Transactional
-    public ModificationResponse<UUID> updateBlogPost(BlogPostUpdateRequest request){
+    public ModificationResponse<UUID> updateBlogPost(BlogPostUpdateRequest request) {
         BlogPost blogPost = blogPostMapper.fromUpdateRequestToEntity(request);
         return upsertAndReturnChanges(blogPost, request.getImage(), request.getId());
     }
 
     private ModificationResponse<UUID> upsertAndReturnChanges(BlogPost blogPost, MultipartFile image, UUID id) throws BadRequestException {
-        try{
+        try {
             if (image != null) {
                 String imageUrl = cloudinaryService.uploadFile(image, cloudinaryService.BLOG_DIR, id.toString());
                 blogPost.setImageUrl(imageUrl);
             }
-        }
-        catch (IOException e){
+        } catch (IOException e) {
             throw new BadRequestException("Failed to upload image");
         }
         BlogPost result = blogPostRepository.save(blogPost);

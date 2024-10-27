@@ -5,6 +5,8 @@ import ecommerce.api.entity.transaction.Order;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.Date;
 import java.util.LinkedHashSet;
@@ -16,6 +18,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @Entity
 @Table(name = "profiles")
+@DynamicInsert
+@DynamicUpdate
 public class Profile {
     @Id
     private UUID id;
@@ -34,10 +38,6 @@ public class Profile {
 
     @Column(name = "date_of_birth")
     private Date dateOfBirth;
-
-//    @OneToOne(mappedBy = "profile",cascade = CascadeType.REMOVE)
-//    @JoinColumn(name = "id",insertable = false, updatable = false)
-//    private Account account;
 
     @OneToMany(targetEntity = BlogPost.class, mappedBy = "author")
     @Transient
