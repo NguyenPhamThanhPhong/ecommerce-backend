@@ -53,6 +53,7 @@ create table categories
     created_at  timestamp(6) default now(),
     deleted_at  timestamp(6),
     description varchar(255),
+    image_url   varchar(2048),
     name        varchar(40)
         constraint uk_categories_tbl_name
             unique,

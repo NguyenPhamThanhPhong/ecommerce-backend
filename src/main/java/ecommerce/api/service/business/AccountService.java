@@ -60,12 +60,6 @@ public class AccountService implements UserDetailsService {
         return accountMapper.fromEntityToAccountResponse(account);
     }
 
-    public PaginationDTO<AccountResponse> getAccount(Pageable pageable) {
-        Page<Account> accounts = accountRepository.findAll(pageable);
-        Page<AccountResponse> accountResponses = accounts.map(accountMapper::fromEntityToAccountResponse);
-        return PaginationDTO.fromPage(accountResponses);
-    }
-
     @Transactional
     public ProfileResponse updateProfile(ProfileUpdateRequest request) throws IOException {
         Profile profile = accountMapper.fromUpdateRequestToEntity(request);

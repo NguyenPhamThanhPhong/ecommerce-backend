@@ -18,4 +18,6 @@ public class BlogPostUpdateRequest {
     private String content;
 
     private Boolean isHtml;
+
+    private boolean isDraft;
 }

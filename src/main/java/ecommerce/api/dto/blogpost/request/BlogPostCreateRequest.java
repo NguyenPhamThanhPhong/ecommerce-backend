@@ -23,6 +23,8 @@ public class BlogPostCreateRequest implements IdentityCriteria {
 
     private Boolean isHtml;
 
+//    public BlogPostCreateRequest() {authorId = UUID.randomUUID();}
+
     @Override
     public UUID getIdentity() {
         return authorId;

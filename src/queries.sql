@@ -3,13 +3,9 @@ from accounts
          join profiles on accounts.id = profiles.id;
 
 select count(1) from Accounts a;
-abort;
 
-
-
-
-
-
+select * from brands;
+select * from categories;
 
 UPDATE accounts
 SET role = 'ROLE_ADMIN';

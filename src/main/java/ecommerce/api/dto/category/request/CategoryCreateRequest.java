@@ -1,6 +1,7 @@
 package ecommerce.api.dto.category.request;
 
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -8,6 +9,8 @@ import java.util.List;
 public class CategoryCreateRequest {
 
     private String description;
+
+    private MultipartFile image;
 
     private String name;
 

@@ -10,6 +10,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Service
 @PropertySource("classpath:cloudinary.yml")
@@ -18,6 +21,8 @@ public class CloudinaryService {
     public final String PRODUCT_DIR;
     public final String ACCOUNT_DIR;
     public final String BLOG_DIR;
+    public final String CATEGORY_DIR;
+    public final String BRAND_DIR;
     private final Cloudinary cloudinary;
 
     public CloudinaryService(@Value("${cloud-name}") String cloudName,
@@ -25,11 +30,15 @@ public class CloudinaryService {
                              @Value("${api-secret}") String apiSecret,
                              @Value("${product-folder:ecommerce/product}") String PRODUCT_DIR,
                              @Value("${account-folder:ecommerce/account}") String ACCOUNT_DIR,
+                             @Value("${category-folder:ecommerce/category}") String CATEGORY_DIR,
+                             @Value("${brand-folder:ecommerce/brand}") String BRAND_DIR,
                              @Value("${blog-folder:ecommerce/blog}") String BLOG_DIR) {
         cloudinary = new Cloudinary(ObjectUtils.asMap("cloud_name", cloudName, "api_key", apiKey,
                 "api_secret", apiSecret, "secure", true));
         this.PRODUCT_DIR = PRODUCT_DIR;
         this.ACCOUNT_DIR = ACCOUNT_DIR;
+        this.CATEGORY_DIR = CATEGORY_DIR;
+        this.BRAND_DIR = BRAND_DIR;
         this.BLOG_DIR = BLOG_DIR;
     }
 
@@ -50,31 +59,29 @@ public class CloudinaryService {
     }
 
     public String[] uploadMultipleFiles(MultipartFile[] files, String folderPath) throws IOException {
-        // Create an array to store the CompletableFuture<String> objects
-        @SuppressWarnings("unchecked")
-        CompletableFuture<String>[] futures = new CompletableFuture[files.length];
-        // Initialize the futures array by submitting each upload asynchronously
-        for (int i = 0; i < files.length; i++) {
-            final int index = i;
-            futures[i] = CompletableFuture.supplyAsync(() -> {
-                try {
-                    return uploadFile(files[index], folderPath, UUID.randomUUID().toString()); // Asynchronously upload file
-                } catch (IOException e) {
-                    throw new RuntimeException(e); // Wrap the checked exception in a RuntimeException
-                }
-            });
+        ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
+        CountDownLatch latch = new CountDownLatch(files.length);
+        String[] results = new String[files.length];
+        try {
+            for (int i = 0; i < files.length; i++) {
+                final int index = i;
+                executor.submit(() -> {
+                    try {
+                        results[index] = uploadFile(files[index], folderPath, UUID.randomUUID().toString());
+                    } catch (IOException e) {
+                        results[index] = null; // Handle the exception by setting the result to null
+                    } finally {
+                        latch.countDown();
+                    }
+                });
+            }
+            latch.await(); // Wait for all tasks to complete
+            return results;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("File upload interrupted", e);
+        } finally {
+            executor.shutdownNow();
         }
-        return CompletableFuture.allOf(futures)
-                .thenApply(v -> Arrays.stream(futures)
-                        .map(future -> {
-                            try {
-                                return future.join();
-                            } catch (Exception e) {
-                                return null; // Return null if future failed
-                            }
-                        })
-                        .toArray(String[]::new) // Convert to a String[] directly
-                ).join(); // Wait for all futures to complete
     }
-
 }

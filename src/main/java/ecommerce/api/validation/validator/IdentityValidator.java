@@ -15,8 +15,7 @@ public class IdentityValidator implements ConstraintValidator<IdentityValidation
         UserDetailDTO userDetailDTO = (UserDetailDTO) authentication.getPrincipal();
         if (userDetailDTO == null) {
             return false;
-        } else if (userDetailDTO.getId() != value.getIdentity())
-            return false;
+        }
         value.setIdentity(userDetailDTO.getId());
         return true;
     }

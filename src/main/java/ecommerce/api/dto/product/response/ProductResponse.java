@@ -16,9 +16,7 @@ public class ProductResponse {
 
     private String name;
 
-
     private String sku;
-
 
     private String imageUrl;
 

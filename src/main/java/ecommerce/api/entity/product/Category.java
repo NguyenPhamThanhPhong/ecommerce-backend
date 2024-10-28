@@ -24,9 +24,11 @@ public class Category extends EntityBase {
     @Column(name = "description", length = Integer.MAX_VALUE)
     private String description;
 
-
     @Size(max = 40)
     @Column(name = "name", length = 40 , unique = true)
     private String name;
+
+    @Column(name = "image_url")
+    private String imageUrl;
 
 }

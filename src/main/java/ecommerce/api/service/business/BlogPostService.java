@@ -36,7 +36,7 @@ public class BlogPostService {
 
     public ModificationResponse<UUID> createBlogPost(BlogPostCreateRequest request) {
         BlogPost blogPost = blogPostMapper.fromCreateRequestToEntity(request);
-        return upsertAndReturnChanges(blogPost, request.getImage(), blogPost.getId());
+        return upsertAndReturnChanges(blogPost, request.getImage());
     }
 
     public BlogPostResponse getBlogPost(UUID id, boolean includeDeleted) {
@@ -67,19 +67,19 @@ public class BlogPostService {
     @Transactional
     public ModificationResponse<UUID> updateBlogPost(BlogPostUpdateRequest request) {
         BlogPost blogPost = blogPostMapper.fromUpdateRequestToEntity(request);
-        return upsertAndReturnChanges(blogPost, request.getImage(), request.getId());
+        return upsertAndReturnChanges(blogPost, request.getImage());
     }
 
-    private ModificationResponse<UUID> upsertAndReturnChanges(BlogPost blogPost, MultipartFile image, UUID id) throws BadRequestException {
+    private ModificationResponse<UUID> upsertAndReturnChanges(BlogPost blogPost, MultipartFile image) throws BadRequestException {
         try {
             if (image != null) {
-                String imageUrl = cloudinaryService.uploadFile(image, cloudinaryService.BLOG_DIR, id.toString());
+                String imageUrl = cloudinaryService.uploadFile(image, cloudinaryService.BLOG_DIR, blogPost.toString());
                 blogPost.setImageUrl(imageUrl);
             }
         } catch (IOException e) {
             throw new BadRequestException("Failed to upload image");
         }
         BlogPost result = blogPostRepository.save(blogPost);
-        return new ModificationResponse<>(result.getId(), result.getCreatedAt(), Map.of("image_url", result.getImageUrl()));
+        return new ModificationResponse<>(result.getId(), result.getCreatedAt(), Map.of("imageUrl", result.getImageUrl()));
     }
 }

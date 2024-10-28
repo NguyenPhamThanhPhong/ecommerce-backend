@@ -1,6 +1,7 @@
 package ecommerce.api.dto.category.request;
 
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -9,6 +10,8 @@ import java.util.UUID;
 public class CategoryUpdateRequest {
 
     private UUID id;
+
+    private MultipartFile image;
 
     private String description;
 

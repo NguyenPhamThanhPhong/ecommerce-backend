@@ -2,15 +2,19 @@ package ecommerce.api.controller;
 import ecommerce.api.dto.category.request.CategoryCreateRequest;
 import ecommerce.api.dto.category.request.CategoryUpdateRequest;
 import ecommerce.api.dto.category.response.CategoryResponse;
+import ecommerce.api.dto.general.PaginationDTO;
+import ecommerce.api.dto.general.SearchSpecification;
 import ecommerce.api.entity.product.Category;
-import ecommerce.api.mapper.CategoryMapper;
 import ecommerce.api.service.business.CategoryService;
-import io.swagger.v3.oas.annotations.Parameter;
 import lombok.AllArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.util.Set;
 import java.util.UUID;
 
 @RestController
@@ -18,36 +22,30 @@ import java.util.UUID;
 @AllArgsConstructor
 public class CategoryController {
     private final CategoryService categoryService;
-    private final CategoryMapper categoryMapper;
 
-    @GetMapping
-    public ResponseEntity<?> getAllCategories(){
-        return ResponseEntity.ok(categoryService.getAllCategories());
-    }
-
-    @GetMapping("{id}")
-    public ResponseEntity<?> getCategoryById(@PathVariable UUID id){
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getAllCategories(@PathVariable UUID id){
         return ResponseEntity.ok(categoryService.getCategoryById(id));
     }
 
-    @GetMapping("/name/{name}")
-    public ResponseEntity<?> getCategoryByName(@PathVariable String name){
-        CategoryResponse category = categoryService.getCategoryByName(name);
-        return ResponseEntity.ok(category);
+    @PostMapping("/filtered-paginated-info")
+    public ResponseEntity<?> createTempAccount(
+            @ParameterObject Pageable pageable,
+            @RequestBody Set<SearchSpecification> searchSpecs) {
+        PaginationDTO<CategoryResponse> categories = categoryService.search(searchSpecs, pageable);
+        return ResponseEntity.ok(categories);
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> createCategory(@ModelAttribute CategoryCreateRequest request){
-        Category category = categoryMapper.fromCreateRequestToEntity(request);
-        return ResponseEntity.ok(categoryService.upsertCategory(category));
-
+    public ResponseEntity<?> createCategory(@ModelAttribute CategoryCreateRequest request) throws IOException {
+        CategoryResponse res = categoryService.insert(request);
+        return ResponseEntity.ok(res);
     }
 
     @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> updateCategory(@ModelAttribute CategoryUpdateRequest request){
-        Category category = categoryMapper.fromUpdateRequestToEntity(request);
-
-        return ResponseEntity.ok(categoryService.upsertCategory(category));
+    public ResponseEntity<?> updateCategory(@ModelAttribute CategoryUpdateRequest request) throws IOException {
+        CategoryResponse res = categoryService.update(request);
+        return ResponseEntity.ok(res);
     }
 
     @DeleteMapping("/{id}")

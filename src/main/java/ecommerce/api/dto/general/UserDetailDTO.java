@@ -21,7 +21,7 @@ public class UserDetailDTO implements UserDetails {
 
     private String password;
 
-    private UUID loginId;
+    private String loginId;
 
     private Boolean isVerified;
 

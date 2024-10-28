@@ -7,6 +7,8 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -14,6 +16,7 @@ import java.math.BigDecimal;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -26,6 +29,12 @@ public class Product extends EntityBase {
     @Size(max = 255)
     @Column(name = "name")
     private String name;
+
+    @Column(name = "brand_id")
+    private UUID brandId;
+
+    @Column(name = "category_id")
+    private UUID categoryId;
 
     @Size(max = 10)
     @Column(name = "sku", length = 10)
@@ -55,17 +64,15 @@ public class Product extends EntityBase {
     private Map<String, Object> attributes;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "brand_id")
+    @JoinColumn(name = "brand_id",insertable = false, updatable = false)
+    @Fetch(FetchMode.JOIN)
     private Brand brand;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "category_id",insertable = false, updatable = false)
+    @Fetch(FetchMode.JOIN)
     private Category category;
 
-
-    @Column(name = "product_no")
-    @ColumnDefault(value = "0")
-    private String productNo;
 
     @ManyToMany
     @JoinTable(name = "products_discounts",
