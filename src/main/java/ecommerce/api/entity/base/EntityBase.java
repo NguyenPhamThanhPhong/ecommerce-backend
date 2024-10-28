@@ -2,6 +2,7 @@ package ecommerce.api.entity.base;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.ColumnDefault;
@@ -15,7 +16,8 @@ import java.util.UUID;
 @AllArgsConstructor
 public abstract class EntityBase {
     @Id
-    protected UUID id;
+    @Builder.Default
+    protected UUID id = UUID.randomUUID();
 
     @ColumnDefault("now()")
     @Column(name = "created_at", insertable = false, updatable = false)
