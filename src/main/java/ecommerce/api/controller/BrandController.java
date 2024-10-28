@@ -33,7 +33,7 @@ public class BrandController {
         return ResponseEntity.ok(brandService.getBrandById(id));
     }
 
-    @PostMapping(value = "" , consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createBrand(@ModelAttribute BrandCreateRequest request) throws IOException {
 
         Brand brand = brandMapper.fromCreateRequestToEntity(request);
@@ -46,7 +46,7 @@ public class BrandController {
         return ResponseEntity.ok(brandService.upsertBrand(brand));
     }
 
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updateBrand(@ModelAttribute BrandUpdateRequest request) throws IOException {
         Brand brand = brandMapper.fromUpdateRequestToEntity(request);
 

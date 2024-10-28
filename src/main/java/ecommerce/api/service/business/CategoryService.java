@@ -8,6 +8,7 @@ import ecommerce.api.repository.ICategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,7 +20,22 @@ public class CategoryService {
 
 
     public List<CategoryResponse> getAllCategories() {
-        return categoryRepository.findAll().stream().map(categoryMapper::fromEntityToResponse).toList();
+        return this.categoryRepository.findAllParentCategories().stream().map(
+                c -> {
+                    CategoryResponse categoryResponse = categoryMapper.fromEntityToResponse(c);
+                    setChildren(categoryResponse);
+                    return categoryResponse;
+                }).toList();
+    }
+
+    private void setChildren(CategoryResponse parent) {
+        List<CategoryResponse> children = categoryRepository.findAllChildren(parent.getId()).stream().map(categoryMapper::fromEntityToResponse).toList();
+        if(!children.isEmpty()) {
+            parent.setChildren(children);
+            for(CategoryResponse child : children) {
+                setChildren(child);
+            }
+        }
     }
 
     public CategoryResponse getCategoryById(UUID id) {

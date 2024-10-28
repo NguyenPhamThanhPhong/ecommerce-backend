@@ -4,19 +4,19 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import ecommerce.api.entity.base.EntityBase;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @SuperBuilder
 @Table(name = "categories")
 public class Category extends EntityBase {
@@ -29,11 +29,11 @@ public class Category extends EntityBase {
     @Column(name = "name", length = 40 , unique = true)
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "parent_id")
-    @JsonIgnore
-    private Category parent;
 
-    @OneToMany(mappedBy = "parent" , cascade = CascadeType.ALL)
-    private List<Category> children;
+    @Column(name = "parent")
+    private UUID parent;
+
+    @OneToMany(mappedBy = "category" , cascade = CascadeType.ALL)
+    private Set<Product> products = new HashSet<>();
+
 }

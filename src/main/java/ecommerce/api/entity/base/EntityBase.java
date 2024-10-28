@@ -3,6 +3,7 @@ package ecommerce.api.entity.base;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -15,9 +16,11 @@ import java.util.UUID;
 @Data
 @SuperBuilder
 @AllArgsConstructor
+@NoArgsConstructor
 public abstract class EntityBase {
     @Id
-    protected UUID id;
+    @Builder.Default
+    protected UUID id = UUID.randomUUID();;
 
     @ColumnDefault("now()")
     @Column(name = "created_at", insertable = false, updatable = false)
@@ -26,8 +29,4 @@ public abstract class EntityBase {
     @Column(name = "deleted_at")
     protected Date deletedAt;
 
-
-    public EntityBase() {
-        this.id = UUID.randomUUID();
-    }
 }

@@ -12,5 +12,5 @@ public class CategoryResponse {
 
     private String name;
 
-    private CategoryResponse parent;
+    private List<CategoryResponse> children;
 }

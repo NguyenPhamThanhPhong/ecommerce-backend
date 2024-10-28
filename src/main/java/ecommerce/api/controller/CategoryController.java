@@ -37,12 +37,10 @@ public class CategoryController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createCategory(@ModelAttribute CategoryCreateRequest request){
         Category category = categoryMapper.fromCreateRequestToEntity(request);
-
-        if(request.getParentCategoryString() != null && !request.getParentCategoryString().isBlank()){
-            Category parent = categoryMapper.fromResponseToEntity(categoryService.getCategoryByName(request.getParentCategoryString()));
-            if(parent != null) {
-                category.setParent(parent);
-            }
+        System.out.println(category.getId());
+        if(request.getParentCategory() != null && !request.getParentCategory().isBlank()){
+            Category parent = categoryMapper.fromResponseToEntity(categoryService.getCategoryByName(request.getParentCategory()));
+            category.setParent(parent.getId());
         }
         return ResponseEntity.ok(categoryService.upsertCategory(category));
 

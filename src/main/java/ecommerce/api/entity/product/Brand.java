@@ -9,7 +9,9 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
@@ -31,4 +33,6 @@ public class Brand extends EntityBase {
     @Column(name = "name", length = 40 , unique = true)
     private String name;
 
+    @OneToMany(mappedBy = "brand" , cascade = CascadeType.ALL)
+    private Set<Product> products = new HashSet<>();
 }

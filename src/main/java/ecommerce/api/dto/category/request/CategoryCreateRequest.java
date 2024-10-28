@@ -11,6 +11,6 @@ public class CategoryCreateRequest {
 
     private String name;
 
-    private String parentCategoryString;
+    private String parentCategory;
 
 }
