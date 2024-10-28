@@ -32,6 +32,4 @@ public class BrandService {
     public int deleteBrandById(UUID id) {
         return brandRepository.deleteBrandById(id);
     }
-
-
 }
