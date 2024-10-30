@@ -164,7 +164,6 @@ create table products
     image_url   varchar(2048),
     name        varchar(255),
     price       numeric(10, 2),
-    product_no  varchar(255) default 0,
     quantity    integer,
     sku         varchar(10),
     sold        integer,
