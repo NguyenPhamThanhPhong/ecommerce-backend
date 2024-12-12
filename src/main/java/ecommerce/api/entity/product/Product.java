@@ -1,16 +1,16 @@
 package ecommerce.api.entity.product;
 
-import ecommerce.api.entity.discount.Discount;
 import ecommerce.api.entity.base.EntityBase;
+import ecommerce.api.entity.transaction.OrderDetail;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import java.math.BigDecimal;
 import java.util.LinkedHashSet;
@@ -74,12 +74,10 @@ public class Product extends EntityBase {
     private Category category;
 
 
-    @ManyToMany
-    @JoinTable(name = "products_discounts",
-            joinColumns = @JoinColumn(name = "product_id"),
-            inverseJoinColumns = @JoinColumn(name = "discount_id"))
-    @Builder.Default
-    private Set<Discount> discounts = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<OrderDetail> orderDetails = new LinkedHashSet<>();
 
+    @Column(name = "discount_percent", precision = 3, scale = 2)
+    private BigDecimal discountPercent;
 
 }

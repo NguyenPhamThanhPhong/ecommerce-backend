@@ -57,6 +57,7 @@ public class ProductService {
     @Transactional
     public ProductResponse update(ProductUpdateRequest request) throws IOException {
         Product product = productMapper.fromUpdateRequestToEntity(request);
+        product.setId(request.getId());
         if(request.getImage()!=null)
         {
             cloudinaryService.deleteFile(product.getId().toString());

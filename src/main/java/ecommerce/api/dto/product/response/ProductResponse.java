@@ -37,4 +37,6 @@ public class ProductResponse {
     private BrandResponse brand;
 
     private String productNo;
+
+    private BigDecimal discountPercent;
 }
