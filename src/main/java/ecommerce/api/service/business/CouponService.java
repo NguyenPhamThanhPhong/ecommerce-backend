@@ -43,7 +43,7 @@ public class CouponService {
     
     public CouponResponse findById(UUID id) {
         Coupon c = couponRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("PRODUCT NOT FOUND"));
+                .orElseThrow(() -> new ResourceNotFoundException("COUPON NOT FOUND"));
         return couponMapper.fromEntityToResponse(c);
     }
 

@@ -24,7 +24,7 @@ public class CouponController {
     private final CouponService couponService;
 
     @PostMapping("/filtered-paginated-info")
-    public ResponseEntity<?> getAllProducts(
+    public ResponseEntity<?> getAllCoupons(
             @ParameterObject Pageable pageable,
             @RequestBody(required = false) Set<SearchSpecification> specs) {
         PaginationDTO<CouponResponse> res = couponService.search(specs, pageable);
@@ -32,12 +32,12 @@ public class CouponController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getProductById(@PathVariable UUID id) {
+    public ResponseEntity<?> getCouponById(@PathVariable UUID id) {
         return ResponseEntity.ok(couponService.findById(id));
     }
 
     @PostMapping(value = "" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> createProduct(@ModelAttribute CouponCreateRequest request) throws IOException {
+    public ResponseEntity<?> createCoupon(@ModelAttribute CouponCreateRequest request) throws IOException {
         return ResponseEntity.ok(couponService.insert(request));
     }
 
@@ -47,7 +47,7 @@ public class CouponController {
     }
 
     @PutMapping(value = "" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> updateProduct(@ModelAttribute CouponUpdateRequest request) throws IOException {
+    public ResponseEntity<?> updateCoupon(@ModelAttribute CouponUpdateRequest request) throws IOException {
         return ResponseEntity.ok(couponService.update(request));
     }
 }
