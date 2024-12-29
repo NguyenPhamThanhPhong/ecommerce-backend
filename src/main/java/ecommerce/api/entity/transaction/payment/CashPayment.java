@@ -26,8 +26,4 @@ public class CashPayment extends Payment {
 
     @Column(name = "exchange", precision = 10, scale = 2)
     private BigDecimal exchange;
-
-    @Column(name = "cash_method", length = Integer.MAX_VALUE)
-    private String cashMethod;
-
 }

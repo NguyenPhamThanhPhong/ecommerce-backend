@@ -15,18 +15,13 @@ import java.util.UUID;
 @AllArgsConstructor
 public class CouponCreateRequest {
 
-    private String couponCode;
-
-    private BigDecimal usageLimit;
-
-    private MultipartFile image;
+    private Integer usageLimit;
 
     private String description;
 
     private String couponType;
 
     private BigDecimal value;
-
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Date startDate;

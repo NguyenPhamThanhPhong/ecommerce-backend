@@ -13,12 +13,11 @@ spring:
     #        format_sql: ${APP_ENABLE_SHOW_SQL:true}
     #        use_sql_comments: ${APP_ENABLE_SHOW_SQL:true}
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
   servlet:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
-
 
 
 logging:
@@ -57,5 +56,8 @@ management:
     web:
       exposure:
         include: "httpexchanges,beans"
+springdoc:
+  swagger-ui:
+    with-credentials: true
 
 

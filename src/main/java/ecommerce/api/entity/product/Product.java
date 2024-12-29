@@ -1,5 +1,6 @@
 package ecommerce.api.entity.product;
 
+import ecommerce.api.constants.ProductStatus;
 import ecommerce.api.entity.base.EntityBase;
 import ecommerce.api.entity.transaction.OrderDetail;
 import jakarta.persistence.*;
@@ -10,13 +11,9 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import java.math.BigDecimal;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -36,16 +33,23 @@ public class Product extends EntityBase {
     @Column(name = "category_id")
     private UUID categoryId;
 
-    @Size(max = 10)
-    @Column(name = "sku", length = 10)
-    private String sku;
-
     @Size(max = 2048)
-    @Column(name = "image_url", length = 2048)
-    private String imageUrl;
+    @Column(name = "image_urls")
+    @JdbcTypeCode(SqlTypes.JSON)
+    private Map<String, String> imageUrls;
+
+    @Column(name = "rating",precision = 1, scale = 1)
+    private BigDecimal rating;
 
     @Column(name = "quantity")
     private Integer quantity;
+
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private ProductStatus status;
+
+    @Column(name = "available_date")
+    private Date availableDate;
 
     @Column(name = "sold")
     private Integer sold;
@@ -59,25 +63,36 @@ public class Product extends EntityBase {
     @Column(name = "stock")
     private Integer stock;
 
-    @Column(name = "attributes")
-    @JdbcTypeCode(SqlTypes.JSON)
-    private Map<String, Object> attributes;
+    @Column(name = "discount_percent", precision = 3, scale = 2)
+    private BigDecimal discountPercent;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "brand_id",insertable = false, updatable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "brand_id", insertable = false, updatable = false)
     @Fetch(FetchMode.JOIN)
     private Brand brand;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id",insertable = false, updatable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "category_id", insertable = false, updatable = false)
     @Fetch(FetchMode.JOIN)
     private Category category;
 
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<OrderDetail> orderDetails = new LinkedHashSet<>();
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(insertable = false,updatable = false)
+    private Set<OrderDetail> orderDetails = new HashSet<>();
 
-    @Column(name = "discount_percent", precision = 3, scale = 2)
-    private BigDecimal discountPercent;
+    public void appendImageUrl(String key, String url) {
+        if (imageUrls == null) {
+            imageUrls = new HashMap<>();
+        }
+        imageUrls.put(key, url);
+    }
+    public void removeImageUrl(String key) {
+        if (imageUrls != null) {
+            imageUrls.remove(key);
+        }
+    }
+
+
 
 }

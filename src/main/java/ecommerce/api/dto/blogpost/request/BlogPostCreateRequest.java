@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.UUID;
 
 @Data
-@IdentityValidation(message = "địt mẹ chưa có token???")
+@IdentityValidation(message = "please Provide a valid token")
 public class BlogPostCreateRequest implements IdentityCriteria {
     private String title;
 

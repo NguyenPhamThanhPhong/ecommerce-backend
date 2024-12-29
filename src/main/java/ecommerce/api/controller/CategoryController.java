@@ -4,7 +4,6 @@ import ecommerce.api.dto.category.request.CategoryUpdateRequest;
 import ecommerce.api.dto.category.response.CategoryResponse;
 import ecommerce.api.dto.general.PaginationDTO;
 import ecommerce.api.dto.general.SearchSpecification;
-import ecommerce.api.entity.product.Category;
 import ecommerce.api.service.business.CategoryService;
 import lombok.AllArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
@@ -24,12 +23,12 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getAllCategories(@PathVariable UUID id){
+    public ResponseEntity<?> getOne(@PathVariable UUID id){
         return ResponseEntity.ok(categoryService.getCategoryById(id));
     }
 
-    @PostMapping("/filtered-paginated-info")
-    public ResponseEntity<?> createTempAccount(
+    @PostMapping("/searches")
+    public ResponseEntity<?> search(
             @ParameterObject Pageable pageable,
             @RequestBody Set<SearchSpecification> searchSpecs) {
         PaginationDTO<CategoryResponse> categories = categoryService.search(searchSpecs, pageable);

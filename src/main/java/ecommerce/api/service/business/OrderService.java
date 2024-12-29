@@ -1,6 +1,8 @@
 package ecommerce.api.service.business;
 
 import ecommerce.api.constants.OrderStatus;
+import ecommerce.api.dto.general.PaginationDTO;
+import ecommerce.api.dto.general.SearchSpecification;
 import ecommerce.api.dto.order.OrderCreateRequest;
 import ecommerce.api.dto.order.OrderResponse;
 import ecommerce.api.dto.order.OrderUpdateRequest;
@@ -9,11 +11,16 @@ import ecommerce.api.exception.BadRequestException;
 import ecommerce.api.exception.ResourceNotFoundException;
 import ecommerce.api.mapper.OrderMapper;
 import ecommerce.api.repository.IOrderRepository;
+import ecommerce.api.utils.DynamicSpecificationUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -28,6 +35,13 @@ public class OrderService {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("ORDER NOT FOUND"));
         return orderMapper.fromEntityToResponse(order);
+    }
+
+    public PaginationDTO<OrderResponse> search(Set<SearchSpecification> searchSpecs, Pageable pageable) {
+        Specification<Order> specs = DynamicSpecificationUtils.buildSpecification(searchSpecs);
+        Page<Order> orders = orderRepository.findAll(specs, pageable);
+        return PaginationDTO.fromPage(orders.map(orderMapper::fromEntityToResponse));
+
     }
 
     @Transactional
@@ -50,7 +64,10 @@ public class OrderService {
     }
 
 
-    public int deleteOrderById(UUID id) {
+    public int deleteOrderById(UUID id, boolean isSoft) {
+        if(isSoft) {
+            return orderRepository.updateDeletedAtById(id);
+        }
         return orderRepository.deleteOrderById(id);
     }
 

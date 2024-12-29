@@ -1,11 +1,13 @@
 package ecommerce.api.dto.product.request;
 
+import ecommerce.api.constants.ProductStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 
@@ -14,28 +16,29 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductUpdateRequest {
-
     private UUID id;
+
+    private String name;
 
     private UUID brandId;
 
     private UUID categoryId;
 
-    private String name;
+    private ProductStatus status;
 
-    private String sku;
+    private Date availableDate;
 
-    private MultipartFile image;
+    private Map<String, MultipartFile> images;
+
+    private BigDecimal discountPercent;
 
     private Integer quantity;
 
     private Integer sold;
 
-    private String description;
-
     private BigDecimal price;
 
     private Integer stock;
 
-    private Map<String , Object> attributes;
+    private String description;
 }

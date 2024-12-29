@@ -15,7 +15,6 @@ import java.util.List;
 @Entity
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 @SuperBuilder
 @Table(name = "brands")
 public class Brand extends EntityBase {

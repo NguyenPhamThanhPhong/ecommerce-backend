@@ -9,13 +9,15 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface IProductRepository extends JpaRepository<Product, UUID>, JpaSpecificationExecutor<Product> {
-
-
-
     Page<Product> findAllByDeletedAtIsNotNull(Pageable pageable);
+
+    @Query("SELECT p.imageUrls FROM Product p WHERE p.id = :id")
+    Optional<Map<String,String>> findImageUrlsById(UUID id);
 
     @Modifying
     @Query("DELETE FROM Product p WHERE p.id = :id")

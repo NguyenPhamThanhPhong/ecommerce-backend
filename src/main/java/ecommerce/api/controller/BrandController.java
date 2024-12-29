@@ -1,17 +1,25 @@
 package ecommerce.api.controller;
+import ecommerce.api.config.property.CloudinaryProperties;
+import ecommerce.api.dto.account.response.AccountResponse;
 import ecommerce.api.dto.brand.request.BrandCreateRequest;
 import ecommerce.api.dto.brand.request.BrandUpdateRequest;
+import ecommerce.api.dto.brand.response.BrandResponse;
+import ecommerce.api.dto.general.PaginationDTO;
+import ecommerce.api.dto.general.SearchSpecification;
 import ecommerce.api.entity.product.Brand;
 import ecommerce.api.mapper.BrandMapper;
 import ecommerce.api.service.azure.CloudinaryService;
 import ecommerce.api.service.business.BrandService;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Set;
 import java.util.UUID;
 
 @RestController
@@ -20,12 +28,15 @@ import java.util.UUID;
 public class BrandController {
     private final BrandService brandService;
     private final BrandMapper brandMapper;
-    private final CloudinaryService blobService;
     private final CloudinaryService cloudinaryService;
+    private final CloudinaryProperties cloudinaryProperties;
 
-    @GetMapping
-    public ResponseEntity<?> getAllBrands() {
-        return ResponseEntity.ok(brandService.getAllBrands());
+    @PostMapping("searches")
+    public ResponseEntity<?> getBrands(
+            @ParameterObject Pageable pageable,
+            @RequestBody Set<SearchSpecification> searchSpecs) {
+        PaginationDTO<BrandResponse> brands = brandService.search(searchSpecs, pageable);
+        return ResponseEntity.ok(brands);
     }
 
     @GetMapping("{id}")
@@ -65,7 +76,7 @@ public class BrandController {
 
 
     private String storeFile(MultipartFile file , UUID id) throws IOException {
-        return blobService.uploadFile(file,
-                cloudinaryService.PRODUCT_DIR, id.toString());
+        return cloudinaryService.uploadFile(file,
+                cloudinaryProperties.getBrandDir(), id.toString());
     }
 }

@@ -31,7 +31,7 @@ public class BlogPostController {
         return ResponseEntity.ok(blogPostService.getBlogPost(id, includeDeleted));
     }
 
-    @PostMapping("/filtered-paginated-info")
+    @PostMapping("/searches")
     public ResponseEntity<?> search(
             @ParameterObject Pageable pageable,
             @RequestBody Set<SearchSpecification> searchSpecs) {

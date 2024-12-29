@@ -11,6 +11,4 @@ public class CategoryResponse {
     private String description;
 
     private String name;
-
-    private CategoryResponse parent;
 }

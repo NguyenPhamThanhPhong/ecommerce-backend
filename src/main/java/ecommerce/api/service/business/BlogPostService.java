@@ -1,5 +1,6 @@
 package ecommerce.api.service.business;
 
+import ecommerce.api.config.property.CloudinaryProperties;
 import ecommerce.api.dto.account.response.AccountResponse;
 import ecommerce.api.dto.blogpost.response.BlogPostDisplayResponse;
 import ecommerce.api.dto.blogpost.response.BlogPostResponse;
@@ -33,6 +34,7 @@ public class BlogPostService {
     private final IBlogPostRepository blogPostRepository;
     private final BlogPostMapper blogPostMapper;
     private final CloudinaryService cloudinaryService;
+    private final CloudinaryProperties cloudinaryProperties;
 
     public ModificationResponse<UUID> createBlogPost(BlogPostCreateRequest request) {
         BlogPost blogPost = blogPostMapper.fromCreateRequestToEntity(request);
@@ -73,7 +75,8 @@ public class BlogPostService {
     private ModificationResponse<UUID> upsertAndReturnChanges(BlogPost blogPost, MultipartFile image) throws BadRequestException {
         try {
             if (image != null) {
-                String imageUrl = cloudinaryService.uploadFile(image, cloudinaryService.BLOG_DIR, blogPost.toString());
+                String imageUrl = cloudinaryService.uploadFile(image, cloudinaryProperties.getBlogDir(),
+                        blogPost.getId().toString());
                 blogPost.setImageUrl(imageUrl);
             }
         } catch (IOException e) {

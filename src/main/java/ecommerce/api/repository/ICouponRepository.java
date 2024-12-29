@@ -13,4 +13,8 @@ public interface ICouponRepository extends JpaRepository<Coupon, UUID>, JpaSpeci
     @Modifying
     @Query("DELETE FROM Coupon c WHERE c.id = :id")
     int deleteCouponById(UUID id);
+
+    @Modifying
+    @Query("UPDATE Coupon c SET c.deletedAt = current_timestamp WHERE c.id = :id")
+    int updateDeletedAtById(UUID id);
 }

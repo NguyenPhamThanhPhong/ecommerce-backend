@@ -20,9 +20,6 @@ import java.util.UUID;
 @DynamicUpdate
 public class BlogPost extends EntityBase {
 
-    @Builder.Default
-    private UUID id = UUID.randomUUID();
-
     @ColumnDefault("''")
     @Column(name = "title", length = Integer.MAX_VALUE)
     private String title;

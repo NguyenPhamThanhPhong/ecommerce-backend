@@ -8,10 +8,7 @@ import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import java.util.Date;
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Data
 @NoArgsConstructor
@@ -44,6 +41,6 @@ public class Profile {
     private Set<BlogPost> blogPost;
 
     @OneToMany(mappedBy = "profile", fetch = FetchType.LAZY)
-    @Transient
-    private Set<Order> orders = new LinkedHashSet<>();
+    @Column(insertable = false, updatable = false)
+    private List<Order> orders = new ArrayList<>();
 }

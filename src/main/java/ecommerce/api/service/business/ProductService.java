@@ -1,6 +1,6 @@
 package ecommerce.api.service.business;
 
-import ecommerce.api.dto.category.response.CategoryResponse;
+import ecommerce.api.config.property.CloudinaryProperties;
 import ecommerce.api.dto.general.PaginationDTO;
 import ecommerce.api.dto.general.SearchSpecification;
 import ecommerce.api.dto.product.request.ProductCreateRequest;
@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -29,6 +30,7 @@ public class ProductService {
     private final IProductRepository productRepository;
     private final ProductMapper productMapper;
     private final CloudinaryService cloudinaryService;
+    private final CloudinaryProperties cloudinaryProperties;
 
     public PaginationDTO<ProductResponse> search(Set<SearchSpecification> searchSpec, Pageable pageable) {
         Specification<Product> spec = DynamicSpecificationUtils.buildSpecification(searchSpec);
@@ -46,10 +48,13 @@ public class ProductService {
     @Transactional
     public ProductResponse insert(ProductCreateRequest request) throws IOException {
         Product product = productMapper.fromCreateRequestToEntity(request);
-        if(request.getImage()!=null)
-        {
-            String imageUrl = cloudinaryService.uploadFile(request.getImage(),cloudinaryService.PRODUCT_DIR,product.getId().toString());
-            product.setImageUrl(imageUrl);
+        if (request.getImages() != null && !request.getImages().isEmpty()) {
+            for (var entry : request.getImages().entrySet()) {
+                String publicId = product.getId().toString() + "_" + entry.getKey();
+                String imageUrl = cloudinaryService.uploadFile(
+                        entry.getValue(), cloudinaryProperties.getProductDir(), publicId);
+                product.appendImageUrl(publicId, imageUrl);
+            }
         }
         return productMapper.fromEntityToResponse(productRepository.save(product));
     }
@@ -57,12 +62,18 @@ public class ProductService {
     @Transactional
     public ProductResponse update(ProductUpdateRequest request) throws IOException {
         Product product = productMapper.fromUpdateRequestToEntity(request);
-        product.setId(request.getId());
-        if(request.getImage()!=null)
-        {
-            cloudinaryService.deleteFile(product.getId().toString());
-            String imageUrl = cloudinaryService.uploadFile(request.getImage(),cloudinaryService.PRODUCT_DIR,product.getId().toString());
-            product.setImageUrl(imageUrl);
+        Map<String,String> imageUrls = productRepository.findImageUrlsById(product.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("PRODUCT NOT FOUND"));
+        if (request.getImages() != null) {
+            for(var entry : request.getImages().entrySet()) {
+                String publicId = product.getId().toString() + "_" + entry.getKey();
+                String imageUrl = cloudinaryService.uploadFile(
+                        entry.getValue(), cloudinaryProperties.getProductDir(), publicId);
+                product.appendImageUrl(publicId, imageUrl);
+                if (imageUrls.containsKey(publicId)) {
+                    cloudinaryService.deleteFile(publicId);
+                }
+            }
         }
         return productMapper.fromEntityToResponse(productRepository.save(product));
     }

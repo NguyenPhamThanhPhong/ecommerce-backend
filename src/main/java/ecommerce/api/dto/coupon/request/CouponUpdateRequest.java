@@ -14,18 +14,15 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CouponUpdateRequest {
-
     private UUID id;
 
-    private String couponCode;
-
-    private BigDecimal usageLimit;
-
-    private MultipartFile image;
+    private Integer usageLimit;
 
     private String description;
 
     private String couponType;
+
+    private MultipartFile image;
 
     private BigDecimal value;
 

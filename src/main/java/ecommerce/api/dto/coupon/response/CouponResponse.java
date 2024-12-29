@@ -1,6 +1,8 @@
 package ecommerce.api.dto.coupon.response;
 
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -11,25 +13,19 @@ public class CouponResponse {
 
     private UUID id;
 
-    private String couponCode;
-
-
-    private BigDecimal usageLimit;
-
-
-    private String imageUrl;
-
+    private Integer usageLimit;
 
     private String description;
 
-
     private String couponType;
 
+    private MultipartFile image;
 
     private BigDecimal value;
 
-
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Date startDate;
 
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Date endDate;
 }

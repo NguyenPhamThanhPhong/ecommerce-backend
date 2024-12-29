@@ -42,13 +42,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BadRequestException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse<?> handleSchedulerException(BadRequestException ex, WebRequest webRequest) {
+    public ErrorResponse<?> handleSchedulerException(BadRequestException ex, HttpServletRequest webRequest) {
         return new ErrorResponse<>(webRequest.getContextPath(), ex.getMessage(), null);
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse<?> handleResourceAccessException(ResourceNotFoundException ex, WebRequest webRequest) {
+    public ErrorResponse<?> handleResourceAccessException(ResourceNotFoundException ex, HttpServletRequest webRequest) {
         return new ErrorResponse<>(webRequest.getContextPath(), ex.getMessage(), null);
     }
 }

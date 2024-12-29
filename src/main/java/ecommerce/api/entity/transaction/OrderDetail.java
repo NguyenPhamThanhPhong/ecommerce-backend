@@ -19,6 +19,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Table(name = "order_details")
+@IdClass(OrderDetailId.class)
 public class OrderDetail extends EntityBase {
 
     @Column(name = "quantity")

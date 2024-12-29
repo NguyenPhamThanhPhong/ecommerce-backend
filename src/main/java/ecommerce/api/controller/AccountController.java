@@ -4,22 +4,20 @@ import ecommerce.api.dto.account.request.AccountCreateRequest;
 import ecommerce.api.dto.account.request.LoginRequest;
 import ecommerce.api.dto.account.request.ProfileUpdateRequest;
 import ecommerce.api.dto.account.response.AccountResponse;
+import ecommerce.api.dto.account.response.LoginResponse;
 import ecommerce.api.dto.account.response.ProfileResponse;
 import ecommerce.api.dto.general.PaginationDTO;
 import ecommerce.api.dto.general.SearchSpecification;
 import ecommerce.api.dto.general.UserDetailDTO;
-import ecommerce.api.entity.user.Account;
-import ecommerce.api.mapper.AccountMapper;
-import ecommerce.api.repository.IAccountRepository;
 import ecommerce.api.service.auth.AuthService;
 import ecommerce.api.service.business.AccountService;
-import ecommerce.api.utils.DynamicSpecificationUtils;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -38,6 +36,11 @@ public class AccountController {
     private final AccountService accountService;
     private final AuthService authService;
 
+    @GetMapping("phong")
+    public ResponseEntity<?> getPhong() {
+        return ResponseEntity.ok("Phong");
+    }
+
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createAccount(
             @ModelAttribute @Valid AccountCreateRequest request) throws IOException {
@@ -52,8 +55,8 @@ public class AccountController {
     }
 
     // query & get infos
-    @PostMapping("filtered-paginated-info")
-    public ResponseEntity<?> createTempAccount(
+    @PostMapping("searches")
+    public ResponseEntity<?> search(
             @ParameterObject Pageable pageable,
             @RequestBody Set<SearchSpecification> searchSpecs) {
         PaginationDTO<AccountResponse> accounts = accountService.search(searchSpecs, pageable);
@@ -61,13 +64,16 @@ public class AccountController {
     }
 
     @PostMapping("/tokens")
-    public ResponseEntity<?> getTokens(@RequestBody LoginRequest loginRequest) {
-        return ResponseEntity.ok(authService.authenticateAccount(loginRequest));
+    public ResponseEntity<?> getTokens(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+        LoginResponse loginResponse = authService.authenticateAccount(loginRequest);
+        Cookie[] cookies = loginResponse.makeCookies();
+        for (Cookie cookie : cookies) {
+            response.addCookie(cookie);
+        }
+        return ResponseEntity.ok(loginResponse);
     }
 
-    @PatchMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("hasRole(T(ecommerce.api.constants.AuthRoleConstants).ROLE_DEFAULT)")
-    @SecurityRequirement(name = "bearerAuth")
+    @PatchMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updateProfile(@ModelAttribute ProfileUpdateRequest request) throws IOException {
         ProfileResponse profile = accountService.updateProfile(request);
         return ResponseEntity.ok(profile);
@@ -81,8 +87,6 @@ public class AccountController {
     }
 
     @GetMapping("/me")
-    @PreAuthorize("hasRole(T(ecommerce.api.constants.AuthRoleConstants).ROLE_DEFAULT)")
-    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<?> getMyProfile(Authentication authentication) {
         UserDetailDTO userDetailDTO = (UserDetailDTO) authentication.getPrincipal();
         return ResponseEntity.ok(userDetailDTO);

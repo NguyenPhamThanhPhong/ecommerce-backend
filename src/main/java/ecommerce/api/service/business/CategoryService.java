@@ -1,6 +1,7 @@
 package ecommerce.api.service.business;
 
 
+import ecommerce.api.config.property.CloudinaryProperties;
 import ecommerce.api.dto.category.request.CategoryCreateRequest;
 import ecommerce.api.dto.category.request.CategoryUpdateRequest;
 import ecommerce.api.dto.category.response.CategoryResponse;
@@ -30,6 +31,7 @@ public class CategoryService {
     private final ICategoryRepository categoryRepository;
     private final CloudinaryService cloudinaryService;
     private final CategoryMapper categoryMapper;
+    private final CloudinaryProperties cloudinaryProperties;
 
     public PaginationDTO<CategoryResponse> search(Set<SearchSpecification> searchSpec, Pageable pageable) {
         Specification<Category> spec = DynamicSpecificationUtils.buildSpecification(searchSpec);
@@ -43,10 +45,12 @@ public class CategoryService {
                 new ResourceNotFoundException("CATEGORY NOT FOUND"));
         return categoryMapper.fromEntityToResponse(category);
     }
+
     public CategoryResponse insert(CategoryCreateRequest request) throws IOException {
         Category category = categoryMapper.fromCreateRequestToEntity(request);
-        if(request.getImage()!=null){
-            String imageUrl = cloudinaryService.uploadFile(request.getImage(),cloudinaryService.CATEGORY_DIR,category.getId().toString());
+        if (request.getImage() != null) {
+            String imageUrl = cloudinaryService.uploadFile(request.getImage(),
+                    cloudinaryProperties.getCategoryDir(), category.getId().toString());
             category.setImageUrl(imageUrl);
         }
         return this.upsert(category);
@@ -54,9 +58,10 @@ public class CategoryService {
 
     public CategoryResponse update(CategoryUpdateRequest request) throws IOException {
         Category category = categoryMapper.fromUpdateRequestToEntity(request);
-        if(request.getImage()!=null){
+        if (request.getImage() != null) {
             cloudinaryService.deleteFile(category.getId().toString());
-            String imageUrl = cloudinaryService.uploadFile(request.getImage(),cloudinaryService.CATEGORY_DIR,category.getId().toString());
+            String imageUrl = cloudinaryService.uploadFile(request.getImage(),
+                    cloudinaryProperties.getCategoryDir(), category.getId().toString());
             category.setImageUrl(imageUrl);
         }
         return this.upsert(category);
@@ -68,10 +73,9 @@ public class CategoryService {
 
     @Transactional(timeout = 15)
     public int deleteCategory(UUID id) {
-        try{
+        try {
             return categoryRepository.deleteCategoryById(id);
-        }
-        catch (DataIntegrityViolationException ex){
+        } catch (DataIntegrityViolationException ex) {
             return categoryRepository.updateCategoryDeletedAt(id);
         }
     }

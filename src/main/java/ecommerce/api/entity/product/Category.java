@@ -16,7 +16,6 @@ import java.util.List;
 @Entity
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 @SuperBuilder
 @Table(name = "categories")
 public class Category extends EntityBase {

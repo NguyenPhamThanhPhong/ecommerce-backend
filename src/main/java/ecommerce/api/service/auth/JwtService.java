@@ -30,10 +30,15 @@ public class JwtService {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", account.getRole());
         claims.put("userId", account.getId());
+        claims.put("enableDate", account.getEnableDate());
+        claims.put("disableDate", account.getDisableDate());
+        claims.put("deletedAt", account.getDeletedAt());
+        claims.put("isVerified", account.getIsVerified());
 
         return Jwts.builder()
                 .addClaims(claims)
-                .setSubject(account.getEmail()).setIssuer(jwtProperties.getIssuer())
+                .setSubject(account.getId().toString())
+                .setIssuer(jwtProperties.getIssuer())
                 .setAudience(jwtProperties.getAudience())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getAccessTokenExpirationMinutes() * 60 * 1000))
@@ -62,7 +67,7 @@ public class JwtService {
         return extractClaims(token, isAccessToken).getExpiration().before(new Date());
     }
 
-    public String extractUsername(String token, boolean isAccessToken) {
+    public String extractId(String token, boolean isAccessToken) {
         return extractClaims(token, isAccessToken).getSubject();
     }
 }

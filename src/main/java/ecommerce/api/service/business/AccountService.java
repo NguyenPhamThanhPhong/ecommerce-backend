@@ -1,5 +1,6 @@
 package ecommerce.api.service.business;
 
+import ecommerce.api.config.property.CloudinaryProperties;
 import ecommerce.api.dto.account.request.AccountCreateRequest;
 import ecommerce.api.dto.account.response.AccountResponse;
 import ecommerce.api.dto.account.response.ProfileResponse;
@@ -25,7 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -34,8 +34,8 @@ import java.util.UUID;
 public class AccountService implements UserDetailsService {
     private final IAccountRepository accountRepository;
     private final AccountMapper accountMapper;
-    private final CloudinaryService blobService;
     private final CloudinaryService cloudinaryService;
+    private final CloudinaryProperties cloudinaryProperties;
 
     @Transactional
     public AccountResponse createAccount(AccountCreateRequest request) throws IOException {
@@ -43,7 +43,8 @@ public class AccountService implements UserDetailsService {
 
         MultipartFile file = request.getProfile().getAvatar();
         if (file != null) {
-            String blobUrl = blobService.uploadFile(file, cloudinaryService.ACCOUNT_DIR, account.getId().toString());
+            String blobUrl = cloudinaryService.uploadFile(file,
+                    cloudinaryProperties.getAccountDir(), account.getId().toString());
             account.getProfile().setAvatarUrl(blobUrl);
         }
         return accountMapper.fromEntityToAccountResponse(accountRepository.save(account));
@@ -64,8 +65,8 @@ public class AccountService implements UserDetailsService {
     public ProfileResponse updateProfile(ProfileUpdateRequest request) throws IOException {
         Profile profile = accountMapper.fromUpdateRequestToEntity(request);
         if (request.getAvatar() != null) {
-            String blobUrl = blobService.uploadFile(request.getAvatar(),
-                    cloudinaryService.ACCOUNT_DIR, request.getId().toString());
+            String blobUrl = cloudinaryService.uploadFile(request.getAvatar(),
+                    cloudinaryProperties.getAccountDir(), request.getId().toString());
             profile.setAvatarUrl(blobUrl);
         }
         accountRepository.updateProfile(profile);
@@ -82,7 +83,7 @@ public class AccountService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Account account = accountRepository.findByEmailOrLoginId(username);
+        Account account = accountRepository.findByEmail(username);
         return accountMapper.fromEntityToUserDetailDTO(account);
     }
 }

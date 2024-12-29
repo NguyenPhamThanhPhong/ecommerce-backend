@@ -4,6 +4,8 @@ from accounts
 
 select count(1) from Accounts a;
 
+
+
 select * from brands;
 select * from categories;
 

@@ -2,6 +2,7 @@ package ecommerce.api.entity.coupon;
 
 import ecommerce.api.constants.CouponType;
 import ecommerce.api.entity.base.EntityBase;
+import ecommerce.api.entity.transaction.Order;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,6 +12,8 @@ import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 
 @EqualsAndHashCode(callSuper = true)
@@ -21,14 +24,9 @@ import java.util.Date;
 @SuperBuilder
 @Table(name = "coupons")
 public class Coupon extends EntityBase {
-    @Column(name = "coupon_code", unique = true, nullable = false)
-    private String couponCode;
 
     @Column(name = "usage_limit")
-    private BigDecimal usageLimit;
-
-    @Column(name = "image_url")
-    private String imageUrl;
+    private Integer usageLimit;
 
     @Column(name = "description")
     private String description;
@@ -45,6 +43,10 @@ public class Coupon extends EntityBase {
 
     @Column(name = "end_date")
     private Date endDate;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
+    private Order order;
 
 
 }

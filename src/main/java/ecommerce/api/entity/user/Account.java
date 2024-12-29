@@ -20,8 +20,6 @@ import java.util.UUID;
 @Entity
 @Table(name = "accounts")
 public class Account extends EntityBase {
-    private UUID id = UUID.randomUUID();
-
     @Column(name = "enable_date")
     private Date enableDate;
 
@@ -34,9 +32,6 @@ public class Account extends EntityBase {
     @NotNull
     @Column(name = "password", nullable = false, length = Integer.MAX_VALUE)
     private String password;
-
-    @Column(name = "login_id", length = Integer.MAX_VALUE)
-    private String loginId;
 
     @Column(name = "is_verified")
     private Boolean isVerified;
@@ -52,6 +47,8 @@ public class Account extends EntityBase {
     @Column(name = "role", length = Integer.MAX_VALUE)
     @Enumerated(EnumType.STRING)
     private AccountRolesEnum role;
+
+
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn(name = "id", referencedColumnName = "id")

@@ -23,7 +23,7 @@ import java.util.UUID;
 public class CouponController {
     private final CouponService couponService;
 
-    @PostMapping("/filtered-paginated-info")
+    @PostMapping("/searches")
     public ResponseEntity<?> getAllCoupons(
             @ParameterObject Pageable pageable,
             @RequestBody(required = false) Set<SearchSpecification> specs) {
@@ -42,8 +42,8 @@ public class CouponController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteCouponById(@PathVariable UUID id) {
-        return ResponseEntity.ok(couponService.deleteCouponById(id));
+    public ResponseEntity<?> deleteCouponById(@PathVariable UUID id, @RequestParam(required = false) boolean isSoft) {
+        return ResponseEntity.ok(couponService.deleteCoupon(id,isSoft));
     }
 
     @PutMapping(value = "" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

@@ -1,13 +1,12 @@
 package ecommerce.api.service.business;
 
+import ecommerce.api.config.property.CloudinaryProperties;
 import ecommerce.api.dto.coupon.request.CouponCreateRequest;
 import ecommerce.api.dto.coupon.request.CouponUpdateRequest;
 import ecommerce.api.dto.coupon.response.CouponResponse;
 import ecommerce.api.dto.general.PaginationDTO;
 import ecommerce.api.dto.general.SearchSpecification;
-import ecommerce.api.dto.product.response.ProductResponse;
 import ecommerce.api.entity.coupon.Coupon;
-import ecommerce.api.entity.product.Product;
 import ecommerce.api.exception.ResourceNotFoundException;
 import ecommerce.api.mapper.CouponMapper;
 import ecommerce.api.repository.ICouponRepository;
@@ -19,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 import java.io.IOException;
 import java.util.Set;
@@ -30,8 +30,6 @@ public class CouponService {
 
     private final ICouponRepository couponRepository;
     private final CouponMapper couponMapper;
-    private final CloudinaryService cloudinaryService;
-
 
     public PaginationDTO<CouponResponse> search(Set<SearchSpecification> searchSpec, Pageable pageable) {
         Specification<Coupon> spec = DynamicSpecificationUtils.buildSpecification(searchSpec);
@@ -50,29 +48,19 @@ public class CouponService {
     @Transactional
     public CouponResponse insert(CouponCreateRequest request) throws IOException {
         Coupon coupon = couponMapper.fromCreateRequestToEntity(request);
-        if(request.getImage()!=null)
-        {
-            String imageUrl = cloudinaryService.uploadFile(request.getImage(),cloudinaryService.PRODUCT_DIR,coupon.getId().toString());
-            coupon.setImageUrl(imageUrl);
-        }
         return couponMapper.fromEntityToResponse(couponRepository.save(coupon));
     }
 
     @Transactional
     public CouponResponse update(CouponUpdateRequest request) throws IOException {
         Coupon coupon = couponMapper.fromUpdateRequestToEntity(request);
-        coupon.setId(request.getId());
-        if( request.getImage() != null)
-        {
-            cloudinaryService.deleteFile(coupon.getId().toString());
-            String imageUrl = cloudinaryService.uploadFile(request.getImage(),cloudinaryService.COUPON_DIR,coupon.getId().toString());
-            coupon.setImageUrl(imageUrl);
-        }
         return couponMapper.fromEntityToResponse(couponRepository.save(coupon));
     }
 
-
-    public int deleteCouponById(UUID id) {
+    public int deleteCoupon(UUID id, boolean isSoft) {
+        if (isSoft) {
+            return couponRepository.updateDeletedAtById(id);
+        }
         return couponRepository.deleteCouponById(id);
     }
     

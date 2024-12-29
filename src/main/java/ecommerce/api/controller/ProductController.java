@@ -27,7 +27,7 @@ import java.util.UUID;
 public class ProductController {
     private final ProductService productService;
 
-    @PostMapping("/filtered-paginated-info")
+    @PostMapping("/searches")
     public ResponseEntity<?> getAllProducts(
             @ParameterObject Pageable pageable,
             @RequestBody(required = false) Set<SearchSpecification> specs) {

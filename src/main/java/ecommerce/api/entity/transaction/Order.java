@@ -4,13 +4,16 @@ import ecommerce.api.constants.OrderStatus;
 import ecommerce.api.entity.base.EntityBase;
 import ecommerce.api.entity.coupon.Coupon;
 
+import ecommerce.api.entity.transaction.payment.Payment;
 import ecommerce.api.entity.user.Profile;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -27,18 +30,29 @@ public class Order extends EntityBase {
     @Column(name = "notes", length = 200)
     private String notes;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.REFRESH,CascadeType.DETACH})
-    private Set<Coupon> Coupon = new LinkedHashSet<>();
+    @Column(name = "creator_id")
+    private UUID creatorId;
 
-
-    @JoinColumn(name = "customer_id")
-    @Transient
-    private Profile profile;
-
-    @OneToMany(mappedBy = "order",cascade = CascadeType.ALL)
-    private Set<OrderDetail> orderDetails = new LinkedHashSet<>();
+    @Column(name = "coupon_id")
+    private UUID couponId;
 
     @Column(name = "total_value")
     private Double totalValue;
+
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(insertable = false, updatable = false)
+    private Set<Coupon> coupons = new HashSet<>();
+
+    @OneToOne(fetch = FetchType.EAGER)
+    private Payment payment;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "creator_id", insertable = false, updatable = false)
+    private Profile profile;
+
+    @OneToMany
+    private Set<OrderDetail> orderDetails = new LinkedHashSet<>();
+
+
 }
 

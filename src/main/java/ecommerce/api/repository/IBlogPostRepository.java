@@ -18,6 +18,7 @@ public interface IBlogPostRepository extends JpaRepository<BlogPost, UUID>, JpaS
     int deleteBlogPostById(UUID id);
     Optional<BlogPost> findFirstByIdAndDeletedAtIsNull(UUID id);
     Page<BlogPost> findAllByDeletedAtIsNotNull(Pageable pageable);
+
     @Modifying
     @Query("UPDATE BlogPost b SET b.deletedAt = CURRENT_TIMESTAMP WHERE b.id = :id")
     int updateBlogPostDeletedAt(UUID id);
