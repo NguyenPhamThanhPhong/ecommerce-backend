@@ -8,7 +8,9 @@ import java.util.UUID;
 
 @Data
 public class AccountResponse {
-    private UUID id = UUID.randomUUID();
+    private UUID id ;
+
+    private long code;
 
     private Date enableDate;
 

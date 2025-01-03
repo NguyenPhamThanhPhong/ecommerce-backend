@@ -9,6 +9,7 @@ import java.util.UUID;
 @Data
 public class BlogPostResponse {
     private UUID id;
+    private long code;
     private String title;
     private Date createdAt;
     private Date deletedAt;

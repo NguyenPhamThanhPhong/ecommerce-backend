@@ -13,6 +13,8 @@ public class CouponResponse {
 
     private UUID id;
 
+    private String code;
+
     private Integer usageLimit;
 
     private String description;

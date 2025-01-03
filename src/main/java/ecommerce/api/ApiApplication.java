@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.util.List;
 import java.util.Spliterator;
+import java.util.logging.Logger;
 
 @SpringBootApplication
 @SecurityScheme(
@@ -16,10 +17,11 @@ import java.util.Spliterator;
         bearerFormat = "JWT"
 )
 public class ApiApplication {
+//    public static Logger logger = Logger.getLogger(ApiApplication.class.getName());
 
     public static void main(String[] args) {
         SpringApplication.run(ApiApplication.class, args);
-
+        System.out.println("Application started successfully");
     }
 
 }

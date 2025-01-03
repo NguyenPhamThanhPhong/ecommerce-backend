@@ -28,7 +28,7 @@ public abstract class EntityBase {
 
     //in case we exceed the limit of 6 digits, we will use the base32 encoding
     @Column(name = "code",insertable = false, updatable = false)
-    protected Long code;
+    protected long code;
 
     public EntityBase() {
         this.id = UUID.randomUUID();

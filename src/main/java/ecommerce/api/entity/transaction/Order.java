@@ -39,18 +39,18 @@ public class Order extends EntityBase {
     @Column(name = "total_value")
     private Double totalValue;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(insertable = false, updatable = false)
     private Set<Coupon> coupons = new HashSet<>();
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.LAZY)
     private Payment payment;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id", insertable = false, updatable = false)
     private Profile profile;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
     private Set<OrderDetail> orderDetails = new LinkedHashSet<>();
 
 

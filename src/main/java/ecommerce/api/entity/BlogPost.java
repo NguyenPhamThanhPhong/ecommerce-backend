@@ -42,7 +42,7 @@ public class BlogPost extends EntityBase {
     @Column(name = "is_html")
     private Boolean isHtml;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
     @JoinColumn(name = "author_id", insertable = false, updatable = false)
     private Profile author;
 

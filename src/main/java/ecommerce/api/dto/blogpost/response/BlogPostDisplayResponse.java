@@ -9,11 +9,14 @@ import java.util.UUID;
 @Data
 public class BlogPostDisplayResponse {
     private UUID id;
+    private long code;
+
     private String title;
     private Date createdAt;
     private Date deletedAt;
     private String subtitle;
     private String imageUrl;
+
 
     private UUID authorId;
 

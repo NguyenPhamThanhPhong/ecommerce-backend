@@ -4,10 +4,12 @@ import ecommerce.api.entity.user.Account;
 import ecommerce.api.entity.user.Profile;
 import io.lettuce.core.dynamic.annotation.Param;
 import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.*;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -51,14 +53,19 @@ public interface IAccountRepository extends JpaRepository<Account, UUID>, JpaSpe
     @Query("select a from Account a left join fetch a.profile")
     Optional<Account> findById(UUID id);
 
+    @Query("select a from Account a left join fetch a.profile where a.code = :code")
+    Optional<Account> findByCode(long code);
+
     @Override
     @Query("select a from Account a left join fetch a.profile")
     List<Account> findAll();
 
-    @Override
-    @Query(value = "select a from Account a left join fetch a.profile",
-            countQuery = "select count(1) from Account a")
-    Page<Account> findAll(Specification specification, Pageable pageable);
+    @EntityGraph(attributePaths = {"profile"})
+    Page<Account> findAll(@NotNull Specification<Account> spec, Pageable pageable);
+
+//    @Query(value = "select a from Account a left join fetch a.profile",
+//            countQuery = "select count(1) from Account a")
+//    Page<Account> findSth(@Nullable Specification<Account> spec, Pageable pageable);
 
     @Override
     @Query("select a from Account a left join fetch a.profile")

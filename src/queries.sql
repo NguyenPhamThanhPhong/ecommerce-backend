@@ -2,17 +2,29 @@ select *
 from accounts
          join profiles on accounts.id = profiles.id;
 
-select count(1) from Accounts a;
+select count(1)
+from Accounts a;
 
+select *
+from brands
+limit 1;
 
+select *
+from brands;
+select *
+from categories;
 
-select * from brands;
-select * from categories;
+select * from products_images;
+
+select *
+from products;
+
 
 UPDATE accounts
 SET role = 'ROLE_ADMIN';
 
-select * from categories;
+select *
+from categories;
 
 
 delete

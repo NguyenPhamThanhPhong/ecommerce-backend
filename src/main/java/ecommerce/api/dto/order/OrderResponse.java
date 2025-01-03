@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -19,6 +20,12 @@ import java.util.List;
 public class OrderResponse {
 
     private String id;
+
+    private long code;
+
+    private Date createdAt;
+
+    private Date deletedAt;
 
     private String address;
 

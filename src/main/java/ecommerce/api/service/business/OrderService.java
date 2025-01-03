@@ -19,7 +19,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.util.Set;
 import java.util.UUID;
 
@@ -31,8 +30,8 @@ public class OrderService {
     private final OrderMapper orderMapper;
 
 
-    public OrderResponse findById(UUID id) {
-        Order order = orderRepository.findById(id)
+    public OrderResponse findByCode(Integer code) {
+        Order order = orderRepository.findByCode(code)
                 .orElseThrow(() -> new ResourceNotFoundException("ORDER NOT FOUND"));
         return orderMapper.fromEntityToResponse(order);
     }

@@ -1,6 +1,5 @@
 package ecommerce.api.controller;
 
-import ecommerce.api.dto.category.response.CategoryResponse;
 import ecommerce.api.dto.general.PaginationDTO;
 import ecommerce.api.dto.general.SearchSpecification;
 import ecommerce.api.dto.order.OrderCreateRequest;
@@ -23,10 +22,9 @@ import java.util.UUID;
 public class OrderController {
     private final OrderService orderService;
 
-
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getOrderById(@PathVariable UUID id) {
-        return ResponseEntity.ok(orderService.findById(id));
+    @GetMapping("/{code}")
+    public ResponseEntity<?> getOrderById(@PathVariable Integer code) {
+        return ResponseEntity.ok(orderService.findByCode(code));
     }
 
     @PostMapping("/searches")

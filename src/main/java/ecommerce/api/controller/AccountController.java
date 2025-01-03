@@ -11,7 +11,7 @@ import ecommerce.api.dto.general.SearchSpecification;
 import ecommerce.api.dto.general.UserDetailDTO;
 import ecommerce.api.service.auth.AuthService;
 import ecommerce.api.service.business.AccountService;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -25,13 +25,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/accounts")
 @AllArgsConstructor
+@Tag(name = "Account")
 public class AccountController {
     private final AccountService accountService;
     private final AuthService authService;
@@ -39,6 +39,10 @@ public class AccountController {
     @GetMapping("phong")
     public ResponseEntity<?> getPhong() {
         return ResponseEntity.ok("Phong");
+    }
+    @GetMapping("doom/{status}")
+    public ResponseEntity<?> getDoom(@PathVariable int status) {
+        return ResponseEntity.status(status).build();
     }
 
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -48,9 +52,9 @@ public class AccountController {
         return ResponseEntity.ok(account);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<AccountResponse> getAccount(@PathVariable UUID id) {
-        AccountResponse account = accountService.getAccount(id);
+    @GetMapping("/{code}")
+    public ResponseEntity<AccountResponse> getAccount(@PathVariable Integer code) {
+        AccountResponse account = accountService.getByCode(code);
         return ResponseEntity.ok(account);
     }
 
@@ -80,9 +84,12 @@ public class AccountController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole(T(ecommerce.api.constants.AuthRoleConstants).ROLE_ADMIN)")
-    @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<?> deleteAccount(@PathVariable UUID id, @RequestParam boolean isSoft) {
+    @PreAuthorize("hasRole(T(ecommerce.api.constants.AuthRoleConstants).ROLE_DEFAULT)")
+    public ResponseEntity<?> deleteAccount(@PathVariable UUID id, @RequestParam boolean isSoft, Authentication authentication) {
+        UserDetailDTO auth = (UserDetailDTO) authentication.getPrincipal();
+        if (auth.getId().equals(id)) {
+            return ResponseEntity.status(403).build();
+        }
         return accountService.deleteAccount(id, isSoft) == 1 ? ResponseEntity.ok().build() : ResponseEntity.badRequest().build();
     }
 
@@ -92,12 +99,12 @@ public class AccountController {
         return ResponseEntity.ok(userDetailDTO);
     }
 
-    @DeleteMapping("/me")
-    @PreAuthorize("hasRole(T(ecommerce.api.constants.AuthRoleConstants).ROLE_DEFAULT)")
-    @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<?> deleteMyAccount(Authentication authentication, @RequestParam boolean isSoft) {
-        UserDetailDTO userDetailDTO = (UserDetailDTO) authentication.getPrincipal();
-        return accountService.deleteAccount(userDetailDTO.getId(), isSoft) == 1 ? ResponseEntity.ok().build() : ResponseEntity.badRequest().build();
-    }
+//    @DeleteMapping("/me")
+//    @PreAuthorize("hasRole(T(ecommerce.api.constants.AuthRoleConstants).ROLE_DEFAULT)")
+//    @SecurityRequirement(name = "bearerAuth")
+//    public ResponseEntity<?> deleteMyAccount(Authentication authentication, @RequestParam boolean isSoft) {
+//        UserDetailDTO userDetailDTO = (UserDetailDTO) authentication.getPrincipal();
+//        return accountService.deleteAccount(userDetailDTO.getId(), isSoft) == 1 ? ResponseEntity.ok().build() : ResponseEntity.badRequest().build();
+//    }
 
 }

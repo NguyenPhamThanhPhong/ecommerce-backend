@@ -2,20 +2,18 @@ package ecommerce.api.controller;
 
 import ecommerce.api.dto.general.PaginationDTO;
 import ecommerce.api.dto.general.SearchSpecification;
+import ecommerce.api.dto.general.UserDetailDTO;
 import ecommerce.api.dto.product.request.ProductCreateRequest;
 import ecommerce.api.dto.product.request.ProductUpdateRequest;
 import ecommerce.api.dto.product.response.ProductResponse;
-import ecommerce.api.entity.product.Product;
-import ecommerce.api.mapper.ProductMapper;
-import ecommerce.api.service.azure.CloudinaryService;
 import ecommerce.api.service.business.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Set;
@@ -35,9 +33,9 @@ public class ProductController {
         return ResponseEntity.ok(res);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getProductById(@PathVariable UUID id) {
-        return ResponseEntity.ok(productService.findById(id));
+    @GetMapping("/{code}")
+    public ResponseEntity<?> getProductById(@PathVariable int code) {
+        return ResponseEntity.ok(productService.findByCode(code));
     }
 
     @PostMapping(value = "" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -53,6 +51,19 @@ public class ProductController {
     @PutMapping(value = "" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updateProduct(@ModelAttribute ProductUpdateRequest request) throws IOException {
         return ResponseEntity.ok(productService.update(request));
+    }
+
+    @PutMapping("/favorites")
+    public ResponseEntity<?> favoriteProduct(@RequestParam UUID productId, Authentication authentication) {
+        UserDetailDTO auth = (UserDetailDTO) authentication.getPrincipal();
+        productService.addFavoriteProduct(auth.getId(), productId);
+        return ResponseEntity.ok().build();
+    }
+    @DeleteMapping("/favorites")
+    public ResponseEntity<?> unFavoriteProduct(@RequestParam UUID productId, Authentication authentication) {
+        UserDetailDTO auth = (UserDetailDTO) authentication.getPrincipal();
+        productService.removeFavoriteProduct(auth.getId(), productId);
+        return ResponseEntity.ok().build();
     }
 
 }

@@ -56,8 +56,8 @@ public class AccountService implements UserDetailsService {
         return PaginationDTO.fromPage(accounts.map(accountMapper::fromEntityToAccountResponse));
     }
 
-    public AccountResponse getAccount(UUID id) {
-        Account account = accountRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Account not found"));
+    public AccountResponse getByCode(Integer code) {
+        Account account = accountRepository.findByCode(code).orElseThrow(() -> new ResourceNotFoundException("Account not found"));
         return accountMapper.fromEntityToAccountResponse(account);
     }
 
@@ -86,4 +86,6 @@ public class AccountService implements UserDetailsService {
         Account account = accountRepository.findByEmail(username);
         return accountMapper.fromEntityToUserDetailDTO(account);
     }
+
+
 }

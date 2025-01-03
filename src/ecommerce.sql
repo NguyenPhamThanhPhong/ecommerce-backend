@@ -2,21 +2,20 @@ BEGIN;
 
 create table accounts
 (
-    id           uuid        not null
+    id           uuid not null
         constraint accounts_pkey
             primary key,
+    code         serial,
     created_at   timestamp(6) default now(),
     deleted_at   timestamp(6),
     disable_date timestamp(6),
-    email        varchar(40) not null,
+    email        text not null,
     enable_date  timestamp(6),
     is_verified  boolean,
-    login_id     varchar(40),
     otp          varchar(6),
     otp_expiry   timestamp(6),
-    password     varchar(40) not null,
-    role         varchar(40)  default 'ANONYMOUS'::text,
-    code         serial
+    password     text not null,
+    role         text         default 'ANONYMOUS'::text
 );
 
 create table profiles
@@ -24,6 +23,7 @@ create table profiles
     id            uuid not null
         constraint profiles_pkey
             primary key,
+    constraint fk_profiles_accounts_id foreign key (id) references accounts (id),
     avatar_url    varchar(2048),
     date_of_birth timestamp(6),
     full_name     varchar(40),
@@ -35,14 +35,13 @@ create table brands
     id          uuid not null
         constraint brands_pkey
             primary key,
+    code        serial,
     created_at  timestamp(6) default now(),
     deleted_at  timestamp(6),
-    description varchar,
+    description text,
     image_url   varchar(2048),
     name        varchar(40)
-        constraint uk_brands_tbl_name
-            unique,
-    code        serial
+        constraint uk_brands_name unique
 );
 
 create table categories
@@ -50,159 +49,89 @@ create table categories
     id          uuid not null
         constraint categories_pkey
             primary key,
+    code        serial,
     created_at  timestamp(6) default now(),
     deleted_at  timestamp(6),
-    description varchar(255),
-    image_url   varchar(2048),
+    description text,
+    image_url   varchar(255),
     name        varchar(40)
-        constraint uk_categories_tbl_name
-            unique,
-    parent_id   uuid
-        constraint fk_categories_tbl_categories_id
-            references categories,
-    code        serial
-);
-
-create table discounts
-(
-    id            uuid        not null
-        constraint discounts_pkey
-            primary key,
-    discount_type varchar(31) not null,
-    created_at    timestamp(6) default now(),
-    deleted_at    timestamp(6),
-    description   text,
-    disable_date  timestamp(6),
-    enable_date   timestamp(6),
-    title         text,
-    code          serial
-);
-
-create table fixed_discounts
-(
-    fixed_discount real,
-    min_condition  real,
-    id             uuid not null
-        constraint fixed_discounts_pkey
-            primary key
-        constraint fk_fixed_discounts_tbl_discounts_id
-            references discounts
+        constraint uk_categories_name unique
 );
 
 create table payments
 (
     payment_method varchar(31) not null,
     id             uuid        not null
-        constraint payments_pkey
-            primary key,
+        constraint payments_pkey primary key,
+    code           serial,
     created_at     timestamp(6) default now(),
     deleted_at     timestamp(6),
     account_id     uuid,
-    status         text,
-    code           serial
+    status         text
 );
 
 create table cash_payments
 (
-    amount      numeric(10, 2),
-    cash_method text,
-    exchange    numeric(10, 2),
-    paid        numeric(10, 2),
-    id          uuid not null
+    amount   numeric(10, 2),
+    exchange numeric(10, 2),
+    paid     numeric(10, 2),
+    id       uuid not null
         constraint cash_payments_pkey
             primary key
-        constraint fk_cash_payments_tbl_payments_id
-            references payments
-);
-
-create table orders
-(
-    id          uuid not null
-        constraint orders_pkey
-            primary key,
-    created_at  timestamp(6) default now(),
-    deleted_at  timestamp(6),
-    address     varchar(255),
-    description text,
-    discount_id uuid
-        constraint fk_orders_tbl_discounts_id
-            references discounts,
-    issuer_id   uuid,
-    status      varchar(255)
-        constraint orders_status_check
-            check ((status)::text = ANY
-                   ((ARRAY ['PROCESSING'::character varying, 'SHIPPING'::character varying, 'DELIVERED'::character varying, 'CANCELLED'::character varying])::text[])),
-    payment_id  uuid not null
-        constraint uk_orders_tbl_payments_id
-            unique
-        constraint fk_orders_tbl_payments_id
-            references payments,
-    code        serial
-);
-
-create table percent_discounts
-(
-    discount_percent numeric(3, 2),
-    max_discount     numeric(38, 2),
-    min_condition    numeric(38, 2),
-    id               uuid not null
-        constraint percent_discounts_pkey
-            primary key
-        constraint fk_percent_discounts_tbl_discounts_id
-            references discounts
+        constraint fk_cash_payments_payments_id
+            references payments (id)
 );
 
 create table products
 (
-    id          uuid not null
+    id               uuid not null
         constraint products_pkey
             primary key,
-    created_at  timestamp(6) default now(),
-    deleted_at  timestamp(6),
-    attributes  jsonb,
-    description text,
-    image_url   varchar(2048),
-    name        varchar(255),
-    price       numeric(10, 2),
-    quantity    integer,
-    sku         varchar(10),
-    sold        integer,
-    stock       integer,
-    brand_id    uuid
-        constraint fk_products_tbl_brands_id
+    code             serial,
+    created_at       timestamp(6) default now(),
+    deleted_at       timestamp(6),
+    available_date   timestamp(6),
+    brand_id         uuid
+        constraint fk_products_brands_id
             references brands,
-    category_id uuid
-        constraint fk_products_tbl_categories_id
+    category_id      uuid
+        constraint fk_products_categories_id
             references categories,
-    code        serial
+    description      text,
+    highlights       text,
+    policies         text,
+    discount_percent numeric(5, 2),
+    thumbnail_url    varchar(2048),
+    name             varchar(255),
+    price            numeric(10, 2),
+    quantity         integer,
+    rating           numeric(2, 1),
+    status           varchar(100),
+    stock            integer
+);
+-- alter table products alter discount_percent type numeric(5, 2) using discount_percent::numeric(5, 2);
+-- alter table products alter rating type numeric(2, 1) using rating::numeric(2, 1);
+-- alter table products alter price type numeric(10, 2) using price::numeric(10, 2);
+create table products_images(
+    seq_no     int,
+    product_id uuid          not null
+        constraint fk_products_images_products_id
+            references products,
+    constraint products_images_pkey primary key (seq_no, product_id),
+    name       varchar(255),
+    colour     varchar(255),
+    created_at timestamp(6) default now(),
+    deleted_at timestamp(6),
+    image_url  varchar(2048) not null
 );
 
-create table order_details
+create table favorite_products
 (
-    order_id    uuid not null
-        constraint fk_order_details_tbl_orders_id
-            references orders
-            on delete cascade,
-    product_id  uuid not null
-        constraint fk_products_tbl_orders_id
-            references products,
-    gross_total numeric(10, 2),
-    net_total   numeric(10, 2),
-    quantity    integer,
-    constraint order_details_pkey
-        primary key (order_id, product_id)
-);
-
-create table products_discounts
-(
-    product_id  uuid not null
-        constraint fk_products_discounts_tbl_products_id
-            references products,
-    discount_id uuid not null
-        constraint fk_products_discounts_tbl_discounts_id
-            references discounts,
-    constraint products_discounts_pkey
-        primary key (product_id, discount_id)
+    account_id uuid not null,
+    product_id uuid not null,
+    constraint favorites_products_pkey primary key (account_id, product_id),
+    constraint fk_favorites_products_accounts_id foreign key (account_id) references accounts,
+    constraint fk_favorites_products_products_id foreign key (product_id) references products
 );
 
 
@@ -212,32 +141,102 @@ create table blog_posts
     id         uuid not null
         constraint blog_posts_pkey
             primary key,
+    code       serial,
     created_at timestamp(6) default now(),
     deleted_at timestamp(6),
     author_id  uuid
-        constraint blog_posts_tbl_profiles_id
-            references profiles,
+        constraint fk_blog_posts_authors_id references profiles,
     content    text         default ''::text,
     image_url  text         default ''::text,
     is_html    boolean,
     subtitle   text         default now(),
-    title      text         default ''::text,
-    is_draft   boolean,
-    code       serial
+    title      text         default ''::text
 );
 
-create table promotion_discounts
+create table orders
 (
-    required_quantity integer,
-    reward_product_id uuid
-        constraint products_discounts_tbl_products_id
-            references products,
-    reward_quantity   integer,
-    id                uuid not null
-        constraint promotion_discounts_pkey
-            primary key
-        constraint fk_promotion_discounts_tbl_discounts_id
-            references discounts
+    id          uuid not null
+        constraint orders_pkey
+            primary key,
+    code        serial,
+    created_at  timestamp(6) default now(),
+    deleted_at  timestamp(6),
+    address     varchar(255),
+    coupon_id   uuid,
+    creator_id  uuid
+        constraint fk_orders_profiles_id
+            references profiles(id),
+    notes       varchar(200),
+    status      varchar(255),
+    total_value double precision,
+    payment_id  uuid
+        constraint uk_orders_payment_id
+            unique
+        constraint fk_orders_payments_id
+            references payments
+);
+
+create table coupons
+(
+    id          uuid not null
+        constraint coupons_pkey
+            primary key,
+    code        varchar(100),
+    created_at  timestamp(6) default now(),
+    deleted_at  timestamp(6),
+    coupon_type varchar(100),
+    description varchar(255),
+    end_date    timestamp(6),
+    start_date  timestamp(6),
+    usage_limit integer,
+    value       numeric(38, 2),
+    order_id    uuid
+        constraint fk_coupons_orders_id
+            references orders
+);
+
+create table coupon_usages(
+    created_at timestamp(6) default now(),
+    times      integer
+        constraint coupon_usages_times_positive check (times >= 0),
+    account_id uuid
+        constraint fk_coupons_usages_accounts_id
+            references accounts,
+    coupon_id  uuid
+        constraint fk_coupons_usages_coupons_id
+            references coupons,
+    constraint coupon_usages_pkey primary key (account_id, coupon_id)
+);
+
+create table order_details
+(
+    id         uuid not null
+        constraint order_details_pkey
+            primary key,
+    code       serial,
+    created_at timestamp(6) default now(),
+    deleted_at timestamp(6),
+    quantity   integer,
+    order_id   uuid not null
+        constraint fk_order_details_orders_id
+            references orders,
+    product_id uuid not null
+        constraint fk_order_details_products_id
+            references products
+);
+
+create table orders_order_details
+(
+    order_id         uuid not null
+        constraint fk_orders_order_details_orders_id
+            references orders,
+    order_details_id uuid not null
+        constraint uk_orders_order_details_order_details_id
+            unique
+        constraint fk_orders_order_details_order_details_id
+            references order_details,
+    constraint orders_order_details_pkey
+        primary key (order_id, order_details_id)
 );
 
 create table tokens
@@ -245,14 +244,14 @@ create table tokens
     id             uuid         not null
         constraint tokens_pkey
             primary key,
+    code           serial,
     created_at     timestamp(6) default now(),
     deleted_at     timestamp(6),
     access_expiry  timestamp(6) not null,
     access_token   text         not null,
     account_id     uuid         not null,
     refresh_expiry timestamp(6) not null,
-    refresh_token  text         not null,
-    code           varchar(6)
+    refresh_token  text         not null
 );
 
 create table vnpay_payments
@@ -264,21 +263,79 @@ create table vnpay_payments
     id          uuid not null
         constraint vnpay_payments_pkey
             primary key
-        constraint vnpay_payments_tbl_payments_id
-            references payments
+        constraint fk_vnpay_payments_payments_id
+            references payments (id)
 );
-
 COMMIT;
 
 BEGIN;
 insert into accounts (id, email, password, role)
 values ('00000000-0000-0000-0000-000000000000', 'admin@gmail.com', 'string', 'ROLE_ADMIN'),
-       ('00000000-0000-0000-0000-000000000001', 'customer@gmail.com','string','ROLE_CUSTOMER'),
-       ('00000000-0000-0000-0000-000000000002', 'staff@gmail.com','string','ROLE_STAFF');
+       ('00000000-0000-0000-0000-000000000001', 'customer@gmail.com', 'string', 'ROLE_CUSTOMER'),
+       ('00000000-0000-0000-0000-000000000002', 'staff@gmail.com', 'string', 'ROLE_STAFF');
 
-insert into profiles (id,date_of_birth, full_name, phone)
+insert into profiles (id, date_of_birth, full_name, phone)
 values ('00000000-0000-0000-0000-000000000000', now() - INTERVAL '18 years', 'Phong', '0123456789'),
        ('00000000-0000-0000-0000-000000000001', now() - INTERVAL '17 years', 'Phong', '098765432'),
        ('00000000-0000-0000-0000-000000000002', now() - INTERVAL '18 years', 'Phong', '0995555555');
 
-COMMIT ;
+insert into brands (id, name, description, image_url)
+values ('00000000-0000-0000-0000-000000000000', 'Apple', 'Apple Inc.',
+        'https://www.apple.com/ac/structured-data/images/knowledge_graph_logo.png?202103230739'),
+       ('00000000-0000-0000-0000-000000000001', 'Samsung', 'Samsung Inc.',
+        'https://www.samsung.com/etc/designs/smg/global/imgs/logo-square-letter.png'),
+       ('00000000-0000-0000-0000-000000000002', 'Xiaomi', 'Xiaomi Inc.',
+        'https://www.xiaomi.com/static/images/logo.png');
+
+insert into categories (id, name, description, image_url)
+values ('00000000-0000-0000-0000-000000000000', 'Smartphone', 'Smartphone',
+        'https://www.apple.com/ac/structured-data/images/knowledge_graph_logo.png?202103230739'),
+       ('00000000-0000-0000-0000-000000000001', 'Laptop', 'Laptop',
+        'https://www.samsung.com/etc/designs/smg/global/imgs/logo-square-letter.png'),
+       ('00000000-0000-0000-0000-000000000002', 'Tablet', 'Tablet', 'https://www.xiaomi.com/static/images/logo.png');
+
+insert into products (id, brand_id, category_id, description, discount_percent, thumbnail_url, name, price,
+                      quantity, rating,  status, stock)
+values ('00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000',
+        '00000000-0000-0000-0000-000000000000', 'Latest Apple iPhone', 10.00,'https://example.com/thumbnail.jpg',
+        'iPhone 13', 999.99, 100, 4.5, 'DRAFT', 150),
+       ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001',
+        '00000000-0000-0000-0000-000000000001', 'Latest Samsung Galaxy', 15.00, 'https://example.com/thumbnail2.jpg',
+        'Samsung Galaxy S21', 799.99, 200, 4.7, 'ON_SALE', 250),
+       ('00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000002',
+        '00000000-0000-0000-0000-000000000002', 'Latest Xiaomi Phone', 20.00, 'https://example.com/thumbnail3.jpg',
+        'Xiaomi Mi 11', 699.99, 150, 4.6, 'ON_SALE', 200);
+
+insert into products(id,brand_id,category_id,description,discount_percent,thumbnail_url,name,price,quantity,rating,status,stock)
+values ('00000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-000000000000',
+        '00000000-0000-0000-0000-000000000000', 'Xiao mi', 10.50,'https://example.com/thumbnail.jpg',
+        'iPhone 16', 999.99, 100, 4.5, 'DRAFT', 150),
+       ('00000000-0000-0000-0000-000000000004', '00000000-0000-0000-0000-000000000001',
+        '00000000-0000-0000-0000-000000000001', 'Latest Samsung Galaxy', 15.12, 'https://example.com/thumbnail2.jpg',
+        'Samsung Galaxy S25', 799.99, 200, 4.7, 'ON_SALE', 250),
+       ('00000000-0000-0000-0000-000000000005', '00000000-0000-0000-0000-000000000002',
+        '00000000-0000-0000-0000-000000000002', 'Latest Xiaomi Phone', 30.55, 'https://example.com/thumbnail3.jpg',
+        'Xiaomi Mi 15', 699.99, 150, 4.6, 'ON_SALE', 200);
+
+insert into products_images (seq_no, product_id, name, colour, image_url)
+values (1, '00000000-0000-0000-0000-000000000000', 'iPhone 13', 'Black', 'https://example.com/image.jpg'),
+       (1, '00000000-0000-0000-0000-000000000001', 'Samsung Galaxy S21', 'White', 'https://example.com/image2.jpg'),
+       (1, '00000000-0000-0000-0000-000000000002', 'Xiaomi Mi 11', 'Blue', 'https://example.com/image3.jpg');
+
+insert into blog_posts (id, author_id, content, image_url, is_html, subtitle, title)
+values ('00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000', 'This is a blog post',
+        'https://example.com/image.jpg', false, 'This is a subtitle', 'This is a title'),
+       ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', 'This is a blog post',
+        'https://example.com/image.jpg', false, 'This is a subtitle', 'This is a title'),
+       ('00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000002', 'This is a blog post',
+        'https://example.com/image.jpg', false, 'This is a subtitle', 'This is a title');
+
+insert into coupons (id, code, coupon_type, description, end_date, start_date, usage_limit, value)
+values ('00000000-0000-0000-0000-000000000000', 'PERCENT10', 'PERCENT', '10% off on all items', '2024-12-31 23:59:59',
+        '2024-01-01 00:00:00', 3, 10.00),
+       ('00000000-0000-0000-0000-000000000001', 'PERCENT20', 'PERCENT', '20% off on selected items',
+        '2024-12-31 23:59:59', '2024-01-01 00:00:00', 3, 20.00),
+       ('00000000-0000-0000-0000-000000000002', 'PERCENT30', 'PERCENT', '30% off on electronics', '2024-12-31 23:59:59',
+        '2024-01-01 00:00:00', 3, 30.00);
+COMMIT;
+abort;

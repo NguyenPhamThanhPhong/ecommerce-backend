@@ -9,12 +9,17 @@ import org.springframework.web.multipart.MultipartFile;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 
 @Data
 public class ProductResponse {
     private String id;
+
+    private long code;
+
+    private Date createdAt;
 
     private String name;
 
@@ -26,9 +31,13 @@ public class ProductResponse {
 
     private Date availableDate;
 
-    private Map<String, MultipartFile> images;
+    private String thumbnailUrl;
+
+    private Set<String> imageUrls;
 
     private BigDecimal discountPercent;
+
+    private BigDecimal rating;
 
     private Integer quantity;
 

@@ -4,26 +4,34 @@ import ecommerce.api.constants.CouponType;
 import ecommerce.api.entity.base.EntityBase;
 import ecommerce.api.entity.transaction.Order;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 
-@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
-@SuperBuilder
 @Table(name = "coupons")
-public class Coupon extends EntityBase {
+public class Coupon {
+    @Id
+    protected UUID id = UUID.randomUUID();
+
+    @Column(name = "code", insertable = true, updatable = true)
+    private String code;
+
+    @ColumnDefault("now()")
+    @Column(name = "created_at", insertable = false, updatable = false)
+    protected Date createdAt;
+
+    @Column(name = "deleted_at")
+    protected Date deletedAt;
 
     @Column(name = "usage_limit")
     private Integer usageLimit;
@@ -47,6 +55,5 @@ public class Coupon extends EntityBase {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private Order order;
-
 
 }

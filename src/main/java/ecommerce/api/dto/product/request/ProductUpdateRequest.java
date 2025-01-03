@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -28,7 +29,11 @@ public class ProductUpdateRequest {
 
     private Date availableDate;
 
-    private Map<String, MultipartFile> images;
+    private List<ProductImageRequest> appendingImages;
+    private List<Integer> removalImageIds;
+
+
+    private MultipartFile thumbnail;
 
     private BigDecimal discountPercent;
 

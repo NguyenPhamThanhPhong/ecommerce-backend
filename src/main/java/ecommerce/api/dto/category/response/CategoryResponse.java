@@ -8,6 +8,8 @@ import java.util.UUID;
 public class CategoryResponse {
     private UUID id;
 
+    private long code;
+
     private String description;
 
     private String name;

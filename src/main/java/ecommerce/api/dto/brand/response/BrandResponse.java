@@ -9,6 +9,8 @@ public class BrandResponse {
 
     private UUID id;
 
+    private long code;
+
     private String description;
 
     private String imageUrl;

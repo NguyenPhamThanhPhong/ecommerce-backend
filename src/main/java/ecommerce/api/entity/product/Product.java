@@ -3,6 +3,7 @@ package ecommerce.api.entity.product;
 import ecommerce.api.constants.ProductStatus;
 import ecommerce.api.entity.base.EntityBase;
 import ecommerce.api.entity.transaction.OrderDetail;
+import ecommerce.api.entity.user.Account;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -19,7 +20,6 @@ import java.util.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@SuperBuilder
 @Entity
 @Table(name = "products")
 public class Product extends EntityBase {
@@ -33,12 +33,10 @@ public class Product extends EntityBase {
     @Column(name = "category_id")
     private UUID categoryId;
 
-    @Size(max = 2048)
-    @Column(name = "image_urls")
-    @JdbcTypeCode(SqlTypes.JSON)
-    private Map<String, String> imageUrls;
+    @Column(name = "thumbnail_url")
+    private String thumbnailUrl;
 
-    @Column(name = "rating",precision = 1, scale = 1)
+    @Column(name = "rating", precision = 1, scale = 2)
     private BigDecimal rating;
 
     @Column(name = "quantity")
@@ -51,11 +49,14 @@ public class Product extends EntityBase {
     @Column(name = "available_date")
     private Date availableDate;
 
-    @Column(name = "sold")
-    private Integer sold;
-
-    @Column(name = "description", length = Integer.MAX_VALUE)
+    @Column(name = "description")
     private String description;
+
+    @Column(name = "highlights")
+    private String highlights;
+
+    @Column(name = "policies")
+    private String policies;
 
     @Column(name = "price", precision = 10, scale = 2)
     private BigDecimal price;
@@ -66,33 +67,24 @@ public class Product extends EntityBase {
     @Column(name = "discount_percent", precision = 3, scale = 2)
     private BigDecimal discountPercent;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "brand_id", insertable = false, updatable = false)
-    @Fetch(FetchMode.JOIN)
     private Brand brand;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "category_id", insertable = false, updatable = false)
-    @Fetch(FetchMode.JOIN)
     private Category category;
 
+    @OneToMany(mappedBy = "product",targetEntity = ProductImage.class)
+    private List<ProductImage> productImages = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(insertable = false,updatable = false)
+    @JoinColumn(insertable = false, updatable = false)
     private Set<OrderDetail> orderDetails = new HashSet<>();
 
-    public void appendImageUrl(String key, String url) {
-        if (imageUrls == null) {
-            imageUrls = new HashMap<>();
-        }
-        imageUrls.put(key, url);
-    }
-    public void removeImageUrl(String key) {
-        if (imageUrls != null) {
-            imageUrls.remove(key);
-        }
-    }
-
-
-
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "favorite_products",
+            joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns = @JoinColumn(name = "account_id"))
+    private Set<Account> users = new HashSet<>();
 }
