@@ -15,7 +15,6 @@ import ecommerce.api.repository.IProductImageRepository;
 import ecommerce.api.repository.IProductRepository;
 import ecommerce.api.service.azure.CloudinaryService;
 import ecommerce.api.utils.DynamicSpecificationUtils;
-import jakarta.persistence.criteria.JoinType;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
@@ -39,7 +38,12 @@ public class ProductService {
 
     public PaginationDTO<ProductResponse> search(Set<SearchSpecification> searchSpec, Pageable pageable) {
         Specification<Product> spec = DynamicSpecificationUtils.buildSpecification(searchSpec);
-
+//        Specification<Product> spec = (root, query, criteriaBuilder) -> {
+//            return criteriaBuilder.and(
+//                    criteriaBuilder.isNotNull(root.get("availableDate")),
+//                    criteriaBuilder.greaterThanOrEqualTo(root.get("availableDate"), new Date())
+//            );
+//        };
         Page<Product> products = productRepository.findAll(spec, pageable);
         Page<ProductResponse> responses = products.map(productMapper::fromEntityToResponse);
         return PaginationDTO.fromPage(responses);
@@ -63,7 +67,7 @@ public class ProductService {
     public ProductResponse update(ProductUpdateRequest request) throws IOException {
         Product product = productMapper.fromUpdateRequestToEntity(request);
         checkAndAddThumbNail(product, request.getThumbnail());
-        if(request.getRemovalImageIds()!=null && !request.getRemovalImageIds().isEmpty()){
+        if (request.getRemovalImageIds() != null && !request.getRemovalImageIds().isEmpty()) {
             String publicId = product.getId().toString() + "_";
             for (Integer seqNo : request.getRemovalImageIds()) {
                 cloudinaryService.deleteFile(publicId + seqNo);
@@ -74,14 +78,19 @@ public class ProductService {
         return productMapper.fromEntityToResponse(productRepository.save(product));
     }
 
-    public int addFavoriteProduct(UUID accountId, UUID productId) {
+    public int addFavorite(UUID accountId, UUID productId) {
         return productRepository.insertFavoriteProduct(accountId, productId);
     }
 
-    public int removeFavoriteProduct(UUID accountId, UUID productId) {
+    public int removeFavorite(UUID accountId, UUID productId) {
         return productRepository.deleteFavoriteProduct(accountId, productId);
     }
 
+    public PaginationDTO<ProductResponse> findFavorites(UUID accountId, Pageable pageable) {
+        Page<Product> products = productRepository.findFavorites(accountId, pageable);
+        Page<ProductResponse> responses = products.map(productMapper::fromEntityToResponse);
+        return PaginationDTO.fromPage(responses);
+    }
 
     private void handleProductImages(Product product, List<ProductImageRequest> appendingImages) throws IOException {
         if (appendingImages != null && !appendingImages.isEmpty()) {
@@ -104,7 +113,6 @@ public class ProductService {
         productImage.setImageUrl(imageUrl);
         return productImage;
     }
-
 
     private void checkAndAddThumbNail(Product product, MultipartFile file) throws IOException {
         if (file != null) {

@@ -19,6 +19,8 @@ select * from products_images;
 select *
 from products;
 
+select code,name,available_date,created_at from products;
+
 
 UPDATE accounts
 SET role = 'ROLE_ADMIN';

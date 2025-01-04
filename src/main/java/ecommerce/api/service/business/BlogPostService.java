@@ -41,14 +41,14 @@ public class BlogPostService {
         return upsertAndReturnChanges(blogPost, request.getImage());
     }
 
-    public BlogPostResponse getBlogPost(UUID id, boolean includeDeleted) {
+    public BlogPostResponse getBlogPost(long code, boolean includeDeleted) {
         Optional<BlogPost> blogPost;
         if (includeDeleted)
-            blogPost = blogPostRepository.findFirstByIdAndDeletedAtIsNull(id);
+            blogPost = blogPostRepository.findFirstByCodeAndDeletedAtIsNull(code);
         else
-            blogPost = blogPostRepository.findById(id);
+            blogPost = blogPostRepository.findByCode(code);
         return blogPost.map(blogPostMapper::fromEntityToResponse)
-                .orElseThrow(() -> new ResourceNotFoundException("Blog post not found by id " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Blog post not found by id " + code));
     }
 
     public PaginationDTO<BlogPostDisplayResponse> search(Set<SearchSpecification> searchSpec, Pageable pageable) {

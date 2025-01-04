@@ -24,8 +24,6 @@ public enum ComparisonType {
             -> criteriaBuilder.lessThanOrEqualTo(expression.as(Comparable.class), (Comparable) value)),
     GREATER_OR_EQUAL((criteriaBuilder, expression, value)
             -> criteriaBuilder.greaterThanOrEqualTo(expression.as(Comparable.class), (Comparable) value)),
-    BETWEEN((criteriaBuilder, expression, value)
-            -> criteriaBuilder.between(expression.as(Comparable.class), (Comparable) value, (Comparable) value)),
     IN((criteriaBuilder, expression, value)
             -> expression.in((Object[]) value)),
     NOT_IN((criteriaBuilder, expression, value)

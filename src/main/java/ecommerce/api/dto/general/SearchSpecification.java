@@ -16,12 +16,11 @@ public class SearchSpecification {
     private boolean isOpposite;
     // Column name like product_name
     private String parameterName;
-
     private String joinEntity;
-
+    private String type;
     // Comparison operator like equal, notEqual, like, less, greater, etc.
     private ComparisonType comparison;
     // Left value, usually for range checks (like BETWEEN)
-    private Object value;
+    private String value;
 
 }

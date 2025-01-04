@@ -56,14 +56,20 @@ public class ProductController {
     @PutMapping("/favorites")
     public ResponseEntity<?> favoriteProduct(@RequestParam UUID productId, Authentication authentication) {
         UserDetailDTO auth = (UserDetailDTO) authentication.getPrincipal();
-        productService.addFavoriteProduct(auth.getId(), productId);
+        productService.addFavorite(auth.getId(), productId);
         return ResponseEntity.ok().build();
     }
     @DeleteMapping("/favorites")
     public ResponseEntity<?> unFavoriteProduct(@RequestParam UUID productId, Authentication authentication) {
         UserDetailDTO auth = (UserDetailDTO) authentication.getPrincipal();
-        productService.removeFavoriteProduct(auth.getId(), productId);
+        productService.removeFavorite(auth.getId(), productId);
         return ResponseEntity.ok().build();
+    }
+    @GetMapping("/favorites")
+    public ResponseEntity<?> getFavoriteProducts(@ParameterObject Pageable pageable, Authentication authentication) {
+        UserDetailDTO auth = (UserDetailDTO) authentication.getPrincipal();
+        PaginationDTO<ProductResponse> res = productService.findFavorites(auth.getId(), pageable);
+        return ResponseEntity.ok(res);
     }
 
 }

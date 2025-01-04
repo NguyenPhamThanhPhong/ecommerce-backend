@@ -6,7 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.*;
-import org.springframework.lang.Nullable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
@@ -18,16 +17,15 @@ public interface IProductRepository extends JpaRepository<Product, UUID>, JpaSpe
     @Query("DELETE FROM Product p WHERE p.id = :id")
     int deleteProductById(UUID id);
 
-    //    @Query("""
-//            select p from Product p
-//            left join fetch p.category
-//            left join fetch p.brand
-//            left join fetch p.productImages
-//            """)
-//    @Override
-//    Page<Product> findAll(@Nullable Specification<Product> spec, Pageable pageable);
     @EntityGraph(attributePaths = {"brand", "category","productImages"})
     Page<Product> findAll(Specification<Product> spec, Pageable pageable);
+
+    @Query("""
+            select p from Product p
+            join p.favoriteProducts fp
+            where fp.id = :accountId
+            """)
+    Page<Product> findFavorites(UUID accountId, Pageable pageable);
 
     @Modifying
     @Transactional

@@ -26,9 +26,9 @@ import java.util.UUID;
 public class BlogPostController {
     private final BlogPostService blogPostService;
 
-    @GetMapping("{id}")
-    public ResponseEntity<?> getBlogPost(@PathVariable UUID id, @RequestParam(required = false) boolean includeDeleted) {
-        return ResponseEntity.ok(blogPostService.getBlogPost(id, includeDeleted));
+    @GetMapping("{code}")
+    public ResponseEntity<?> getBlogPost(@PathVariable long code, @RequestParam(required = false) boolean includeDeleted) {
+        return ResponseEntity.ok(blogPostService.getBlogPost(code, includeDeleted));
     }
 
     @PostMapping("/searches")
@@ -41,7 +41,6 @@ public class BlogPostController {
 
     @PostMapping(value = "",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole(T(ecommerce.api.constants.AuthRoleConstants).ROLE_ADMIN)")
-    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<?> createBlogPost(@ModelAttribute @Valid BlogPostCreateRequest request) throws IOException {
         return ResponseEntity.ok(blogPostService.createBlogPost(request));
     }

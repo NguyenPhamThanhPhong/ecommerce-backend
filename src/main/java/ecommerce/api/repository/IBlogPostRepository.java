@@ -16,7 +16,8 @@ import java.util.UUID;
 
 public interface IBlogPostRepository extends JpaRepository<BlogPost, UUID>, JpaSpecificationExecutor<BlogPost> {
     int deleteBlogPostById(UUID id);
-    Optional<BlogPost> findFirstByIdAndDeletedAtIsNull(UUID id);
+    Optional<BlogPost> findFirstByCodeAndDeletedAtIsNull(long id);
+    Optional<BlogPost> findByCode(long id);
     Page<BlogPost> findAllByDeletedAtIsNotNull(Pageable pageable);
 
     @Modifying

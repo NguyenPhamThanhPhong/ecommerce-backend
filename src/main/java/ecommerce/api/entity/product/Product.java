@@ -7,11 +7,6 @@ import ecommerce.api.entity.user.Account;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -86,5 +81,5 @@ public class Product extends EntityBase {
     @JoinTable(name = "favorite_products",
             joinColumns = @JoinColumn(name = "product_id"),
             inverseJoinColumns = @JoinColumn(name = "account_id"))
-    private Set<Account> users = new HashSet<>();
+    private Set<Account> favoriteProducts = new HashSet<>();
 }
