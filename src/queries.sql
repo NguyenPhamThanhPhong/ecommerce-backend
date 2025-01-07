@@ -28,7 +28,13 @@ SET role = 'ROLE_ADMIN';
 select *
 from categories;
 
+select *
+from products_images;
 
 delete
 from profiles e
 where e.id = (select a.id from accounts a order by id desc limit 1);
+
+
+
+

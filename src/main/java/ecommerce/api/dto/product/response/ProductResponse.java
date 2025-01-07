@@ -3,15 +3,13 @@ package ecommerce.api.dto.product.response;
 import ecommerce.api.constants.ProductStatus;
 import ecommerce.api.dto.brand.response.BrandResponse;
 import ecommerce.api.dto.category.response.CategoryResponse;
+import ecommerce.api.entity.product.ProductImage;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 
 @Data
@@ -29,15 +27,13 @@ public class ProductResponse {
 
     private String thumbnailUrl;
 
-    private Set<String> imageUrls;
+    private List<ProductImageResponse> productImages = new ArrayList<>();
 
     private BigDecimal discountPercent;
 
     private BigDecimal rating;
 
     private Integer quantity;
-
-    private Integer sold;
 
     private BigDecimal price;
 

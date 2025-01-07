@@ -8,6 +8,7 @@ import lombok.Data;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.Instant;
+import java.util.Date;
 import java.util.UUID;
 
 @Entity
@@ -36,10 +37,10 @@ public class ProductImage {
 
     @ColumnDefault("now()")
     @Column(name = "created_at")
-    private Instant createdAt;
+    private Date createdAt;
 
     @Column(name = "deleted_at")
-    private Instant deletedAt;
+    private Date deletedAt;
 
     @Size(max = 2048)
     @NotNull

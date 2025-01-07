@@ -2,11 +2,10 @@ package ecommerce.api.controller;
 
 import ecommerce.api.dto.blogpost.request.BlogPostCreateRequest;
 import ecommerce.api.dto.blogpost.request.BlogPostUpdateRequest;
-import ecommerce.api.dto.blogpost.response.BlogPostDisplayResponse;
+import ecommerce.api.dto.blogpost.response.BlogPostResponse;
 import ecommerce.api.dto.general.PaginationDTO;
 import ecommerce.api.dto.general.SearchSpecification;
 import ecommerce.api.service.business.BlogPostService;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
@@ -21,7 +20,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/blog-posts")
+@RequestMapping("/blogs")
 @RequiredArgsConstructor
 public class BlogPostController {
     private final BlogPostService blogPostService;
@@ -35,7 +34,7 @@ public class BlogPostController {
     public ResponseEntity<?> search(
             @ParameterObject Pageable pageable,
             @RequestBody Set<SearchSpecification> searchSpecs) {
-        PaginationDTO<BlogPostDisplayResponse> accounts = blogPostService.search(searchSpecs, pageable);
+        PaginationDTO<BlogPostResponse> accounts = blogPostService.search(searchSpecs, pageable);
         return ResponseEntity.ok(accounts);
     }
 

@@ -16,6 +16,7 @@ import ecommerce.api.repository.IProductRepository;
 import ecommerce.api.service.azure.CloudinaryService;
 import ecommerce.api.utils.DynamicSpecificationUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
@@ -36,13 +38,13 @@ public class ProductService {
     private final CloudinaryService cloudinaryService;
     private final CloudinaryProperties cloudinaryProperties;
 
+    @SneakyThrows
     public PaginationDTO<ProductResponse> search(Set<SearchSpecification> searchSpec, Pageable pageable) {
         Specification<Product> spec = DynamicSpecificationUtils.buildSpecification(searchSpec);
+//        SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+//        Date value = isoFormat.parse((String) "2025-01-04T17:20:38.403Z");
 //        Specification<Product> spec = (root, query, criteriaBuilder) -> {
-//            return criteriaBuilder.and(
-//                    criteriaBuilder.isNotNull(root.get("availableDate")),
-//                    criteriaBuilder.greaterThanOrEqualTo(root.get("availableDate"), new Date())
-//            );
+//            return criteriaBuilder.greaterThanOrEqualTo(root.get("availableDate"), new Date());
 //        };
         Page<Product> products = productRepository.findAll(spec, pageable);
         Page<ProductResponse> responses = products.map(productMapper::fromEntityToResponse);
@@ -53,6 +55,12 @@ public class ProductService {
         Product product = productRepository.findByCode(code)
                 .orElseThrow(() -> new ResourceNotFoundException("PRODUCT NOT FOUND"));
         return productMapper.fromEntityToResponse(product);
+    }
+
+    public PaginationDTO<ProductResponse> findInCodesOrIds(List<Integer> codes, List<UUID> ids, Pageable pageable) {
+        Page<Product> products = productRepository.findAllByCodeInOrIdIn(codes, ids, pageable);
+        Page<ProductResponse> responses = products.map(productMapper::fromEntityToResponse);
+        return PaginationDTO.fromPage(responses);
     }
 
     @Transactional

@@ -9,7 +9,6 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
@@ -91,7 +90,10 @@ public class DynamicSpecificationUtils {
         if (function == null) {
             throw new UnsupportedOperationException("Unsupported comparison operation: " + spec.getComparison());
         }
-        Object value = parsers.get(spec.getType()).apply(spec.getValue());
+        Object value = spec.getValue();
+        if (spec.getType() != null) {
+            value = parsers.get(spec.getType()).apply(spec.getValue());
+        }
         Predicate predicate = function.apply(criteriaBuilder, expression, value);
         return spec.isOpposite() ? criteriaBuilder.not(predicate) : predicate;
     }

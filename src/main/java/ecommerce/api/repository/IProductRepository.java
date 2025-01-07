@@ -40,6 +40,10 @@ public interface IProductRepository extends JpaRepository<Product, UUID>, JpaSpe
     @Query(value = "select pi from ProductImage pi where pi.productId = :productId order by pi.seqNo asc")
     List<ProductImage> findProductImages(UUID productId);
 
+    @EntityGraph(attributePaths = {"brand", "category","productImages"})
     Optional<Product> findByCode(Integer code);
+
+    @EntityGraph(attributePaths = {"brand", "category","productImages"})
+    Page<Product> findAllByCodeInOrIdIn(List<Integer> codes, List<UUID> ids, Pageable pageable);
 
 }

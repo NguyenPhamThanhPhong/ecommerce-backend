@@ -1,6 +1,6 @@
 package ecommerce.api.dto.blogpost.response;
 
-import ecommerce.api.entity.user.Profile;
+import ecommerce.api.dto.account.response.ProfileResponse;
 import lombok.Data;
 
 import java.util.Date;
@@ -10,17 +10,13 @@ import java.util.UUID;
 public class BlogPostResponse {
     private UUID id;
     private long code;
-    private String title;
+
     private Date createdAt;
     private Date deletedAt;
+    private String title;
     private String subtitle;
     private String imageUrl;
-
-    private UUID authorId;
-
     private String content;
-
     private Boolean isHtml;
-
-    private Profile author;
+    private ProfileResponse author;
 }

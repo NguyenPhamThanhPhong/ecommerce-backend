@@ -3,6 +3,7 @@ package ecommerce.api.mapper;
 import ecommerce.api.dto.product.request.ProductCreateRequest;
 import ecommerce.api.dto.product.request.ProductImageRequest;
 import ecommerce.api.dto.product.request.ProductUpdateRequest;
+import ecommerce.api.dto.product.response.ProductImageResponse;
 import ecommerce.api.dto.product.response.ProductResponse;
 import ecommerce.api.entity.product.Product;
 import ecommerce.api.entity.product.ProductImage;
@@ -23,6 +24,8 @@ public interface ProductMapper {
 //            expression = "java(fromProductImageRequestListToEntityList(request.getProductImages(), product.getId()))")
     Product fromCreateRequestToEntity(ProductCreateRequest request);
     ProductImage fromImageRequestToImage(ProductImageRequest request);
+
+    ProductImageResponse fromImageToImageResponse(ProductImage image);
 
 //    default List<ProductImage> fromProductImageRequestListToEntityList(List<ProductImageRequest> request, UUID productId) {
 //        return request.stream()

@@ -12,10 +12,12 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -30,6 +32,14 @@ public class ProductController {
             @ParameterObject Pageable pageable,
             @RequestBody(required = false) Set<SearchSpecification> specs) {
         PaginationDTO<ProductResponse> res = productService.search(specs, pageable);
+        return ResponseEntity.ok(res);
+    }
+
+    @GetMapping("")
+    public ResponseEntity<?> getProductsByCodesOrIds(
+            @RequestParam(required = false) List<Integer> codes,
+            @RequestParam(required = false) List<UUID> ids, @ParameterObject Pageable pageable) {
+        PaginationDTO<ProductResponse> res = productService.findInCodesOrIds(codes, ids, pageable);
         return ResponseEntity.ok(res);
     }
 
@@ -54,18 +64,21 @@ public class ProductController {
     }
 
     @PutMapping("/favorites")
+    @PreAuthorize("hasRole(T(ecommerce.api.constants.AuthRoleConstants).ROLE_DEFAULT)")
     public ResponseEntity<?> favoriteProduct(@RequestParam UUID productId, Authentication authentication) {
         UserDetailDTO auth = (UserDetailDTO) authentication.getPrincipal();
         productService.addFavorite(auth.getId(), productId);
         return ResponseEntity.ok().build();
     }
     @DeleteMapping("/favorites")
+    @PreAuthorize("hasRole(T(ecommerce.api.constants.AuthRoleConstants).ROLE_DEFAULT)")
     public ResponseEntity<?> unFavoriteProduct(@RequestParam UUID productId, Authentication authentication) {
         UserDetailDTO auth = (UserDetailDTO) authentication.getPrincipal();
         productService.removeFavorite(auth.getId(), productId);
         return ResponseEntity.ok().build();
     }
     @GetMapping("/favorites")
+    @PreAuthorize("hasRole(T(ecommerce.api.constants.AuthRoleConstants).ROLE_DEFAULT)")
     public ResponseEntity<?> getFavoriteProducts(@ParameterObject Pageable pageable, Authentication authentication) {
         UserDetailDTO auth = (UserDetailDTO) authentication.getPrincipal();
         PaginationDTO<ProductResponse> res = productService.findFavorites(auth.getId(), pageable);

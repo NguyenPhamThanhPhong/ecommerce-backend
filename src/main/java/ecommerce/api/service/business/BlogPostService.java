@@ -1,8 +1,6 @@
 package ecommerce.api.service.business;
 
 import ecommerce.api.config.property.CloudinaryProperties;
-import ecommerce.api.dto.account.response.AccountResponse;
-import ecommerce.api.dto.blogpost.response.BlogPostDisplayResponse;
 import ecommerce.api.dto.blogpost.response.BlogPostResponse;
 import ecommerce.api.dto.general.ModificationResponse;
 import ecommerce.api.dto.general.PaginationDTO;
@@ -10,7 +8,6 @@ import ecommerce.api.dto.blogpost.request.BlogPostCreateRequest;
 import ecommerce.api.dto.blogpost.request.BlogPostUpdateRequest;
 import ecommerce.api.dto.general.SearchSpecification;
 import ecommerce.api.entity.BlogPost;
-import ecommerce.api.entity.user.Account;
 import ecommerce.api.exception.BadRequestException;
 import ecommerce.api.exception.ResourceNotFoundException;
 import ecommerce.api.mapper.BlogPostMapper;
@@ -51,10 +48,10 @@ public class BlogPostService {
                 .orElseThrow(() -> new ResourceNotFoundException("Blog post not found by id " + code));
     }
 
-    public PaginationDTO<BlogPostDisplayResponse> search(Set<SearchSpecification> searchSpec, Pageable pageable) {
+    public PaginationDTO<BlogPostResponse> search(Set<SearchSpecification> searchSpec, Pageable pageable) {
         Specification<BlogPost> spec = DynamicSpecificationUtils.buildSpecification(searchSpec);
         Page<BlogPost> blogPosts = blogPostRepository.findAll(spec, pageable);
-        var res = blogPosts.map(blogPostMapper::fromEntityToDisplayResponse);
+        var res = blogPosts.map(blogPostMapper::fromEntityToResponse);
         return PaginationDTO.fromPage(res);
     }
 

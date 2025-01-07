@@ -1,7 +1,6 @@
 package ecommerce.api.mapper;
 
 import ecommerce.api.dto.blogpost.request.BlogPostCreateRequest;
-import ecommerce.api.dto.blogpost.response.BlogPostDisplayResponse;
 import ecommerce.api.dto.blogpost.response.BlogPostResponse;
 import ecommerce.api.dto.blogpost.request.BlogPostUpdateRequest;
 import ecommerce.api.entity.BlogPost;
@@ -20,5 +19,4 @@ public interface BlogPostMapper {
     BlogPost fromUpdateRequestToEntity(BlogPostUpdateRequest request);
 
     BlogPostResponse fromEntityToResponse(BlogPost entity);
-    BlogPostDisplayResponse fromEntityToDisplayResponse(BlogPost entity);
 }

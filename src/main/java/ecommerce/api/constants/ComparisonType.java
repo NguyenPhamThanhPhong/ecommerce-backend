@@ -17,13 +17,13 @@ public enum ComparisonType {
     LIKE((criteriaBuilder, expression, value)
             -> criteriaBuilder.like(criteriaBuilder.lower(expression.as(String.class)), "%" + value + "%")),
     LESS((criteriaBuilder, expression, value)
-            -> criteriaBuilder.lessThan(expression.as(Comparable.class), (Comparable) value)),
-    GREATER((criteriaBuilder, expression, value)
-            -> criteriaBuilder.greaterThan(expression.as(Comparable.class), (Comparable) value)),
+            -> criteriaBuilder.lessThan(expression.as((Class<Comparable>) value.getClass()), (Comparable) value)),
+    GREATER((criteriaBuilder, expression, value) ->
+            criteriaBuilder.greaterThan(expression.as((Class<Comparable>) value.getClass()), (Comparable) value)),
     LESS_OR_EQUAL((criteriaBuilder, expression, value)
-            -> criteriaBuilder.lessThanOrEqualTo(expression.as(Comparable.class), (Comparable) value)),
+            -> criteriaBuilder.lessThanOrEqualTo(expression.as((Class<Comparable>) value.getClass()), (Comparable) value)),
     GREATER_OR_EQUAL((criteriaBuilder, expression, value)
-            -> criteriaBuilder.greaterThanOrEqualTo(expression.as(Comparable.class), (Comparable) value)),
+            -> criteriaBuilder.greaterThanOrEqualTo(expression.as((Class<Comparable>) value.getClass()), (Comparable) value)),
     IN((criteriaBuilder, expression, value)
             -> expression.in((Object[]) value)),
     NOT_IN((criteriaBuilder, expression, value)
