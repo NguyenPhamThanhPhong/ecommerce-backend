@@ -46,4 +46,10 @@ public interface IProductRepository extends JpaRepository<Product, UUID>, JpaSpe
     @EntityGraph(attributePaths = {"brand", "category","productImages"})
     Page<Product> findAllByCodeInOrIdIn(List<Integer> codes, List<UUID> ids, Pageable pageable);
 
+    @Query("""
+            select p from Product p
+            where p.id in :ids
+            """)
+    List<Product> findAllByIdIn(List<UUID> ids);
+
 }

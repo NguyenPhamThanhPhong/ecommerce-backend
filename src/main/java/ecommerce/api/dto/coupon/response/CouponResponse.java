@@ -21,8 +21,6 @@ public class CouponResponse {
 
     private String couponType;
 
-    private MultipartFile image;
-
     private BigDecimal value;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)

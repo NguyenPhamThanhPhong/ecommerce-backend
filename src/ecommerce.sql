@@ -20,15 +20,18 @@ create table accounts
 
 create table profiles
 (
-    id            uuid not null
+    id              uuid not null
         constraint profiles_pkey
             primary key,
     constraint fk_profiles_accounts_id foreign key (id) references accounts (id),
-    avatar_url    varchar(2048),
-    date_of_birth timestamp(6),
-    full_name     varchar(40),
-    phone         varchar(11)
+    avatar_url      varchar(2048),
+    primary_address varchar(255),
+    addresses       jsonb,
+    date_of_birth   timestamp(6),
+    full_name       varchar(40),
+    phone           varchar(11)
 );
+
 
 create table brands
 (
@@ -58,17 +61,8 @@ create table categories
         constraint uk_categories_name unique
 );
 
-create table payments
-(
-    payment_method varchar(31) not null,
-    id             uuid        not null
-        constraint payments_pkey primary key,
-    code           serial,
-    created_at     timestamp(6) default now(),
-    deleted_at     timestamp(6),
-    account_id     uuid,
-    status         text
-);
+
+
 
 create table cash_payments
 (
@@ -112,7 +106,8 @@ create table products
 -- alter table products alter discount_percent type numeric(5, 2) using discount_percent::numeric(5, 2);
 -- alter table products alter rating type numeric(2, 1) using rating::numeric(2, 1);
 -- alter table products alter price type numeric(10, 2) using price::numeric(10, 2);
-create table products_images(
+create table products_images
+(
     seq_no     int,
     product_id uuid          not null
         constraint fk_products_images_products_id
@@ -162,18 +157,30 @@ create table orders
     created_at  timestamp(6) default now(),
     deleted_at  timestamp(6),
     address     varchar(255),
-    coupon_id   uuid,
+    coupon_id   uuid constraint fk_orders_coupons_id references coupons(id),
     creator_id  uuid
         constraint fk_orders_profiles_id
-            references profiles(id),
+            references profiles (id),
     notes       varchar(200),
-    status      varchar(255),
-    total_value double precision,
-    payment_id  uuid
-        constraint uk_orders_payment_id
+    total_value numeric(10, 2)
+);
+
+create table payments
+(
+    id             uuid        not null
+        constraint payments_pkey primary key,
+    payment_method varchar(31) not null,
+    amount      numeric(10, 2),
+    order_id       uuid
+        constraint uk_payments_order_id
             unique
-        constraint fk_orders_payments_id
-            references payments
+        constraint fk_payments_orders_id
+            references orders(id),
+    code           serial,
+    created_at     timestamp(6) default now(),
+    deleted_at     timestamp(6),
+    account_id     uuid constraint fk_payments_accounts_id references accounts,
+    status         varchar
 );
 
 create table coupons
@@ -186,27 +193,15 @@ create table coupons
     deleted_at  timestamp(6),
     coupon_type varchar(100),
     description varchar(255),
-    end_date    timestamp(6),
     start_date  timestamp(6),
+    end_date    timestamp(6),
     usage_limit integer,
-    value       numeric(38, 2),
-    order_id    uuid
-        constraint fk_coupons_orders_id
-            references orders
+    current_usage integer,
+    value       numeric(38, 2)
 );
 
-create table coupon_usages(
-    created_at timestamp(6) default now(),
-    times      integer
-        constraint coupon_usages_times_positive check (times >= 0),
-    account_id uuid
-        constraint fk_coupons_usages_accounts_id
-            references accounts,
-    coupon_id  uuid
-        constraint fk_coupons_usages_coupons_id
-            references coupons,
-    constraint coupon_usages_pkey primary key (account_id, coupon_id)
-);
+
+
 
 create table order_details
 (
@@ -256,16 +251,20 @@ create table tokens
 
 create table vnpay_payments
 (
-    amount      numeric(10, 2),
     bank_code   text,
     card_method text,
     order_info  text,
+    trans_ref varchar(100),
+    trans_no varchar(100),
+    secure_hash varchar(256),
     id          uuid not null
         constraint vnpay_payments_pkey
             primary key
         constraint fk_vnpay_payments_payments_id
             references payments (id)
 );
+
+
 COMMIT;
 
 BEGIN;
@@ -278,6 +277,13 @@ insert into profiles (id, date_of_birth, full_name, phone)
 values ('00000000-0000-0000-0000-000000000000', now() - INTERVAL '18 years', 'Phong', '0123456789'),
        ('00000000-0000-0000-0000-000000000001', now() - INTERVAL '17 years', 'Phong', '098765432'),
        ('00000000-0000-0000-0000-000000000002', now() - INTERVAL '18 years', 'Phong', '0995555555');
+
+update profiles set primary_address='Ha noi',addresses='{
+  "Ha noi": "street 99, district Thanh Oai, Ha Tay, Ha noi",
+  "Workplace": "street 88, district 9, Ho Chi Minh"
+}' where id in ('00000000-0000-0000-0000-000000000001',
+                '00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000003');
+
 
 insert into brands (id, name, description, image_url)
 values ('00000000-0000-0000-0000-000000000000', 'Apple', 'Apple Inc.',
@@ -295,9 +301,9 @@ values ('00000000-0000-0000-0000-000000000000', 'Smartphone', 'Smartphone',
        ('00000000-0000-0000-0000-000000000002', 'Tablet', 'Tablet', 'https://www.xiaomi.com/static/images/logo.png');
 
 insert into products (id, brand_id, category_id, description, discount_percent, thumbnail_url, name, price,
-                      quantity, rating,  status, stock)
+                      quantity, rating, status, stock)
 values ('00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000',
-        '00000000-0000-0000-0000-000000000000', 'Latest Apple iPhone', 10.00,'https://example.com/thumbnail.jpg',
+        '00000000-0000-0000-0000-000000000000', 'Latest Apple iPhone', 10.00, 'https://example.com/thumbnail.jpg',
         'iPhone 13', 999.99, 100, 4.5, 'DRAFT', 150),
        ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001',
         '00000000-0000-0000-0000-000000000001', 'Latest Samsung Galaxy', 15.00, 'https://example.com/thumbnail2.jpg',
@@ -306,9 +312,12 @@ values ('00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-0000000
         '00000000-0000-0000-0000-000000000002', 'Latest Xiaomi Phone', 20.00, 'https://example.com/thumbnail3.jpg',
         'Xiaomi Mi 11', 699.99, 150, 4.6, 'ON_SALE', 200);
 
-insert into products(id,brand_id,category_id,description,discount_percent,thumbnail_url,name,price,quantity,rating,status,stock)
+
+
+insert into products(id, brand_id, category_id, description, discount_percent, thumbnail_url, name, price, quantity,
+                     rating, status, stock)
 values ('00000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-000000000000',
-        '00000000-0000-0000-0000-000000000000', 'Xiao mi', 10.50,'https://example.com/thumbnail.jpg',
+        '00000000-0000-0000-0000-000000000000', 'Xiao mi', 10.50, 'https://example.com/thumbnail.jpg',
         'iPhone 16', 999.99, 100, 4.5, 'DRAFT', 150),
        ('00000000-0000-0000-0000-000000000004', '00000000-0000-0000-0000-000000000001',
         '00000000-0000-0000-0000-000000000001', 'Latest Samsung Galaxy', 15.12, 'https://example.com/thumbnail2.jpg',

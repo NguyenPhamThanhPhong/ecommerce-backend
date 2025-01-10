@@ -4,7 +4,10 @@ import ecommerce.api.constants.ProductStatus;
 import ecommerce.api.dto.brand.response.BrandResponse;
 import ecommerce.api.dto.category.response.CategoryResponse;
 import ecommerce.api.entity.product.ProductImage;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,6 +16,9 @@ import java.util.*;
 
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ProductResponse {
     private String id;
     private long code;

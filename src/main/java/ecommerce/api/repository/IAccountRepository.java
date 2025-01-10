@@ -13,6 +13,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -30,6 +31,18 @@ public interface IAccountRepository extends JpaRepository<Account, UUID>, JpaSpe
                     """
     )
     void updateProfile(@Param("profile") Profile profile);
+
+    @Modifying
+    @Query(
+            """
+                            update Profile a set
+                            a.fullName = :#{#profile.fullName},
+                            a.dateOfBirth = :#{#profile.dateOfBirth},
+                            a.phone = :#{#profile.phone}
+                            where a.id = :#{#profile.id}
+                    """
+    )
+    void updateProfileExcludeAvatar(@Param("profile") Profile profile);
 
 
     @Query("""
@@ -51,7 +64,7 @@ public interface IAccountRepository extends JpaRepository<Account, UUID>, JpaSpe
 
     @Override
     @Query("select a from Account a left join fetch a.profile")
-    Optional<Account> findById(UUID id);
+    Optional<Account> findById(@NotNull UUID id);
 
     @Query("select a from Account a left join fetch a.profile where a.code = :code")
     Optional<Account> findByCode(long code);
@@ -63,12 +76,13 @@ public interface IAccountRepository extends JpaRepository<Account, UUID>, JpaSpe
     @EntityGraph(attributePaths = {"profile"})
     Page<Account> findAll(@NotNull Specification<Account> spec, Pageable pageable);
 
-//    @Query(value = "select a from Account a left join fetch a.profile",
-//            countQuery = "select count(1) from Account a")
-//    Page<Account> findSth(@Nullable Specification<Account> spec, Pageable pageable);
+    @Modifying
+    @Transactional
+    @Query("update Profile p set p.addresses = :addresses, p.primaryAddress = :primaryAddress where p.id = :id")
+    int updateAddresses(UUID id, Map<String,String> addresses, String primaryAddress);
 
     @Override
     @Query("select a from Account a left join fetch a.profile")
-    Optional<Account> findOne(Specification  specification);
+    Optional<Account> findOne(Specification specification);
 
 }

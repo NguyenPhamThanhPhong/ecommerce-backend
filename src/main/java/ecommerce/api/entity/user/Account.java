@@ -3,6 +3,7 @@ package ecommerce.api.entity.user;
 import ecommerce.api.constants.AccountRolesEnum;
 import ecommerce.api.entity.base.EntityBase;
 import ecommerce.api.entity.product.Product;
+import ecommerce.api.entity.transaction.payment.Payment;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -12,6 +13,7 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -57,6 +59,9 @@ public class Account extends EntityBase {
             inverseJoinColumns = @JoinColumn(name = "product_id")
     )
     private Set<Product> favoriteProducts;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<Payment> payments;
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn(name = "id", referencedColumnName = "id")

@@ -3,29 +3,24 @@ package ecommerce.api.entity.transaction;
 import ecommerce.api.constants.OrderStatus;
 import ecommerce.api.entity.base.EntityBase;
 import ecommerce.api.entity.coupon.Coupon;
-
 import ecommerce.api.entity.transaction.payment.Payment;
 import ecommerce.api.entity.user.Profile;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
-@Data
-@Entity
+@Entity @Getter @Setter
 @Table(name = "orders")
 public class Order extends EntityBase {
     @Column(name = "address")
     private String address;
-
-    @Column(name = "status")
-    @Enumerated(EnumType.STRING)
-    private OrderStatus status;
 
     @Column(name = "notes", length = 200)
     private String notes;
@@ -37,22 +32,21 @@ public class Order extends EntityBase {
     private UUID couponId;
 
     @Column(name = "total_value")
-    private Double totalValue;
-
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(insertable = false, updatable = false)
-    private Set<Coupon> coupons = new HashSet<>();
+    private BigDecimal totalValue;
 
     @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(insertable = false, updatable = false)
+    private Coupon coupon;
+
+    @OneToOne(mappedBy = "order")
     private Payment payment;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id", insertable = false, updatable = false)
     private Profile profile;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    private Set<OrderDetail> orderDetails = new LinkedHashSet<>();
-
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", cascade = {})
+    private List<OrderDetail> orderDetails;
 
 }
 

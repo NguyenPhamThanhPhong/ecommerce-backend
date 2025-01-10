@@ -1,6 +1,5 @@
 package ecommerce.api.controller;
 import ecommerce.api.config.property.CloudinaryProperties;
-import ecommerce.api.dto.account.response.AccountResponse;
 import ecommerce.api.dto.brand.request.BrandCreateRequest;
 import ecommerce.api.dto.brand.request.BrandUpdateRequest;
 import ecommerce.api.dto.brand.response.BrandResponse;
@@ -39,9 +38,9 @@ public class BrandController {
         return ResponseEntity.ok(brands);
     }
 
-    @GetMapping("{id}")
-    public ResponseEntity<?> getBrandById(@PathVariable UUID id) {
-        return ResponseEntity.ok(brandService.getBrandById(id));
+    @GetMapping("{code}")
+    public ResponseEntity<?> getBrandById(@PathVariable long code) {
+        return ResponseEntity.ok(brandService.getBrandByCode(code));
     }
 
     @PostMapping(value = "" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

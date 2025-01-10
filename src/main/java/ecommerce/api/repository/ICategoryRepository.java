@@ -18,6 +18,8 @@ public interface ICategoryRepository extends JpaRepository<Category, UUID>, JpaS
 
     int deleteCategoryById(UUID id);
 
+    Optional<Category> findCategoryByCode(long code);
+
     @Modifying
     @Query("""
             update Category c set c.deletedAt = current_timestamp where c.id = :id

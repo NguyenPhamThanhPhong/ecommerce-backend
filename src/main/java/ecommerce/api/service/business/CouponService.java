@@ -1,6 +1,6 @@
 package ecommerce.api.service.business;
 
-import ecommerce.api.config.property.CloudinaryProperties;
+import ecommerce.api.constants.CouponType;
 import ecommerce.api.dto.coupon.request.CouponCreateRequest;
 import ecommerce.api.dto.coupon.request.CouponUpdateRequest;
 import ecommerce.api.dto.coupon.response.CouponResponse;
@@ -10,24 +10,23 @@ import ecommerce.api.entity.coupon.Coupon;
 import ecommerce.api.exception.ResourceNotFoundException;
 import ecommerce.api.mapper.CouponMapper;
 import ecommerce.api.repository.ICouponRepository;
-import ecommerce.api.service.azure.CloudinaryService;
 import ecommerce.api.utils.DynamicSpecificationUtils;
 import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.misc.Pair;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.DeleteMapping;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Set;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class CouponService {
-
     private final ICouponRepository couponRepository;
     private final CouponMapper couponMapper;
 
@@ -37,10 +36,27 @@ public class CouponService {
         Page<CouponResponse> responses = coupons.map(couponMapper::fromEntityToResponse);
         return PaginationDTO.fromPage(responses);
     }
+
+    public Pair<Coupon,BigDecimal> evaluateDiscount(BigDecimal amount, String code) {
+        Coupon coupon = couponRepository.updateCouponUsage(code)
+                .orElseThrow(() -> new ResourceNotFoundException("COUPON NOT FOUND OR EXPIRED"));
+        if (coupon.getCouponType().equals(CouponType.PERCENT)) {
+            BigDecimal discount = amount.multiply(coupon.getValue().divide(BigDecimal.valueOf(100)));
+            amount = amount.subtract(discount);
+            if (amount.compareTo(BigDecimal.ZERO) < 0) {
+                return new Pair<>(coupon, BigDecimal.ZERO);
+            }
+            return new Pair<>(coupon,amount);
+        }
+        if (amount.compareTo(BigDecimal.ZERO) < 0) {
+            return new Pair<>(coupon, BigDecimal.ZERO);
+        }
+        return new Pair<>(coupon, amount.subtract(coupon.getValue()));
+    }
     
     
-    public CouponResponse findById(UUID id) {
-        Coupon c = couponRepository.findById(id)
+    public CouponResponse findByCode(String id) {
+        Coupon c = couponRepository.findByCode(id)
                 .orElseThrow(() -> new ResourceNotFoundException("COUPON NOT FOUND"));
         return couponMapper.fromEntityToResponse(c);
     }

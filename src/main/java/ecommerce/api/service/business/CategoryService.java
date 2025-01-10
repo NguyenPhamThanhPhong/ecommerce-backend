@@ -1,6 +1,4 @@
 package ecommerce.api.service.business;
-
-
 import ecommerce.api.config.property.CloudinaryProperties;
 import ecommerce.api.dto.category.request.CategoryCreateRequest;
 import ecommerce.api.dto.category.request.CategoryUpdateRequest;
@@ -40,8 +38,8 @@ public class CategoryService {
         return PaginationDTO.fromPage(responses);
     }
 
-    public CategoryResponse getCategoryById(UUID id) {
-        Category category = categoryRepository.findById(id).orElseThrow(() ->
+    public CategoryResponse getCategoryByCode(long id) {
+        Category category = categoryRepository.findCategoryByCode(id).orElseThrow(() ->
                 new ResourceNotFoundException("CATEGORY NOT FOUND"));
         return categoryMapper.fromEntityToResponse(category);
     }

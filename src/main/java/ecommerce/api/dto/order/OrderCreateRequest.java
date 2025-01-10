@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -24,13 +25,23 @@ public class OrderCreateRequest implements IdentityCriteria {
 
     private String notes;
 
-    private List<UUID> couponIds;
+    private String couponCode;
 
     private List<OrderDetailRequest> orderDetails;
 
+    public void mergeOrderDetails() {
+        this.orderDetails = orderDetails.stream()
+                .collect(Collectors.groupingBy(OrderDetailRequest::getProductId,
+                        Collectors.summingInt(OrderDetailRequest::getQuantity)))
+                .entrySet()
+                .stream()
+                .map(entry -> new OrderDetailRequest(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
+    }
+
     @Override
     public UUID getIdentity() {
-        return null;
+        return this.creatorId;
     }
 
     @Override

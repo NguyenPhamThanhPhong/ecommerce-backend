@@ -11,6 +11,7 @@ import ecommerce.api.dto.general.SearchSpecification;
 import ecommerce.api.dto.general.UserDetailDTO;
 import ecommerce.api.service.auth.AuthService;
 import ecommerce.api.service.business.AccountService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,6 +26,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -34,16 +36,6 @@ import java.util.UUID;
 @Tag(name = "Account")
 public class AccountController {
     private final AccountService accountService;
-    private final AuthService authService;
-
-    @GetMapping("phong")
-    public ResponseEntity<?> getPhong() {
-        return ResponseEntity.ok("Phong");
-    }
-    @GetMapping("doom/{status}")
-    public ResponseEntity<?> getDoom(@PathVariable int status) {
-        return ResponseEntity.status(status).build();
-    }
 
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createAccount(
@@ -67,24 +59,14 @@ public class AccountController {
         return ResponseEntity.ok(accounts);
     }
 
-    @PostMapping("/tokens")
-    public ResponseEntity<?> getTokens(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-        LoginResponse loginResponse = authService.authenticateAccount(loginRequest);
-        Cookie[] cookies = loginResponse.makeCookies();
-        for (Cookie cookie : cookies) {
-            response.addCookie(cookie);
-        }
-        return ResponseEntity.ok(loginResponse);
-    }
-
     @PatchMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> updateProfile(@ModelAttribute ProfileUpdateRequest request) throws IOException {
+    public ResponseEntity<?> updateProfile(@Valid @ModelAttribute ProfileUpdateRequest request) throws IOException {
         ProfileResponse profile = accountService.updateProfile(request);
         return ResponseEntity.ok(profile);
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole(T(ecommerce.api.constants.AuthRoleConstants).ROLE_DEFAULT)")
+    @PreAuthorize("hasRole(T(ecommerce.api.constants.AuthRoleConstants).ROLE_ADMIN)")
     public ResponseEntity<?> deleteAccount(@PathVariable UUID id, @RequestParam boolean isSoft, Authentication authentication) {
         UserDetailDTO auth = (UserDetailDTO) authentication.getPrincipal();
         if (auth.getId().equals(id)) {
@@ -94,17 +76,27 @@ public class AccountController {
     }
 
     @GetMapping("/me")
+    @PreAuthorize("hasRole(T(ecommerce.api.constants.AuthRoleConstants).ROLE_DEFAULT)")
     public ResponseEntity<?> getMyProfile(Authentication authentication) {
         UserDetailDTO userDetailDTO = (UserDetailDTO) authentication.getPrincipal();
-        return ResponseEntity.ok(userDetailDTO);
+        AccountResponse accountResponse = accountService.getByCode(userDetailDTO.getCode());
+        return ResponseEntity.ok(accountResponse);
     }
 
-//    @DeleteMapping("/me")
-//    @PreAuthorize("hasRole(T(ecommerce.api.constants.AuthRoleConstants).ROLE_DEFAULT)")
-//    @SecurityRequirement(name = "bearerAuth")
-//    public ResponseEntity<?> deleteMyAccount(Authentication authentication, @RequestParam boolean isSoft) {
-//        UserDetailDTO userDetailDTO = (UserDetailDTO) authentication.getPrincipal();
-//        return accountService.deleteAccount(userDetailDTO.getId(), isSoft) == 1 ? ResponseEntity.ok().build() : ResponseEntity.badRequest().build();
-//    }
+    @DeleteMapping("/me")
+    @PreAuthorize("hasRole(T(ecommerce.api.constants.AuthRoleConstants).ROLE_DEFAULT)")
+    public ResponseEntity<?> deleteMyAccount(Authentication authentication, @RequestParam boolean isSoft) {
+        UserDetailDTO userDetailDTO = (UserDetailDTO) authentication.getPrincipal();
+        return accountService.deleteAccount(userDetailDTO.getId(), isSoft) == 1 ? ResponseEntity.ok().build() : ResponseEntity.badRequest().build();
+    }
+
+    @PutMapping("/addresses")
+    @PreAuthorize("hasRole(T(ecommerce.api.constants.AuthRoleConstants).ROLE_DEFAULT)")
+    public ResponseEntity<?> updateAddress(Authentication authentication, @RequestParam(required = false) String defaultAddress,
+                                           @RequestBody Map<String, String> request) {
+        UserDetailDTO userDetailDTO = (UserDetailDTO) authentication.getPrincipal();
+        int changes = accountService.updateAddresses(userDetailDTO.getId(), request, defaultAddress);
+        return changes == 1 ? ResponseEntity.ok().build() : ResponseEntity.badRequest().build();
+    }
 
 }

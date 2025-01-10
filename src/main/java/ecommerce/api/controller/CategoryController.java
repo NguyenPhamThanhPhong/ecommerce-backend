@@ -1,4 +1,5 @@
 package ecommerce.api.controller;
+
 import ecommerce.api.dto.category.request.CategoryCreateRequest;
 import ecommerce.api.dto.category.request.CategoryUpdateRequest;
 import ecommerce.api.dto.category.response.CategoryResponse;
@@ -22,9 +23,9 @@ import java.util.UUID;
 public class CategoryController {
     private final CategoryService categoryService;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getOne(@PathVariable UUID id){
-        return ResponseEntity.ok(categoryService.getCategoryById(id));
+    @GetMapping("/{code}")
+    public ResponseEntity<?> getOne(@PathVariable long code) {
+        return ResponseEntity.ok(categoryService.getCategoryByCode(code));
     }
 
     @PostMapping("/searches")
@@ -48,7 +49,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteCategory(@PathVariable UUID id){
+    public ResponseEntity<?> deleteCategory(@PathVariable UUID id) {
         return ResponseEntity.ok(categoryService.deleteCategory(id));
     }
 

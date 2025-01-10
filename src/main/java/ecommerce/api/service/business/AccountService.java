@@ -10,6 +10,7 @@ import ecommerce.api.dto.general.SearchSpecification;
 import ecommerce.api.entity.user.Account;
 import ecommerce.api.entity.user.Profile;
 import ecommerce.api.exception.ResourceNotFoundException;
+import ecommerce.api.exception.UnAuthorisedException;
 import ecommerce.api.mapper.AccountMapper;
 import ecommerce.api.repository.IAccountRepository;
 import ecommerce.api.service.azure.CloudinaryService;
@@ -20,18 +21,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
-public class AccountService implements UserDetailsService {
+public class AccountService {
     private final IAccountRepository accountRepository;
     private final AccountMapper accountMapper;
     private final CloudinaryService cloudinaryService;
@@ -68,9 +69,15 @@ public class AccountService implements UserDetailsService {
             String blobUrl = cloudinaryService.uploadFile(request.getAvatar(),
                     cloudinaryProperties.getAccountDir(), request.getId().toString());
             profile.setAvatarUrl(blobUrl);
+            accountRepository.updateProfile(profile);
+            return accountMapper.fromEntityToProfileResponse(profile);
         }
-        accountRepository.updateProfile(profile);
+        accountRepository.updateProfileExcludeAvatar(profile);
         return accountMapper.fromEntityToProfileResponse(profile);
+    }
+
+    public int updateAddresses(UUID id, Map<String,String> addresses, String primaryAddress) {
+        return accountRepository.updateAddresses(id, addresses,primaryAddress);
     }
 
     @Transactional
@@ -81,9 +88,9 @@ public class AccountService implements UserDetailsService {
         return accountRepository.deleteAccountById(id);
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Account account = accountRepository.findByEmail(username);
+    public UserDetails findById(UUID username) throws UsernameNotFoundException {
+        Account account = accountRepository.findById(username).orElseThrow(() ->
+                new UnAuthorisedException("Account not found"));
         return accountMapper.fromEntityToUserDetailDTO(account);
     }
 

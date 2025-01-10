@@ -14,10 +14,9 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
+@Getter @Setter
 @SuperBuilder
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Table(name = "order_details")
 @IdClass(OrderDetailId.class)
 public class OrderDetail extends EntityBase {
@@ -25,12 +24,18 @@ public class OrderDetail extends EntityBase {
     @Column(name = "quantity")
     private Integer quantity;
 
-    @ManyToOne
-    @JoinColumn(name = "order_id", nullable = false)
+    @Column(name = "order_id")
+    private UUID orderId;
+
+    @Column(name = "product_id")
+    private UUID productId;
+
+    @ManyToOne(targetEntity = Order.class)
+    @JoinColumn(name = "order_id", nullable = false,updatable = false,insertable = false)
     private Order order;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id" , nullable = false)
+    @ManyToOne(targetEntity = Product.class)
+    @JoinColumn(name = "product_id" , nullable = false,updatable = false,insertable = false)
     private Product product;
 
 }

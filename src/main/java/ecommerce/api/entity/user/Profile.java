@@ -7,6 +7,9 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.*;
 
@@ -35,6 +38,13 @@ public class Profile {
 
     @Column(name = "date_of_birth")
     private Date dateOfBirth;
+
+    @Column(name = "primary_address")
+    private String primaryAddress;
+
+    @Column(name = "addresses")
+    @JdbcTypeCode(SqlTypes.JSON)
+    private Map<String, String> addresses;
 
     @OneToMany(targetEntity = BlogPost.class, mappedBy = "author")
     @Transient

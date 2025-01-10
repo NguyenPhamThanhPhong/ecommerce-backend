@@ -2,6 +2,7 @@ package ecommerce.api.dto.general;
 
 import ecommerce.api.constants.AccountRolesEnum;
 import ecommerce.api.constants.AuthRoleConstants;
+import ecommerce.api.dto.account.response.ProfileResponse;
 import io.jsonwebtoken.Claims;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class UserDetailDTO implements UserDetails {
     private UUID id;
+    private Integer code;
     private Date enableDate;
     private Date disableDate;
     private Date deletedAt;
@@ -29,10 +31,11 @@ public class UserDetailDTO implements UserDetails {
 
     private AccountRolesEnum role;
 
+    private ProfileResponse profile;
+
     public UserDetailDTO(UUID userId) {
         this.id = userId;
     }
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -41,8 +44,9 @@ public class UserDetailDTO implements UserDetails {
                 .toList();
     }
 
-    public void fromClaims(Claims claims){
+    public void fromClaims(Claims claims) {
         id = UUID.fromString(claims.get("userId", String.class));
+        code = claims.get("code", Integer.class);
         role = AccountRolesEnum.valueOf(claims.get("role", String.class));
         enableDate = claims.get("enableDate", Date.class);
         disableDate = claims.get("disableDate", Date.class);

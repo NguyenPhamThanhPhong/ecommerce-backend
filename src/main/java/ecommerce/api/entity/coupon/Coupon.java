@@ -9,10 +9,7 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 
 @Entity
@@ -36,6 +33,9 @@ public class Coupon {
     @Column(name = "usage_limit")
     private Integer usageLimit;
 
+    @Column(name = "current_usage")
+    private Integer currentUsage;
+
     @Column(name = "description")
     private String description;
 
@@ -52,8 +52,7 @@ public class Coupon {
     @Column(name = "end_date")
     private Date endDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id")
+    @OneToOne(mappedBy = "coupon")
     private Order order;
 
 }

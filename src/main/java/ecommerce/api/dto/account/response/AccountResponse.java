@@ -12,6 +12,8 @@ public class AccountResponse {
 
     private long code;
 
+    private String email;
+
     private Date enableDate;
 
     private Date disableDate;

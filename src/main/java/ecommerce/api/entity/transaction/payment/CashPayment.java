@@ -11,8 +11,6 @@ import java.math.BigDecimal;
 
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
-@AllArgsConstructor
-@SuperBuilder
 @Entity
 @Data
 @PrimaryKeyJoinColumn(name = "id")

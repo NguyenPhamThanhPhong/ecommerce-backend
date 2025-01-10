@@ -45,7 +45,7 @@ public class BlogPostController {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<?> deleteBlogPost(@PathVariable UUID id, @RequestParam(required = false) boolean isSoft) {
+    public ResponseEntity<?> deleteBlogPost(@PathVariable UUID id, @RequestParam(required = false,defaultValue = "true") boolean isSoft) {
         return ResponseEntity.ok(blogPostService.deleteBlogPost(id, isSoft));
     }
 

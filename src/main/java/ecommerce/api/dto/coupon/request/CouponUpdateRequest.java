@@ -16,13 +16,13 @@ import java.util.UUID;
 public class CouponUpdateRequest {
     private UUID id;
 
+    private String code;
+
     private Integer usageLimit;
 
     private String description;
 
     private String couponType;
-
-    private MultipartFile image;
 
     private BigDecimal value;
 

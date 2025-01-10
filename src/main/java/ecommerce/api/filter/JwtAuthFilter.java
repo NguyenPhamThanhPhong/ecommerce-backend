@@ -15,7 +15,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 
@@ -66,10 +65,10 @@ public class JwtAuthFilter extends org.springframework.web.filter.OncePerRequest
         } else {
             if (refreshToken != null && !jwtUtil.isTokenExpired(refreshToken, false)) {
                 String userId = jwtUtil.extractId(refreshToken, false);
-                authAccount = (UserDetailDTO) accountService.loadUserByUsername(userId);
+                authAccount = (UserDetailDTO) accountService.findById(UUID.fromString(userId));
             }
         }
-        if (authAccount == null){
+        if (authAccount == null) {
             chain.doFilter(request, response);
             return;
         }

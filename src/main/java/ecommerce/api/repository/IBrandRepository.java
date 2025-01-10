@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public interface IBrandRepository  extends JpaRepository<Brand, UUID>, JpaSpecificationExecutor<Brand> {
@@ -19,6 +20,8 @@ public interface IBrandRepository  extends JpaRepository<Brand, UUID>, JpaSpecif
 //    @Query(value = "select a from Brand a",
 //            countQuery = "select count(1) from Brand a")
 //    Page<Brand> findAll(Specification specification, Pageable pageable);
+
+    Optional<Brand> findBrandByCode(long code);
 
     int deleteBrandById(UUID id);
 }

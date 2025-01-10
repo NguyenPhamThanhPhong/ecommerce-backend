@@ -21,6 +21,4 @@ public class OrderUpdateRequest {
 
     private String notes;
 
-    private List<OrderDetailRequest> orderDetails;
-
 }

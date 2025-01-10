@@ -1,6 +1,7 @@
 package ecommerce.api.controller;
 
-import ecommerce.api.config.payment.VNPService;
+import ecommerce.api.service.business.PaymentService;
+import ecommerce.api.service.business.VNPService;
 import ecommerce.api.config.payment.VNPayUtil;
 import ecommerce.api.dto.payment.VNPPaymentRequest;
 import ecommerce.api.dto.payment.VNPPaymentUrlRequest;
@@ -17,16 +18,18 @@ import java.io.IOException;
 @RequestMapping("/payments")
 public class PaymentController {
     private final VNPService vnpService;
+    private final PaymentService paymentService;
 
-    @GetMapping("/vnpay-url")
-    public ResponseEntity<?> getUrl(@ParameterObject VNPPaymentUrlRequest req, HttpServletRequest request) throws IOException {
+    @PostMapping("/vnpay-url")
+    public ResponseEntity<?> getUrl(@RequestBody VNPPaymentUrlRequest req, HttpServletRequest request) throws IOException {
         String ip = VNPayUtil.getIpAddress(request);
         return ResponseEntity.ok(vnpService.createVnPayPayment(req,ip));
     }
 
-    @PostMapping("/vnpay")
-    public String vnpayPayment(@RequestBody VNPPaymentRequest request) {
-        return "VNPay payment";
+    @GetMapping("/vnpay")
+    public ResponseEntity<?> vnpayPayment(@RequestBody VNPPaymentRequest request) {
+        paymentService.save(request);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/cash")

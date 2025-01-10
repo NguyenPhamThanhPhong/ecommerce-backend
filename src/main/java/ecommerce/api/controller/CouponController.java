@@ -31,23 +31,24 @@ public class CouponController {
         return ResponseEntity.ok(res);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getCouponById(@PathVariable UUID id) {
-        return ResponseEntity.ok(couponService.findById(id));
+    @GetMapping("/{code}")
+    public ResponseEntity<?> getCouponById(@PathVariable String code) {
+        return ResponseEntity.ok(couponService.findByCode(code));
     }
 
-    @PostMapping(value = "" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> createCoupon(@ModelAttribute CouponCreateRequest request) throws IOException {
+    @PostMapping(value = "" )
+    public ResponseEntity<?> createCoupon(@RequestBody CouponCreateRequest request) throws IOException {
         return ResponseEntity.ok(couponService.insert(request));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteCouponById(@PathVariable UUID id, @RequestParam(required = false) boolean isSoft) {
+    public ResponseEntity<?> deleteCouponById(
+            @PathVariable UUID id, @RequestParam(required = false) boolean isSoft) {
         return ResponseEntity.ok(couponService.deleteCoupon(id,isSoft));
     }
 
-    @PutMapping(value = "" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> updateCoupon(@ModelAttribute CouponUpdateRequest request) throws IOException {
+    @PutMapping(value = "")
+    public ResponseEntity<?> updateCoupon(@RequestBody CouponUpdateRequest request) throws IOException {
         return ResponseEntity.ok(couponService.update(request));
     }
 }
