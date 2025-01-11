@@ -1,6 +1,7 @@
 package ecommerce.api.mapper;
 
 import ecommerce.api.dto.order.*;
+import ecommerce.api.entity.product.Product;
 import ecommerce.api.entity.transaction.Order;
 import ecommerce.api.entity.transaction.OrderDetail;
 import org.mapstruct.Builder;
@@ -23,6 +24,9 @@ public interface OrderMapper {
 
     @Mapping(target = "orderDetails",ignore = true)
     Order fromCreateRequestToEntity(OrderCreateRequest request);
+
+    OrderDetailResponse.ProductSimpleResponse fromProductToProductSimpleResponse(Product product);
+
 
     default List<OrderDetail> fromListOrderDetailRequestToListOrderDetail(UUID orderId, List<OrderDetailRequest> requests) {
         return requests.stream()

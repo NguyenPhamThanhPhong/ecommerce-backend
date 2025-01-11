@@ -48,6 +48,9 @@ public interface IProductRepository extends JpaRepository<Product, UUID>, JpaSpe
 
     @Query("""
             select p from Product p
+            left join fetch p.productImages
+            left join fetch p.brand
+            left join fetch p.category
             where p.id in :ids
             """)
     List<Product> findAllByIdIn(List<UUID> ids);

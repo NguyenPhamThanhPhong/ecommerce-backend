@@ -1,6 +1,8 @@
 package ecommerce.api.dto.order;
 
 import ecommerce.api.dto.coupon.response.CouponResponse;
+import ecommerce.api.dto.payment.PaymentResponse;
+import ecommerce.api.entity.transaction.payment.Payment;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,4 +29,6 @@ public class OrderResponse {
     private String notes;
 
     private Double totalValue;
+
+    private PaymentResponse payment;
 }

@@ -1,6 +1,7 @@
 package ecommerce.api.service.business;
 
 import ecommerce.api.constants.OrderStatus;
+import ecommerce.api.constants.PaymentStatus;
 import ecommerce.api.dto.general.PaginationDTO;
 import ecommerce.api.dto.general.SearchSpecification;
 import ecommerce.api.dto.order.*;
@@ -42,6 +43,13 @@ public class OrderService {
     public OrderSingleResponse findByCode(Integer code) {
         Order order = orderRepository.findByCode(code)
                 .orElseThrow(() -> new ResourceNotFoundException("ORDER NOT FOUND"));
+        List<UUID> productIds =order.getOrderDetails().stream()
+                        .map(OrderDetail::getProductId)
+                        .toList();
+        Map<UUID, Product> productMap = productRepository.findAllByIdIn(productIds).stream().collect(Collectors.toMap(Product::getId, product -> product));
+        order.getOrderDetails().forEach(detail -> detail.setProduct(
+                productMap.getOrDefault(detail.getProductId(), null)
+        ));
         return orderMapper.fromEntityToSingleResponse(order);
     }
 
@@ -49,7 +57,6 @@ public class OrderService {
         Specification<Order> specs = DynamicSpecificationUtils.buildSpecification(searchSpecs);
         Page<Order> orders = orderRepository.findAll(specs, pageable);
         return PaginationDTO.fromPage(orders.map(orderMapper::fromEntityToResponse));
-
     }
 
     public PaginationDTO<OrderResponse> getMyOrders(UUID userId, Pageable pageable) {
@@ -60,7 +67,6 @@ public class OrderService {
     @Transactional
     public OrderResponse insert(OrderCreateRequest request) {
         request.mergeOrderDetails();
-        // Extract and sort product IDs
         Map<UUID, Integer> productQuantities = request.getOrderDetails().stream()
                 .collect(Collectors.toMap(OrderDetailRequest::getProductId, OrderDetailRequest::getQuantity));
         List<UUID> productIds = new ArrayList<>(productQuantities.keySet());
@@ -84,11 +90,12 @@ public class OrderService {
         }
         order.setTotalValue(amount);
         Payment payment = EntityUtils.newPayment(request.getCreatorId(), order.getId(), amount);
+        payment.setStatus(PaymentStatus.PENDING);
         orderRepository.insert(order);
         paymentRepository.save(payment);
         List<OrderDetail> orderDetails = orderMapper
                 .fromListOrderDetailRequestToListOrderDetail(order.getId(), request.getOrderDetails());
-        for (OrderDetail detail: orderDetails) {
+        for (OrderDetail detail : orderDetails) {
             orderDetailRepository.insert(detail);
         }
         return orderMapper.fromEntityToResponse(order);

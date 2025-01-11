@@ -4,11 +4,10 @@ package ecommerce.api.service.business;
 import ecommerce.api.config.payment.VNPConfig;
 import ecommerce.api.config.payment.VNPayUtil;
 import ecommerce.api.constants.PaymentStatus;
-import ecommerce.api.dto.payment.PaymentURLResponse;
 import ecommerce.api.dto.payment.VNPPaymentUrlRequest;
 import ecommerce.api.entity.transaction.payment.Payment;
-import ecommerce.api.entity.transaction.payment.VNPPayment;
 import ecommerce.api.exception.BadRequestException;
+import ecommerce.api.repository.IPaymentRepository;
 import ecommerce.api.repository.IVNPPaymentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,25 +20,18 @@ import java.util.*;
 public class VNPService {
     private final VNPConfig vnPayConfig;
     private final IVNPPaymentRepository vnpRepository;
+    private final IPaymentRepository paymentRepository;
 
     @Transactional
     public String createVnPayPayment(VNPPaymentUrlRequest req, String ip) {
         UUID orderId = req.getOrderId();
-        VNPPayment payment = vnpRepository.findByOrderIdAndStatus(orderId, PaymentStatus.PENDING)
-                .orElseThrow(() -> new BadRequestException("ORDER NOT FOUND"));
+        Payment payment = paymentRepository.findByOrderIdAndStatus(orderId, PaymentStatus.PENDING)
+                .orElseThrow(() -> new BadRequestException("ORDER NOT FOUND OR PAYMENT EXPIRED"));
         long amount = payment.getAmount().longValue() * 100;
         String transRef = orderId.toString();
         String bankCode = req.getBankCode();
-
-
-        processSaveState(payment, transRef);
-        return buildQuery(bankCode, amount, transRef, payment.getOrderInfo(), ip);
-    }
-
-    private void processSaveState(VNPPayment payment, String orderId) {
-        payment.setTransRef(orderId);
-        payment.setStatus(PaymentStatus.PENDING);
-        vnpRepository.save(payment);
+        vnpRepository.upsert(payment.getId(), transRef, req.getOrderInfo());
+        return buildQuery(bankCode, amount, transRef, req.getOrderInfo(), ip);
     }
 
     private String buildQuery(String bankCode, long amount, String transRef, String orderInfo, String ip) {

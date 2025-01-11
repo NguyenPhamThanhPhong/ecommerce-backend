@@ -30,11 +30,11 @@ public class OrderDetail extends EntityBase {
     @Column(name = "product_id")
     private UUID productId;
 
-    @ManyToOne(targetEntity = Order.class)
+    @ManyToOne(fetch = FetchType.LAZY, targetEntity = Order.class)
     @JoinColumn(name = "order_id", nullable = false,updatable = false,insertable = false)
     private Order order;
 
-    @ManyToOne(targetEntity = Product.class)
+    @ManyToOne(fetch = FetchType.LAZY, targetEntity = Product.class)
     @JoinColumn(name = "product_id" , nullable = false,updatable = false,insertable = false)
     private Product product;
 

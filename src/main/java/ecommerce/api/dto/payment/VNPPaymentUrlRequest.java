@@ -8,5 +8,5 @@ import java.util.UUID;
 public class VNPPaymentUrlRequest {
     private UUID orderId;
     private String bankCode;
-    private String orderInfo;
+    private String orderInfo = "";
 }

@@ -52,7 +52,8 @@ public class Coupon {
     @Column(name = "end_date")
     private Date endDate;
 
-    @OneToOne(mappedBy = "coupon")
-    private Order order;
+    @OneToMany(mappedBy = "coupon")
+    @Transient
+    private List<Order> order;
 
 }

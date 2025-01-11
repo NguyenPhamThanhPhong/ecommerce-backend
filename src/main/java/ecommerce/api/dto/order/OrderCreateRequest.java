@@ -21,8 +21,6 @@ public class OrderCreateRequest implements IdentityCriteria {
 
     private String address;
 
-    private String status;
-
     private String notes;
 
     private String couponCode;

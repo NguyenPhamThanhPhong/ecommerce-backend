@@ -34,7 +34,7 @@ public class Order extends EntityBase {
     @Column(name = "total_value")
     private BigDecimal totalValue;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(insertable = false, updatable = false)
     private Coupon coupon;
 

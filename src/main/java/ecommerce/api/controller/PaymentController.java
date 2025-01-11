@@ -8,10 +8,12 @@ import ecommerce.api.dto.payment.VNPPaymentUrlRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,10 +28,10 @@ public class PaymentController {
         return ResponseEntity.ok(vnpService.createVnPayPayment(req,ip));
     }
 
-    @GetMapping("/vnpay")
+    @PostMapping(value = "/vnpay",produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<?> vnpayPayment(@RequestBody VNPPaymentRequest request) {
-        paymentService.save(request);
-        return ResponseEntity.ok().build();
+        String message = paymentService.save(request);
+        return ResponseEntity.ok(message);
     }
 
     @PostMapping("/cash")

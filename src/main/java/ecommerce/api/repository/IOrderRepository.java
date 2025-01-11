@@ -19,21 +19,21 @@ public interface IOrderRepository extends JpaRepository<Order, UUID>, JpaSpecifi
 
     @Query("""
             SELECT o FROM Order o
-            left join fetch o.orderDetails od
-            left join fetch od.product pd
+            left join fetch o.orderDetails
             left join fetch o.profile
             left join fetch o.coupon
             left join fetch o.payment
-            left join fetch pd.category
-            left join fetch pd.brand
              WHERE o.code = :code
             """)
-    @EntityGraph(attributePaths = {"orderDetails.product"})
     Optional<Order> findByCode(Integer code);
 
+    @EntityGraph(attributePaths = {"payment"})
     Page<Order> findAll(@NotNull Specification<Order> specification, Pageable pageable);
 
-    @EntityGraph(attributePaths = {"orderDetails", "orderDetails.product"})
+    @Query("""
+            select o from Order o left join fetch o.payment
+            where o.creatorId = :creatorId
+            """)
     Page<Order> findAllByCreatorId(UUID creatorId, Pageable pageable);
 
     @Modifying

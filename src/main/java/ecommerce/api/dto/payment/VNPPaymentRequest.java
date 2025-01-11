@@ -19,4 +19,6 @@ public class VNPPaymentRequest {
     private String secureHash;
     @JsonProperty("vnp_TransactionNo")
     private String transNo;
+    @JsonProperty("vnp_ResponseCode")
+    private String responseCode;
 }

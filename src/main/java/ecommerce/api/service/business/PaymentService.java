@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
+
 @Service
 @RequiredArgsConstructor
 public class PaymentService {
@@ -18,12 +20,17 @@ public class PaymentService {
     private final PaymentMapper paymentMapper;
 
     @Transactional
-    public void save(VNPPaymentRequest request){
+    public String save(VNPPaymentRequest request){
         VNPUpdateDTO dto = paymentMapper.fromVNPCallbackToEntity(request);
+        if (!Objects.equals(request.getResponseCode(), "00")){
+            paymentRepository.updatePaymentFAILED(dto);
+            return "Payment failed";
+        }
         int vnpChanges = vnpPaymentRepository.updateVnpPayment(dto);
         int paymentChanges = paymentRepository.updatePaymentPAID(dto);
         if (vnpChanges !=1 || paymentChanges != 1){
             throw new BadRequestException("Payment update failed");
         }
+        return "Payment success";
     }
 }
