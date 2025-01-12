@@ -7,6 +7,7 @@ import ecommerce.api.constants.PaymentStatus;
 import ecommerce.api.dto.payment.VNPPaymentUrlRequest;
 import ecommerce.api.entity.transaction.payment.Payment;
 import ecommerce.api.exception.BadRequestException;
+import ecommerce.api.repository.IOrderRepository;
 import ecommerce.api.repository.IPaymentRepository;
 import ecommerce.api.repository.IVNPPaymentRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ public class VNPService {
     private final VNPConfig vnPayConfig;
     private final IVNPPaymentRepository vnpRepository;
     private final IPaymentRepository paymentRepository;
+    private final IOrderRepository orderRepository;
 
     @Transactional
     public String createVnPayPayment(VNPPaymentUrlRequest req, String ip) {
@@ -31,6 +33,7 @@ public class VNPService {
         String transRef = orderId.toString();
         String bankCode = req.getBankCode();
         vnpRepository.upsert(payment.getId(), transRef, req.getOrderInfo());
+        orderRepository.updatePaymentAddressAndNotes(orderId, req.getShippingAddress(), req.getOrderInfo());
         return buildQuery(bankCode, amount, transRef, req.getOrderInfo(), ip);
     }
 

@@ -4,6 +4,7 @@ import ecommerce.api.constants.AccountRolesEnum;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -23,4 +24,6 @@ public class AccountResponse {
     private AccountRolesEnum role;
     
     private ProfileResponse profile;
+
+    private Set<UUID> favoriteProducts;
 }

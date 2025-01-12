@@ -1,20 +1,14 @@
 package ecommerce.api.controller;
 
 import ecommerce.api.dto.account.request.AccountCreateRequest;
-import ecommerce.api.dto.account.request.LoginRequest;
 import ecommerce.api.dto.account.request.ProfileUpdateRequest;
 import ecommerce.api.dto.account.response.AccountResponse;
-import ecommerce.api.dto.account.response.LoginResponse;
 import ecommerce.api.dto.account.response.ProfileResponse;
 import ecommerce.api.dto.general.PaginationDTO;
 import ecommerce.api.dto.general.SearchSpecification;
 import ecommerce.api.dto.general.UserDetailDTO;
-import ecommerce.api.service.auth.AuthService;
 import ecommerce.api.service.business.AccountService;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;

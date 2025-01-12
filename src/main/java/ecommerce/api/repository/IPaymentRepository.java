@@ -20,7 +20,8 @@ public interface IPaymentRepository extends JpaRepository<Payment, UUID> {
     @Transactional
     @Query(value = """
         UPDATE payments
-        SET status = :#{T(ecommerce.api.constants.PaymentStatus).PAID.name()}
+        SET status = :#{T(ecommerce.api.constants.PaymentStatus).PAID.name()},
+            payment_method = 'VNP'
         WHERE order_id = CAST(:#{#updateDTO.transRef} AS UUID)
           AND amount = :#{#updateDTO.amount}
         """, nativeQuery = true)

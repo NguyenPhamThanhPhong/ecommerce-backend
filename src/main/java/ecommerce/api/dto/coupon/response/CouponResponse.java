@@ -19,6 +19,8 @@ public class CouponResponse {
 
     private String description;
 
+    private Integer currentUsage;
+
     private String couponType;
 
     private BigDecimal value;

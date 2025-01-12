@@ -15,7 +15,6 @@ public class OrderSingleResponse {
     private Date createdAt;
     private Date deletedAt;
     private String address;
-    private String status;
     private String notes;
     private Double totalValue;
     private CouponResponse coupon;

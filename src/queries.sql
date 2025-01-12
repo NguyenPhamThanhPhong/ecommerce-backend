@@ -60,3 +60,14 @@ select o1_0.id,o1_0.address,o1_0.code,o1_0.coupon_id,o1_0.created_at,o1_0.creato
     on p1_0.id=p1_2.id) on o1_0.id=p1_0.order_id where o1_0.coupon_id=?;
 
 ABORT;
+
+
+select * from coupons;
+
+BEGIN ;
+update coupons c set current_usage = current_usage + 1
+where c.code = 'PERCENT30'
+  and c.deleted_at is null
+  and c.start_date <= now() and c.end_date >= now()
+returning *;
+ABORT ;

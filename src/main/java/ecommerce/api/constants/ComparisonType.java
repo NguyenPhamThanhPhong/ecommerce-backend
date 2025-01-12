@@ -13,9 +13,9 @@ public enum ComparisonType {
     EQUAL(CriteriaBuilder::equal),
     NOT_EQUAL(CriteriaBuilder::notEqual),
     NOT_LIKE((criteriaBuilder, expression, value)
-            -> criteriaBuilder.notLike(criteriaBuilder.lower(expression.as(String.class)), "%" + value + "%")),
+            -> criteriaBuilder.notLike(criteriaBuilder.lower(expression.as(String.class)), "%" + value.toString().toLowerCase() + "%")),
     LIKE((criteriaBuilder, expression, value)
-            -> criteriaBuilder.like(criteriaBuilder.lower(expression.as(String.class)), "%" + value + "%")),
+            -> criteriaBuilder.like(criteriaBuilder.lower(expression.as(String.class)), "%" + value.toString().toLowerCase() + "%")),
     LESS((criteriaBuilder, expression, value)
             -> criteriaBuilder.lessThan(expression.as((Class<Comparable>) value.getClass()), (Comparable) value)),
     GREATER((criteriaBuilder, expression, value) ->

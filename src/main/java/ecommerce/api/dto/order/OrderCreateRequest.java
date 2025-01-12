@@ -19,10 +19,6 @@ public class OrderCreateRequest implements IdentityCriteria {
     @JsonIgnore
     private UUID creatorId;
 
-    private String address;
-
-    private String notes;
-
     private String couponCode;
 
     private List<OrderDetailRequest> orderDetails;

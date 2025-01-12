@@ -20,7 +20,7 @@ public class PaymentService {
     private final PaymentMapper paymentMapper;
 
     @Transactional
-    public String save(VNPPaymentRequest request){
+    public String updatePaymentTransaction(VNPPaymentRequest request){
         VNPUpdateDTO dto = paymentMapper.fromVNPCallbackToEntity(request);
         if (!Objects.equals(request.getResponseCode(), "00")){
             paymentRepository.updatePaymentFAILED(dto);

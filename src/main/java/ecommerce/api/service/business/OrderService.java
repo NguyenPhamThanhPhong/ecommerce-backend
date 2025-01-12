@@ -75,7 +75,6 @@ public class OrderService {
         if (products.size() != productIds.size()) {
             throw new ResourceNotFoundException("PRODUCT NOT FOUND");
         }
-
         BigDecimal amount = products.stream()
                 .map(product -> product.getPrice()
                         .multiply(BigDecimal.valueOf(productQuantities.get(product.getId())))

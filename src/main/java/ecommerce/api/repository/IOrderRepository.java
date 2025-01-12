@@ -1,6 +1,5 @@
 package ecommerce.api.repository;
 
-import ecommerce.api.entity.product.Product;
 import ecommerce.api.entity.transaction.Order;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
@@ -52,11 +51,18 @@ public interface IOrderRepository extends JpaRepository<Order, UUID>, JpaSpecifi
 
     @Modifying
     @Query(value = """
-            insert into orders (id, address, notes, creator_id, coupon_id, total_value)
-            values (:#{#order.id}, :#{#order.address}, :#{#order.notes},
-                    :#{#order.creatorId}, :#{#order.couponId}, :#{#order.totalValue})
+            insert into orders (id, creator_id, coupon_id, total_value)
+            values (:#{#order.id}, :#{#order.creatorId},
+                    :#{#order.couponId}, :#{#order.totalValue})
             """, nativeQuery = true)
     void insert(Order order);
+
+    @Modifying
+    @Query(value = """
+            UPDATE orders o set address = :paymentAddress, notes = :orderInfo
+            WHERE o.id = :id
+            """,nativeQuery = true)
+    void updatePaymentAddressAndNotes(UUID id, String paymentAddress, String orderInfo);
 
 
 }

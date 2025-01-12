@@ -47,6 +47,13 @@ public class DynamicSpecificationUtils {
                     throw new BadRequestException("Invalid date format");
                 }
             },
+            "uuid", (String str) -> {
+                try {
+                    return java.util.UUID.fromString(str);
+                } catch (Exception e) {
+                    throw new BadRequestException("Invalid UUID format");
+                }
+            },
             "milisecs", (String str) -> {
                 try {
                     return new Date(Long.parseLong(str));
