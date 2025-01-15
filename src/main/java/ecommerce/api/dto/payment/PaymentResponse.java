@@ -1,9 +1,6 @@
 package ecommerce.api.dto.payment;
 
 import ecommerce.api.constants.PaymentStatus;
-import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.Data;
 
 import java.math.BigDecimal;

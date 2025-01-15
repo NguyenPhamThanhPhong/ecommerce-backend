@@ -41,8 +41,13 @@ public class CloudinaryService {
 
     // Delete a file by public ID
     public String deleteFile(String publicId) throws IOException {
-        Map<?, ?> deleteResult = cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
-        return deleteResult.get("result").toString(); // Return the result (ok / not found)
+        try{
+            Map<?, ?> deleteResult = cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+            return deleteResult.get("result").toString();
+        }
+        catch (Exception e){
+            return "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcScWo-hawnOFdwHxQcPk8k5a7Kyk94pps-fYw&s,Screenshot 2024-10-25 220247.png";
+        }
     }
 
     public String[] uploadMultipleFiles(MultipartFile[] files, String folderPath) throws IOException {

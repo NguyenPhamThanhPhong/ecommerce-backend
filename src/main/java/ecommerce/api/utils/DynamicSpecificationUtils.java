@@ -68,14 +68,18 @@ public class DynamicSpecificationUtils {
             if (specifications == null || specifications.isEmpty()) {
                 return criteriaBuilder.conjunction();
             }
-            Predicate combinedPredicate = criteriaBuilder.conjunction();
+            Predicate combinedPredicate = null;
             for (SearchSpecification spec : specifications) {
                 Predicate predicate = DynamicSpecificationUtils.createPredicate(spec, root, criteriaBuilder);
 
-                if (ChainType.AND.equals(spec.getJoinCondition())) {
-                    combinedPredicate = criteriaBuilder.and(combinedPredicate, predicate);
-                } else if (ChainType.OR.equals(spec.getJoinCondition())) {
-                    combinedPredicate = criteriaBuilder.or(combinedPredicate, predicate);
+                if (predicate != null) {
+                    if (combinedPredicate == null) {
+                        combinedPredicate = predicate;
+                    } else if (ChainType.AND.equals(spec.getJoinCondition())) {
+                        combinedPredicate = criteriaBuilder.and(combinedPredicate, predicate);
+                    } else if (ChainType.OR.equals(spec.getJoinCondition())) {
+                        combinedPredicate = criteriaBuilder.or(combinedPredicate, predicate);
+                    }
                 }
             }
             return combinedPredicate;

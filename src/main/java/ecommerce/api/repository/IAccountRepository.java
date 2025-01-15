@@ -81,6 +81,16 @@ public interface IAccountRepository extends JpaRepository<Account, UUID>, JpaSpe
     @Query("update Profile p set p.addresses = :addresses, p.primaryAddress = :primaryAddress where p.id = :id")
     int updateAddresses(UUID id, Map<String,String> addresses, String primaryAddress);
 
+    @Modifying
+    @Transactional
+    @Query(value = """
+                update accounts set email = :#{#account.email}, role = :#{#account.role}, 
+                                    password = :#{#account.password}, 
+                                    enable_date = :#{#account.enableDate}, disable_date = :#{#account.disableDate}, 
+                                    is_verified = :#{#account.isVerified} where id = :#{#account.id}
+            """,nativeQuery = true)
+    void updateAccount(Account account);
+
     @Override
     @Query("select a from Account a left join fetch a.profile")
     Optional<Account> findOne(Specification specification);

@@ -26,7 +26,7 @@ public interface IOrderRepository extends JpaRepository<Order, UUID>, JpaSpecifi
             """)
     Optional<Order> findByCode(Integer code);
 
-    @EntityGraph(attributePaths = {"payment"})
+    @EntityGraph(attributePaths = {"payment","profile"})
     Page<Order> findAll(@NotNull Specification<Order> specification, Pageable pageable);
 
     @Query("""

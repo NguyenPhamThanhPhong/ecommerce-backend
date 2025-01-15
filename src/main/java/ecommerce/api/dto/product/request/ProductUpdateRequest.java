@@ -4,6 +4,7 @@ import ecommerce.api.constants.ProductStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
@@ -26,20 +27,17 @@ public class ProductUpdateRequest {
     private UUID categoryId;
 
     private ProductStatus status;
-
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private Date availableDate;
 
-    private List<ProductImageRequest> appendingImages;
+    private List<MultipartFile> appendingImages;
     private List<Integer> removalImageIds;
-
 
     private MultipartFile thumbnail;
 
     private BigDecimal discountPercent;
 
     private Integer quantity;
-
-    private Integer sold;
 
     private BigDecimal price;
 

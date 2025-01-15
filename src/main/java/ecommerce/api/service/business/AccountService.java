@@ -1,7 +1,9 @@
 package ecommerce.api.service.business;
 
 import ecommerce.api.config.property.CloudinaryProperties;
+import ecommerce.api.dto.DataChangeResponse;
 import ecommerce.api.dto.account.request.AccountCreateRequest;
+import ecommerce.api.dto.account.request.AccountUpdateRequest;
 import ecommerce.api.dto.account.response.AccountResponse;
 import ecommerce.api.dto.account.response.ProfileResponse;
 import ecommerce.api.dto.account.request.ProfileUpdateRequest;
@@ -63,6 +65,23 @@ public class AccountService {
     }
 
     @Transactional
+    public DataChangeResponse updateAccount(AccountUpdateRequest request) throws IOException {
+        Account account = accountMapper.fromAccountUpdateRequestToEntity(request);
+        accountRepository.updateAccount(account);
+        if (request.getProfile().getAvatar() != null) {
+            String blobUrl = cloudinaryService.uploadFile(request.getProfile().getAvatar(),
+                    cloudinaryProperties.getAccountDir(), request.getId().toString());
+            Profile p = account.getProfile();
+            p.setAvatarUrl(blobUrl);
+            accountRepository.updateProfile(p);
+            return new DataChangeResponse(request.getId(), p.getAvatarUrl());
+        }
+        Profile p = account.getProfile();
+        accountRepository.updateProfileExcludeAvatar(p);
+        return new DataChangeResponse(request.getId(), null);
+    }
+
+    @Transactional
     public ProfileResponse updateProfile(ProfileUpdateRequest request) throws IOException {
         Profile profile = accountMapper.fromUpdateRequestToEntity(request);
         if (request.getAvatar() != null) {
@@ -76,8 +95,8 @@ public class AccountService {
         return accountMapper.fromEntityToProfileResponse(profile);
     }
 
-    public int updateAddresses(UUID id, Map<String,String> addresses, String primaryAddress) {
-        return accountRepository.updateAddresses(id, addresses,primaryAddress);
+    public int updateAddresses(UUID id, Map<String, String> addresses, String primaryAddress) {
+        return accountRepository.updateAddresses(id, addresses, primaryAddress);
     }
 
     @Transactional

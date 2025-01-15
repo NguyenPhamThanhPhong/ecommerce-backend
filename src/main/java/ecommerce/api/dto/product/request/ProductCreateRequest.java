@@ -27,17 +27,11 @@ public class ProductCreateRequest {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private Date availableDate;
 
-    private List<ProductImageRequest> productImages;
+    private List<MultipartFile> productImages;
 
     private MultipartFile thumbnail;
-
-    private List<MultipartFile> images;
-
     private BigDecimal discountPercent;
-
     private Integer quantity;
-
-    private Integer sold;
 
     private BigDecimal price;
 

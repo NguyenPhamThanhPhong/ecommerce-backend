@@ -55,4 +55,27 @@ public interface IProductRepository extends JpaRepository<Product, UUID>, JpaSpe
             """)
     List<Product> findAllByIdIn(List<UUID> ids);
 
+    @Modifying
+    @Query(value = """
+            insert into products (id, name, brand_id, category_id,
+                                  thumbnail_url, rating, status, available_date,
+                                  discount_percent, quantity, price, stock,
+                                  description,highlights,policies)
+            values (:#{#product.id}, :#{#product.name}, :#{#product.brandId}, :#{#product.categoryId},
+                    :#{#product.thumbnailUrl}, :#{#product.rating}, :#{#product.status.name()}, :#{#product.availableDate},
+                    :#{#product.discountPercent}, :#{#product.quantity}, :#{#product.price}, :#{#product.stock},
+                    :#{#product.description}, :#{#product.highlights}, :#{#product.policies})
+            """,nativeQuery = true)
+    void insert(Product product);
+
+    @Modifying
+    @Query(value = """
+            update products set name = :#{#product.name}, brand_id = :#{#product.brandId}, category_id = :#{#product.categoryId},
+                                thumbnail_url = :#{#product.thumbnailUrl}, rating = :#{#product.rating}, status = :#{#product.status.name()}, available_date = :#{#product.availableDate},
+                                discount_percent = :#{#product.discountPercent}, quantity = :#{#product.quantity}, price = :#{#product.price}, stock = :#{#product.stock},
+                                description = :#{#product.description}, highlights = :#{#product.highlights}, policies = :#{#product.policies}
+            where id = :#{#product.id}
+            """,nativeQuery = true)
+    void update(Product product);
+
 }

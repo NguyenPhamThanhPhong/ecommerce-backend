@@ -1,6 +1,8 @@
 package ecommerce.api.controller;
 
+import ecommerce.api.dto.DataChangeResponse;
 import ecommerce.api.dto.account.request.AccountCreateRequest;
+import ecommerce.api.dto.account.request.AccountUpdateRequest;
 import ecommerce.api.dto.account.request.ProfileUpdateRequest;
 import ecommerce.api.dto.account.response.AccountResponse;
 import ecommerce.api.dto.account.response.ProfileResponse;
@@ -75,6 +77,13 @@ public class AccountController {
         UserDetailDTO userDetailDTO = (UserDetailDTO) authentication.getPrincipal();
         AccountResponse accountResponse = accountService.getByCode(userDetailDTO.getCode());
         return ResponseEntity.ok(accountResponse);
+    }
+
+    @PutMapping("")
+    @PreAuthorize("hasRole(T(ecommerce.api.constants.AuthRoleConstants).ROLE_ADMIN)")
+    public ResponseEntity<?> updateAccount(@Valid @RequestBody AccountUpdateRequest request) throws IOException {
+        DataChangeResponse dataChangeResponse = accountService.updateAccount(request);
+        return ResponseEntity.ok(dataChangeResponse);
     }
 
     @DeleteMapping("/me")

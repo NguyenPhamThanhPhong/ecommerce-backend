@@ -1,5 +1,6 @@
 package ecommerce.api.dto.order;
 
+import ecommerce.api.dto.account.response.ProfileResponse;
 import ecommerce.api.dto.coupon.response.CouponResponse;
 import ecommerce.api.dto.payment.PaymentResponse;
 import ecommerce.api.entity.transaction.payment.Payment;
@@ -24,11 +25,11 @@ public class OrderResponse {
 
     private String address;
 
-    private String status;
-
     private String notes;
 
     private Double totalValue;
+
+    private ProfileResponse profile;
 
     private PaymentResponse payment;
 }

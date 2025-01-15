@@ -4,8 +4,8 @@ import ecommerce.api.config.property.CloudinaryProperties;
 import ecommerce.api.dto.general.PaginationDTO;
 import ecommerce.api.dto.general.SearchSpecification;
 import ecommerce.api.dto.product.request.ProductCreateRequest;
-import ecommerce.api.dto.product.request.ProductImageRequest;
 import ecommerce.api.dto.product.request.ProductUpdateRequest;
+import ecommerce.api.dto.product.response.ProductChangesResponse;
 import ecommerce.api.dto.product.response.ProductResponse;
 import ecommerce.api.entity.product.Product;
 import ecommerce.api.entity.product.ProductImage;
@@ -26,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
@@ -41,11 +40,6 @@ public class ProductService {
     @SneakyThrows
     public PaginationDTO<ProductResponse> search(Set<SearchSpecification> searchSpec, Pageable pageable) {
         Specification<Product> spec = DynamicSpecificationUtils.buildSpecification(searchSpec);
-//        SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-//        Date value = isoFormat.parse((String) "2025-01-04T17:20:38.403Z");
-//        Specification<Product> spec = (root, query, criteriaBuilder) -> {
-//            return criteriaBuilder.greaterThanOrEqualTo(root.get("availableDate"), new Date());
-//        };
         Page<Product> products = productRepository.findAll(spec, pageable);
         Page<ProductResponse> responses = products.map(productMapper::fromEntityToResponse);
         return PaginationDTO.fromPage(responses);
@@ -64,26 +58,27 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductResponse insert(ProductCreateRequest request) throws IOException {
+    public ProductChangesResponse insert(ProductCreateRequest request) throws IOException {
         Product product = productMapper.fromCreateRequestToEntity(request);
-        handleProductImages(product, request.getProductImages());
         checkAndAddThumbNail(product, request.getThumbnail());
-        return productMapper.fromEntityToResponse(productRepository.save(product));
+        List<ProductImage> productImages = saveImages(product.getId(), request.getProductImages());
+        productRepository.insert(product);
+        product.setProductImages(productImages);
+        return productMapper.fromEntityToChangesResponse(product);
     }
 
     @Transactional
-    public ProductResponse update(ProductUpdateRequest request) throws IOException {
+    public ProductChangesResponse update(ProductUpdateRequest request) throws IOException {
         Product product = productMapper.fromUpdateRequestToEntity(request);
         checkAndAddThumbNail(product, request.getThumbnail());
-        if (request.getRemovalImageIds() != null && !request.getRemovalImageIds().isEmpty()) {
-            String publicId = product.getId().toString() + "_";
-            for (Integer seqNo : request.getRemovalImageIds()) {
-                cloudinaryService.deleteFile(publicId + seqNo);
-            }
-            productImageRepository.deleteAllByProductIdAndSeqNoIn(product.getId(), request.getRemovalImageIds());
-        }
-        handleProductImages(product, request.getAppendingImages());
-        return productMapper.fromEntityToResponse(productRepository.save(product));
+        removeImages(product.getId(), request.getRemovalImageIds());
+        List<ProductImage> productImages = saveImages(product.getId(), request.getAppendingImages());
+        productRepository.update(product);
+        return productMapper.fromEntityToChangesResponse(product);
+    }
+
+    public int deleteProductById(UUID id) {
+        return productRepository.deleteProductById(id);
     }
 
     public int addFavorite(UUID accountId, UUID productId) {
@@ -100,26 +95,39 @@ public class ProductService {
         return PaginationDTO.fromPage(responses);
     }
 
-    private void handleProductImages(Product product, List<ProductImageRequest> appendingImages) throws IOException {
-        if (appendingImages != null && !appendingImages.isEmpty()) {
-            List<ProductImage> productImages = new ArrayList<>();
-            for (ProductImageRequest request : appendingImages) {
-                ProductImage productImage = handleProductImage(request, product.getId());
-                productImages.add(productImage);
+    private void removeImages(UUID productId, List<Integer> removalImageIds) throws IOException {
+        if (removalImageIds != null && !removalImageIds.isEmpty()) {
+            String publicId = productId.toString() + "_";
+            for (Integer seqNo : removalImageIds) {
+                cloudinaryService.deleteFile(publicId + seqNo);
             }
-            product.setProductImages(productImages);
+            productImageRepository.deleteAllByProductIdAndSeqNoIn(productId, removalImageIds);
         }
     }
 
-    private ProductImage handleProductImage(ProductImageRequest request, UUID productId) throws IOException {
-        if (request == null || request.getImage() == null)
+    private List<ProductImage> saveImages(UUID productId, List<MultipartFile> imageFiles) throws IOException {
+        List<ProductImage> productImages = new ArrayList<>(imageFiles.size());
+        if (!imageFiles.isEmpty()) {
+            for (int i = 0; i < imageFiles.size(); i++) {
+                MultipartFile file = imageFiles.get(i);
+                ProductImage productImage = productMapper.fromMultipartFileToProductImage(i, file);
+                productImage.setProductId(productId);
+                String url = saveSingleImageToCloud(productImage, file);
+//                String url = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcScWo-hawnOFdwHxQcPk8k5a7Kyk94pps-fYw&s";
+                productImage.setImageUrl(url);
+                productImages.add(productImage);
+            }
+        }
+        return productImageRepository.saveAll(productImages);
+    }
+
+    private String saveSingleImageToCloud(ProductImage productImage, MultipartFile file) throws IOException {
+        if (productImage == null)
             throw new BadRequestException("Product image is required");
-        ProductImage productImage = productMapper.fromImageRequestToImage(request);
-        productImage.setProductId(productId);
-        String publicId = productId.toString() + "_" + request.getSeqNo();
-        String imageUrl = cloudinaryService.uploadFile(request.getImage(), cloudinaryProperties.getProductDir(), publicId);
+        String publicId = productImage.getProductId().toString() + "_" + productImage.getSeqNo();
+        String imageUrl = cloudinaryService.uploadFile(file, cloudinaryProperties.getProductDir(), publicId);
         productImage.setImageUrl(imageUrl);
-        return productImage;
+        return imageUrl;
     }
 
     private void checkAndAddThumbNail(Product product, MultipartFile file) throws IOException {
@@ -130,7 +138,5 @@ public class ProductService {
         }
     }
 
-    public int deleteProductById(UUID id) {
-        return productRepository.deleteProductById(id);
-    }
+
 }

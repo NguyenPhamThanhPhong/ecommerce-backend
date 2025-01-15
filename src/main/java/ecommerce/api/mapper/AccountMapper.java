@@ -1,6 +1,7 @@
 package ecommerce.api.mapper;
 
 
+import ecommerce.api.dto.account.request.AccountUpdateRequest;
 import ecommerce.api.dto.general.UserDetailDTO;
 import ecommerce.api.dto.account.request.AccountCreateRequest;
 import ecommerce.api.dto.account.response.AccountResponse;
@@ -24,6 +25,7 @@ public interface AccountMapper {
     AccountMapper INSTANCE = Mappers.getMapper(AccountMapper.class);
 
     Account fromCreateRequestToEntity(AccountCreateRequest request);
+    Account fromAccountUpdateRequestToEntity(AccountUpdateRequest request);
     Profile fromUpdateRequestToEntity(ProfileUpdateRequest request);
     UserDetailDTO fromEntityToUserDetailDTO(Account account);
 

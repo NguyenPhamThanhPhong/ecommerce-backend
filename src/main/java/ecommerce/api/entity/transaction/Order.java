@@ -47,6 +47,5 @@ public class Order extends EntityBase {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", cascade = {})
     private List<OrderDetail> orderDetails;
-
 }
 

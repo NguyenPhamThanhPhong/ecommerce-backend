@@ -49,25 +49,6 @@ from vnpay_payments v1_0
 
 select * from vnpay_payments;
 select * from payments;
-update orders set total_value = 100_000;
-update payments set amount = 100_000;
 
-update products set price = 100_000 where code <= 9 ;
-update products set price = 200_000 where code > 9 ;
+select * from orders o where o.deleted_at is null
 
-BEGIN;
-select o1_0.id,o1_0.address,o1_0.code,o1_0.coupon_id,o1_0.created_at,o1_0.creator_id,o1_0.deleted_at,o1_0.notes,p1_0.id,p1_0.payment_method,p1_0.account_id,p1_0.amount,p1_0.code,p1_0.created_at,p1_0.deleted_at,p1_0.order_id,p1_0.status,p1_1.exchange,p1_1.paid,p1_2.bank_code,p1_2.card_method,p1_2.order_info,p1_2.secure_hash,p1_2.trans_no,p1_2.trans_ref,o1_0.total_value from orders o1_0 left join (payments p1_0 left join cash_payments p1_1 on p1_0.id=p1_1.id left join vnpay_payments p1_2
-    on p1_0.id=p1_2.id) on o1_0.id=p1_0.order_id where o1_0.coupon_id=?;
-
-ABORT;
-
-
-select * from coupons;
-
-BEGIN ;
-update coupons c set current_usage = current_usage + 1
-where c.code = 'PERCENT30'
-  and c.deleted_at is null
-  and c.start_date <= now() and c.end_date >= now()
-returning *;
-ABORT ;

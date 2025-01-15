@@ -100,6 +100,7 @@ public class OrderService {
         return orderMapper.fromEntityToResponse(order);
     }
 
+    @Transactional
     public int deleteOrderById(UUID id, boolean isSoft) {
         if (isSoft) {
             return orderRepository.updateDeletedAtById(id);
