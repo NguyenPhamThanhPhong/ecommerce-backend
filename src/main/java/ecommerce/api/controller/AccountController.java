@@ -1,16 +1,16 @@
 package ecommerce.api.controller;
 
 import ecommerce.api.dto.DataChangeResponse;
-import ecommerce.api.dto.account.request.AccountCreateRequest;
-import ecommerce.api.dto.account.request.AccountUpdateRequest;
-import ecommerce.api.dto.account.request.ProfileUpdateRequest;
+import ecommerce.api.dto.account.request.*;
 import ecommerce.api.dto.account.response.AccountResponse;
 import ecommerce.api.dto.account.response.ProfileResponse;
 import ecommerce.api.dto.general.PaginationDTO;
 import ecommerce.api.dto.general.SearchSpecification;
 import ecommerce.api.dto.general.UserDetailDTO;
 import ecommerce.api.service.business.AccountService;
+import ecommerce.api.service.smtp.SMTPService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
@@ -32,11 +32,31 @@ import java.util.UUID;
 @Tag(name = "Account")
 public class AccountController {
     private final AccountService accountService;
+    private final SMTPService smtpService;
 
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createAccount(
             @ModelAttribute @Valid AccountCreateRequest request) throws IOException {
-        AccountResponse account = accountService.createAccount(request);
+        DataChangeResponse account = accountService.createAccount(request);
+        return ResponseEntity.ok(account);
+    }
+
+    @PutMapping(value = "/password-otp")
+    public ResponseEntity<?> verifyOtp(@RequestBody OTPRequest request) throws MessagingException {
+        accountService.saveOtp(request);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping(value = "/password")
+    public ResponseEntity<?> changePassword(@RequestBody PasswordUpdateRequest request) {
+        accountService.changePassword(request);
+        return ResponseEntity.ok().build();
+    }
+
+
+    @PostMapping(value = "/registration")
+    public ResponseEntity<?> register(@Valid @RequestBody RegistrationRequest request) {
+        DataChangeResponse account = accountService.register(request);
         return ResponseEntity.ok(account);
     }
 
@@ -63,7 +83,9 @@ public class AccountController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole(T(ecommerce.api.constants.AuthRoleConstants).ROLE_ADMIN)")
-    public ResponseEntity<?> deleteAccount(@PathVariable UUID id, @RequestParam boolean isSoft, Authentication authentication) {
+    public ResponseEntity<?> deleteAccount(@PathVariable UUID id,
+                                           @RequestParam(required = false, defaultValue = "true") boolean isSoft,
+                                           Authentication authentication) {
         UserDetailDTO auth = (UserDetailDTO) authentication.getPrincipal();
         if (auth.getId().equals(id)) {
             return ResponseEntity.status(403).build();
@@ -88,7 +110,7 @@ public class AccountController {
 
     @DeleteMapping("/me")
     @PreAuthorize("hasRole(T(ecommerce.api.constants.AuthRoleConstants).ROLE_DEFAULT)")
-    public ResponseEntity<?> deleteMyAccount(Authentication authentication, @RequestParam boolean isSoft) {
+    public ResponseEntity<?> deleteMyAccount(Authentication authentication, @RequestParam(required = false, defaultValue = "true") boolean isSoft) {
         UserDetailDTO userDetailDTO = (UserDetailDTO) authentication.getPrincipal();
         return accountService.deleteAccount(userDetailDTO.getId(), isSoft) == 1 ? ResponseEntity.ok().build() : ResponseEntity.badRequest().build();
     }

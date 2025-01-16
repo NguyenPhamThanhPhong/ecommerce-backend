@@ -18,6 +18,8 @@ public interface OrderMapper {
 
     OrderResponse fromEntityToResponse(Order order);
 
+    OrderSelfResponse fromEntityToSelfResponse(Order order);
+
     Order fromUpdateRequestToEntity(OrderUpdateRequest request);
 
     OrderSingleResponse fromEntityToSingleResponse(Order order);

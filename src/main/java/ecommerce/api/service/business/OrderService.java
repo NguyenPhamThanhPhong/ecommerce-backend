@@ -1,6 +1,5 @@
 package ecommerce.api.service.business;
 
-import ecommerce.api.constants.OrderStatus;
 import ecommerce.api.constants.PaymentStatus;
 import ecommerce.api.dto.general.PaginationDTO;
 import ecommerce.api.dto.general.SearchSpecification;
@@ -59,9 +58,9 @@ public class OrderService {
         return PaginationDTO.fromPage(orders.map(orderMapper::fromEntityToResponse));
     }
 
-    public PaginationDTO<OrderResponse> getMyOrders(UUID userId, Pageable pageable) {
+    public PaginationDTO<OrderSelfResponse> getMyOrders(UUID userId, Pageable pageable) {
         Page<Order> orders = orderRepository.findAllByCreatorId(userId, pageable);
-        return PaginationDTO.fromPage(orders.map(orderMapper::fromEntityToResponse));
+        return PaginationDTO.fromPage(orders.map(orderMapper::fromEntityToSelfResponse));
     }
 
     @Transactional

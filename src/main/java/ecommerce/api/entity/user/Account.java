@@ -63,8 +63,7 @@ public class Account extends EntityBase {
     @OneToMany(fetch = FetchType.LAZY)
     private List<Payment> payments;
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @PrimaryKeyJoinColumn(name = "id", referencedColumnName = "id")
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL,mappedBy = "account")
     @Fetch(FetchMode.JOIN)
     private Profile profile;
 

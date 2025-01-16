@@ -1,5 +1,6 @@
 package ecommerce.api.repository;
 
+import ecommerce.api.dto.account.request.RegistrationRequest;
 import ecommerce.api.entity.user.Account;
 import ecommerce.api.entity.user.Profile;
 import io.lettuce.core.dynamic.annotation.Param;
@@ -79,7 +80,23 @@ public interface IAccountRepository extends JpaRepository<Account, UUID>, JpaSpe
     @Modifying
     @Transactional
     @Query("update Profile p set p.addresses = :addresses, p.primaryAddress = :primaryAddress where p.id = :id")
-    int updateAddresses(UUID id, Map<String,String> addresses, String primaryAddress);
+    int updateAddresses(UUID id, Map<String, String> addresses, String primaryAddress);
+
+    @Query(value = """
+                insert into accounts (email, password,role,enable_date,disable_date,is_verified) 
+                values (:#{#account.email}, :#{#account.password}, 'ROLE_CUSTOMER',
+                            '2000-01-03 04:10:48.640731','2040-01-03 04:10:48.640731',false)
+                returning id, code;
+            """, nativeQuery = true)
+    Account register(Account account);
+
+    @Query(value = """
+                insert into profiles (id, full_name, phone, date_of_birth)
+                values (:#{#profile.id}, :#{#profile.fullName}, :#{#profile.phone},
+                            :#{#profile.dateOfBirth})
+            """, nativeQuery = true)
+    int registerProfile(Profile profile);
+
 
     @Modifying
     @Transactional
@@ -88,11 +105,25 @@ public interface IAccountRepository extends JpaRepository<Account, UUID>, JpaSpe
                                     password = :#{#account.password}, 
                                     enable_date = :#{#account.enableDate}, disable_date = :#{#account.disableDate}, 
                                     is_verified = :#{#account.isVerified} where id = :#{#account.id}
-            """,nativeQuery = true)
+            """, nativeQuery = true)
     void updateAccount(Account account);
 
     @Override
     @Query("select a from Account a left join fetch a.profile")
     Optional<Account> findOne(Specification specification);
+
+    @Modifying
+    @Query(value = """
+            update accounts set otp = :otp, otp_expiry = now() + interval '15 minutes' 
+                            where email = :email
+            """, nativeQuery = true)
+    int saveOtp(String email, String otp);
+
+    @Modifying
+    @Query(value = """
+            update accounts set password = :password 
+                            where email= :email and otp = :otp and otp_expiry > now()
+            """, nativeQuery = true)
+    int changePassword(String otp, String password);
 
 }

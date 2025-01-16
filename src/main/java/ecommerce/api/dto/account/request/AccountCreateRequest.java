@@ -18,14 +18,14 @@ import java.util.Date;
 @AllArgsConstructor
 @AccountValidation
 public class AccountCreateRequest implements DateRangeCriteria {
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    private Date enableDate;
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    private Date disableDate;
     @Email
     private String email;
     @Length(min = 6, max = 40)
     private String password;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private Date enableDate;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private Date disableDate;
 
     @Nullable
     @Length(min = 6, max = 40)

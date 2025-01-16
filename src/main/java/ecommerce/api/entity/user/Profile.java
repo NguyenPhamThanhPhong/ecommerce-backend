@@ -42,6 +42,10 @@ public class Profile {
     @Column(name = "primary_address")
     private String primaryAddress;
 
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "id")
+    private Account account;
+
     @Column(name = "addresses")
     @JdbcTypeCode(SqlTypes.JSON)
     private Map<String, String> addresses;

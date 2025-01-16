@@ -1,12 +1,10 @@
 package ecommerce.api.entity.transaction;
 
-import ecommerce.api.constants.OrderStatus;
 import ecommerce.api.entity.base.EntityBase;
 import ecommerce.api.entity.coupon.Coupon;
 import ecommerce.api.entity.transaction.payment.Payment;
 import ecommerce.api.entity.user.Profile;
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;

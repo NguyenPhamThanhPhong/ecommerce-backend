@@ -1,6 +1,8 @@
 package ecommerce.api.utils;
 
+import ecommerce.api.constants.AccountRolesEnum;
 import ecommerce.api.constants.ChainType;
+import ecommerce.api.constants.PaymentStatus;
 import ecommerce.api.dto.general.SearchSpecification;
 import ecommerce.api.exception.BadRequestException;
 import jakarta.persistence.criteria.*;
@@ -20,13 +22,6 @@ public class DynamicSpecificationUtils {
             "int", (String str) -> {
                 try {
                     return Integer.parseInt(str);
-                } catch (NumberFormatException e) {
-                    return null;
-                }
-            },
-            "long", (String str) -> {
-                try {
-                    return Long.parseLong(str);
                 } catch (NumberFormatException e) {
                     return null;
                 }
@@ -59,6 +54,27 @@ public class DynamicSpecificationUtils {
                     return new Date(Long.parseLong(str));
                 } catch (Exception e) {
                     throw new BadRequestException("Invalid date format");
+                }
+            },
+            "role", (String str) -> {
+                try {
+                    return Enum.valueOf(AccountRolesEnum.class, str);
+                } catch (Exception e) {
+                    throw new BadRequestException("Invalid role format");
+                }
+            },
+            "paymentStatus", (String str) -> {
+                try {
+                    return Enum.valueOf(PaymentStatus.class, str);
+                } catch (Exception e) {
+                    throw new BadRequestException("Invalid payment status format");
+                }
+            },
+            "productStatus", (String str) -> {
+                try {
+                    return Enum.valueOf(PaymentStatus.class, str);
+                } catch (Exception e) {
+                    throw new BadRequestException("Invalid product status format");
                 }
             }
     );

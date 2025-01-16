@@ -5,20 +5,13 @@ from accounts
 select *
 from coupons;
 select *
-from brands
-limit 1;
-
-select *
 from brands;
 select *
 from categories;
-
 select *
 from products_images;
-
 select *
 from products;
-
 select *
 from orders;
 
@@ -26,9 +19,6 @@ select code, name, available_date, created_at
 from products;
 
 select * from payments join vnpay_payments on payments.id = vnpay_payments.id;
-
-UPDATE accounts
-SET role = 'ROLE_ADMIN';
 
 select *
 from categories;

@@ -2,21 +2,22 @@ package ecommerce.api.service.business;
 
 import ecommerce.api.config.property.CloudinaryProperties;
 import ecommerce.api.dto.DataChangeResponse;
-import ecommerce.api.dto.account.request.AccountCreateRequest;
-import ecommerce.api.dto.account.request.AccountUpdateRequest;
+import ecommerce.api.dto.account.request.*;
 import ecommerce.api.dto.account.response.AccountResponse;
 import ecommerce.api.dto.account.response.ProfileResponse;
-import ecommerce.api.dto.account.request.ProfileUpdateRequest;
 import ecommerce.api.dto.general.PaginationDTO;
 import ecommerce.api.dto.general.SearchSpecification;
 import ecommerce.api.entity.user.Account;
 import ecommerce.api.entity.user.Profile;
+import ecommerce.api.exception.BadRequestException;
 import ecommerce.api.exception.ResourceNotFoundException;
 import ecommerce.api.exception.UnAuthorisedException;
 import ecommerce.api.mapper.AccountMapper;
 import ecommerce.api.repository.IAccountRepository;
 import ecommerce.api.service.azure.CloudinaryService;
+import ecommerce.api.service.smtp.SMTPService;
 import ecommerce.api.utils.DynamicSpecificationUtils;
+import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -29,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
@@ -39,18 +41,39 @@ public class AccountService {
     private final AccountMapper accountMapper;
     private final CloudinaryService cloudinaryService;
     private final CloudinaryProperties cloudinaryProperties;
+    private final SMTPService smtpService;
 
     @Transactional
-    public AccountResponse createAccount(AccountCreateRequest request) throws IOException {
-        Account account = accountMapper.fromCreateRequestToEntity(request);
+    public void saveOtp(OTPRequest otpRequest) throws MessagingException {
+        int ran = new Random().nextInt(999999);
+        String otp = String.format("%06d", ran);
+        int changes = accountRepository.saveOtp(otpRequest.getEmail(), otp);
+        smtpService.sendOTPEmail(otpRequest.getEmail(), otp);
+        if (changes == 0) {
+            throw new ResourceNotFoundException("Account not found");
+        }
+    }
 
+    @Transactional
+    public void changePassword(PasswordUpdateRequest request) {
+        int changes = accountRepository.changePassword(request.getOtp(), request.getPassword());
+        if (changes == 0) {
+            throw new ResourceNotFoundException("Invalid OTP or Account not found");
+        }
+    }
+
+    @Transactional
+    public DataChangeResponse createAccount(AccountCreateRequest request) throws IOException {
+        Account account = accountMapper.fromCreateRequestToEntity(request);
         MultipartFile file = request.getProfile().getAvatar();
         if (file != null) {
             String blobUrl = cloudinaryService.uploadFile(file,
                     cloudinaryProperties.getAccountDir(), account.getId().toString());
             account.getProfile().setAvatarUrl(blobUrl);
+            account.getProfile().setId(account.getId());
         }
-        return accountMapper.fromEntityToAccountResponse(accountRepository.save(account));
+        accountRepository.save(account);
+        return new DataChangeResponse(account.getId(), account.getProfile().getAvatarUrl());
     }
 
     public PaginationDTO<AccountResponse> search(Set<SearchSpecification> searchSpec, Pageable pageable) {
@@ -62,6 +85,18 @@ public class AccountService {
     public AccountResponse getByCode(Integer code) {
         Account account = accountRepository.findByCode(code).orElseThrow(() -> new ResourceNotFoundException("Account not found"));
         return accountMapper.fromEntityToAccountResponse(account);
+    }
+
+    @Transactional
+    public DataChangeResponse register(RegistrationRequest request) {
+        Account account = accountMapper.fromRegistrationRequestToEntity(request);
+        accountRepository.register(account);
+        int insertProfileResult = accountRepository.registerProfile(account.getProfile());
+
+        if (insertProfileResult == 0) {
+            throw new BadRequestException("Profile not found");
+        }
+        return new DataChangeResponse(account.getId(), account.getProfile().getAvatarUrl());
     }
 
     @Transactional
