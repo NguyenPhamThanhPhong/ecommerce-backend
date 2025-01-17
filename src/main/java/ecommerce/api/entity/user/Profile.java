@@ -56,5 +56,6 @@ public class Profile {
 
     @OneToMany(mappedBy = "profile", fetch = FetchType.LAZY)
     @Column(insertable = false, updatable = false)
+    @Transient
     private List<Order> orders = new ArrayList<>();
 }

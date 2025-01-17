@@ -32,7 +32,6 @@ create table profiles
     phone           varchar(11)
 );
 
-
 create table brands
 (
     id          uuid not null
@@ -60,10 +59,6 @@ create table categories
     name        varchar(40)
         constraint uk_categories_name unique
 );
-
-
-
-
 
 create table products
 (
@@ -95,8 +90,7 @@ create table products
 -- alter table products alter discount_percent type numeric(5, 2) using discount_percent::numeric(5, 2);
 -- alter table products alter rating type numeric(2, 1) using rating::numeric(2, 1);
 -- alter table products alter price type numeric(10, 2) using price::numeric(10, 2);
-create table products_images
-(
+create table products_images(
     seq_no     int,
     product_id uuid          not null
         constraint fk_products_images_products_id
@@ -117,6 +111,7 @@ create table favorite_products
     constraint fk_favorites_products_accounts_id foreign key (account_id) references accounts,
     constraint fk_favorites_products_products_id foreign key (product_id) references products
 );
+
 create table coupons
 (
     id          uuid not null
@@ -133,8 +128,6 @@ create table coupons
     current_usage integer,
     value       numeric(38, 2)
 );
-
-
 
 create table blog_posts
 (
@@ -187,10 +180,6 @@ create table payments
     account_id     uuid constraint fk_payments_accounts_id references accounts,
     status         varchar
 );
-
-
-
-
 
 create table order_details
 (
@@ -252,6 +241,7 @@ create table vnpay_payments
         constraint fk_vnpay_payments_payments_id
             references payments (id)
 );
+
 create table cash_payments
 (
     amount   numeric(10, 2),
@@ -263,6 +253,5 @@ create table cash_payments
         constraint fk_cash_payments_payments_id
             references payments (id)
 );
-
 
 COMMIT;

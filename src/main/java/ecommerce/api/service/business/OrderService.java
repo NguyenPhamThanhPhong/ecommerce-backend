@@ -42,9 +42,9 @@ public class OrderService {
     public OrderSingleResponse findByCode(Integer code) {
         Order order = orderRepository.findByCode(code)
                 .orElseThrow(() -> new ResourceNotFoundException("ORDER NOT FOUND"));
-        List<UUID> productIds =order.getOrderDetails().stream()
-                        .map(OrderDetail::getProductId)
-                        .toList();
+        List<UUID> productIds = order.getOrderDetails().stream()
+                .map(OrderDetail::getProductId)
+                .toList();
         Map<UUID, Product> productMap = productRepository.findAllByIdIn(productIds).stream().collect(Collectors.toMap(Product::getId, product -> product));
         order.getOrderDetails().forEach(detail -> detail.setProduct(
                 productMap.getOrDefault(detail.getProductId(), null)
@@ -64,7 +64,7 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderResponse insert(OrderCreateRequest request) {
+    public OrderSimpleResponse insert(OrderCreateRequest request) {
         request.mergeOrderDetails();
         Map<UUID, Integer> productQuantities = request.getOrderDetails().stream()
                 .collect(Collectors.toMap(OrderDetailRequest::getProductId, OrderDetailRequest::getQuantity));
@@ -96,7 +96,9 @@ public class OrderService {
         for (OrderDetail detail : orderDetails) {
             orderDetailRepository.insert(detail);
         }
-        return orderMapper.fromEntityToResponse(order);
+        Order result = orderRepository.findById(order.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("ORDER NOT FOUND"));
+        return orderMapper.fromEntityToSimpleResponse(result);
     }
 
     @Transactional

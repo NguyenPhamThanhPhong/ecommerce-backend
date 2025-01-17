@@ -75,6 +75,7 @@ public class Product extends EntityBase {
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(insertable = false, updatable = false)
+    @Transient
     private Set<OrderDetail> orderDetails = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY)

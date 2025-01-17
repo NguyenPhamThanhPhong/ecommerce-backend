@@ -4,6 +4,7 @@ import ecommerce.api.dto.exception.ErrorResponse;
 import ecommerce.api.dto.exception.FieldErrorResponse;
 import ecommerce.api.exception.BadRequestException;
 import ecommerce.api.exception.ResourceNotFoundException;
+import ecommerce.api.exception.UnAuthorisedException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -24,12 +25,12 @@ public class GlobalExceptionHandler {
         return String.format(COMMON_ERROR_MESSAGE_TEMPLATE, ex.getClass().getName(), ex.getMessage());
     }
 
-//    @ExceptionHandler(Exception.class)
-//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-//    public ErrorResponse<?> handleUnCaughtException(Exception ex, WebRequest webRequest) {
-//        log.error(buildErrorMessage(ex));
-//        return new ErrorResponse<>(webRequest.getContextPath(), ex.getMessage(), null);
-//    }
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse<?> handleUnCaughtException(Exception ex, WebRequest webRequest) {
+        log.error(buildErrorMessage(ex));
+        return new ErrorResponse<>(webRequest.getContextPath(), ex.getMessage(), null);
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -49,6 +50,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse<?> handleResourceAccessException(ResourceNotFoundException ex, HttpServletRequest webRequest) {
+        return new ErrorResponse<>(webRequest.getContextPath(), ex.getMessage(), null);
+    }
+
+    @ExceptionHandler(UnAuthorisedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorResponse<?> handleUnAuthorisedException(UnAuthorisedException ex, HttpServletRequest webRequest) {
         return new ErrorResponse<>(webRequest.getContextPath(), ex.getMessage(), null);
     }
 }

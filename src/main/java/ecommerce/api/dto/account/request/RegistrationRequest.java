@@ -9,5 +9,6 @@ public class RegistrationRequest {
     private String email;
     @NotBlank
     private String password;
-    private ProfileCreateRequest request;
+    @NotBlank
+    private String fullName;
 }

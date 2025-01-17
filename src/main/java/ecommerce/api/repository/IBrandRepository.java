@@ -1,12 +1,8 @@
 package ecommerce.api.repository;
 
-import ecommerce.api.entity.BlogPost;
 import ecommerce.api.entity.product.Brand;
-import ecommerce.api.entity.product.Product;
-import ecommerce.api.entity.user.Account;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -23,5 +19,7 @@ public interface IBrandRepository  extends JpaRepository<Brand, UUID>, JpaSpecif
 
     Optional<Brand> findBrandByCode(long code);
 
-    int deleteBrandById(UUID id);
+    @Query("update Brand b set b.deletedAt = current_timestamp where b.id = :id")
+    int updateBrandDeletedAt(UUID id);
+
 }

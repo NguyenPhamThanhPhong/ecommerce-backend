@@ -67,8 +67,16 @@ public interface IAccountRepository extends JpaRepository<Account, UUID>, JpaSpe
     @Query("select a from Account a left join fetch a.profile")
     Optional<Account> findById(@NotNull UUID id);
 
-    @Query("select a from Account a left join fetch a.profile where a.code = :code")
-    Optional<Account> findByCode(long code);
+    @Query(value = """
+        select a.id, a.code, a.created_at, a.deleted_at, a.disable_date,
+               a.email, a.enable_date, a.is_verified, a.password, a.role,
+               a.otp, a.otp_expiry,
+               p.id as profile_id, p.avatar_url, p.date_of_birth, p.full_name, p.phone
+        from accounts a
+        join profiles p on a.id = p.id
+        where a.code = :code
+        """, nativeQuery = true)
+    Optional<Account> findByCode(@Param("code") long code);
 
     @Override
     @Query("select a from Account a left join fetch a.profile")
@@ -82,14 +90,15 @@ public interface IAccountRepository extends JpaRepository<Account, UUID>, JpaSpe
     @Query("update Profile p set p.addresses = :addresses, p.primaryAddress = :primaryAddress where p.id = :id")
     int updateAddresses(UUID id, Map<String, String> addresses, String primaryAddress);
 
+    @Modifying
     @Query(value = """
-                insert into accounts (email, password,role,enable_date,disable_date,is_verified) 
-                values (:#{#account.email}, :#{#account.password}, 'ROLE_CUSTOMER',
+                insert into accounts (id,email, password,role,enable_date,disable_date,is_verified) 
+                values (:#{#account.id}, :#{#account.email}, :#{#account.password}, 'ROLE_CUSTOMER',
                             '2000-01-03 04:10:48.640731','2040-01-03 04:10:48.640731',false)
-                returning id, code;
             """, nativeQuery = true)
-    Account register(Account account);
+    void register(Account account);
 
+    @Modifying
     @Query(value = """
                 insert into profiles (id, full_name, phone, date_of_birth)
                 values (:#{#profile.id}, :#{#profile.fullName}, :#{#profile.phone},
@@ -121,8 +130,8 @@ public interface IAccountRepository extends JpaRepository<Account, UUID>, JpaSpe
 
     @Modifying
     @Query(value = """
-            update accounts set password = :password 
-                            where email= :email and otp = :otp and otp_expiry > now()
+            update accounts set password = :password
+                            where otp = :otp and otp_expiry > now()
             """, nativeQuery = true)
     int changePassword(String otp, String password);
 

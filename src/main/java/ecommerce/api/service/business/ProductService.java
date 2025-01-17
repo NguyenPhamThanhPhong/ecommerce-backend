@@ -78,11 +78,16 @@ public class ProductService {
     }
 
     public int deleteProductById(UUID id) {
-        return productRepository.deleteProductById(id);
+        return productRepository.updateProductDeletedAt(id);
     }
 
     public int addFavorite(UUID accountId, UUID productId) {
-        return productRepository.insertFavoriteProduct(accountId, productId);
+        try{
+            return productRepository.insertFavoriteProduct(accountId, productId);
+        }
+        catch (Exception e){
+            return 0;
+        }
     }
 
     public int removeFavorite(UUID accountId, UUID productId) {

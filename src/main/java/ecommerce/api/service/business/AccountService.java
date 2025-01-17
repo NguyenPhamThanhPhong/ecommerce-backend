@@ -91,8 +91,8 @@ public class AccountService {
     public DataChangeResponse register(RegistrationRequest request) {
         Account account = accountMapper.fromRegistrationRequestToEntity(request);
         accountRepository.register(account);
+        account.getProfile().setId(account.getId());
         int insertProfileResult = accountRepository.registerProfile(account.getProfile());
-
         if (insertProfileResult == 0) {
             throw new BadRequestException("Profile not found");
         }

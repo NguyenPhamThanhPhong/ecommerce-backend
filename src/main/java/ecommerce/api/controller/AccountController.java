@@ -41,7 +41,7 @@ public class AccountController {
         return ResponseEntity.ok(account);
     }
 
-    @PutMapping(value = "/password-otp")
+    @PostMapping(value = "/password-otp")
     public ResponseEntity<?> verifyOtp(@RequestBody OTPRequest request) throws MessagingException {
         accountService.saveOtp(request);
         return ResponseEntity.ok().build();
@@ -52,7 +52,6 @@ public class AccountController {
         accountService.changePassword(request);
         return ResponseEntity.ok().build();
     }
-
 
     @PostMapping(value = "/registration")
     public ResponseEntity<?> register(@Valid @RequestBody RegistrationRequest request) {

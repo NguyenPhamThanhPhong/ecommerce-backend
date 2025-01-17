@@ -14,8 +14,10 @@ public interface IProductRepository extends JpaRepository<Product, UUID>, JpaSpe
     Page<Product> findAllByDeletedAtIsNotNull(Pageable pageable);
 
     @Modifying
-    @Query("DELETE FROM Product p WHERE p.id = :id")
-    int deleteProductById(UUID id);
+    @Query("""
+            update Product p set p.deletedAt = current_timestamp where p.id = :id
+            """)
+    int updateProductDeletedAt(UUID id);
 
     @EntityGraph(attributePaths = {"brand", "category","productImages"})
     Page<Product> findAll(Specification<Product> spec, Pageable pageable);
