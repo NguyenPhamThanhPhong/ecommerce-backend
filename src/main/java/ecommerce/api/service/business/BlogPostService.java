@@ -1,6 +1,7 @@
 package ecommerce.api.service.business;
 
 import ecommerce.api.config.property.CloudinaryProperties;
+import ecommerce.api.dto.DataChangeResponse;
 import ecommerce.api.dto.blogpost.response.BlogPostResponse;
 import ecommerce.api.dto.general.ModificationResponse;
 import ecommerce.api.dto.general.PaginationDTO;
@@ -33,7 +34,7 @@ public class BlogPostService {
     private final CloudinaryService cloudinaryService;
     private final CloudinaryProperties cloudinaryProperties;
 
-    public ModificationResponse<UUID> createBlogPost(BlogPostCreateRequest request) {
+    public DataChangeResponse createBlogPost(BlogPostCreateRequest request) {
         BlogPost blogPost = blogPostMapper.fromCreateRequestToEntity(request);
         return upsertAndReturnChanges(blogPost, request.getImage());
     }
@@ -64,12 +65,12 @@ public class BlogPostService {
     }
 
     @Transactional
-    public ModificationResponse<UUID> updateBlogPost(BlogPostUpdateRequest request) {
+    public DataChangeResponse updateBlogPost(BlogPostUpdateRequest request) {
         BlogPost blogPost = blogPostMapper.fromUpdateRequestToEntity(request);
         return upsertAndReturnChanges(blogPost, request.getImage());
     }
 
-    private ModificationResponse<UUID> upsertAndReturnChanges(BlogPost blogPost, MultipartFile image) throws BadRequestException {
+    private DataChangeResponse upsertAndReturnChanges(BlogPost blogPost, MultipartFile image) throws BadRequestException {
         try {
             if (image != null) {
                 String imageUrl = cloudinaryService.uploadFile(image, cloudinaryProperties.getBlogDir(),
@@ -80,6 +81,6 @@ public class BlogPostService {
             throw new BadRequestException("Failed to upload image");
         }
         BlogPost result = blogPostRepository.save(blogPost);
-        return new ModificationResponse<>(result.getId(), result.getCreatedAt(), Map.of("imageUrl", result.getImageUrl()));
+        return new DataChangeResponse(result.getId(), result.getImageUrl());
     }
 }

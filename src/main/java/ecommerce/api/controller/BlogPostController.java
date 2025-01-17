@@ -49,9 +49,8 @@ public class BlogPostController {
         return ResponseEntity.ok(blogPostService.deleteBlogPost(id, isSoft));
     }
 
-    @PatchMapping("{id}")
-    public ResponseEntity<?> updateBlogPost(@PathVariable UUID id, @RequestBody BlogPostUpdateRequest blogPostResponse) throws IOException {
-        blogPostResponse.setId(id);
+    @PutMapping(name = "",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> updateBlogPost(@ModelAttribute @Valid BlogPostUpdateRequest blogPostResponse) throws IOException {
         return ResponseEntity.ok(blogPostService.updateBlogPost(blogPostResponse));
     }
 

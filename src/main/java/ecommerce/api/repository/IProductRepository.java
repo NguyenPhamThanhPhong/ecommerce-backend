@@ -78,4 +78,5 @@ public interface IProductRepository extends JpaRepository<Product, UUID>, JpaSpe
             """,nativeQuery = true)
     void update(Product product);
 
+
 }

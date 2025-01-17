@@ -18,11 +18,18 @@ import org.springframework.web.bind.annotation.RestController;
 public class StatisticController {
     private final StatisticService statisticService;
 
-    @GetMapping("/me")
+    @GetMapping("/me/orders")
     @PreAuthorize("hasRole(T(ecommerce.api.constants.AuthRoleConstants).ROLE_DEFAULT)")
     public ResponseEntity<?> getStatistic(Authentication authentication) {
         UserDetailDTO userDetail = (UserDetailDTO) authentication.getPrincipal();
         return ResponseEntity.ok(statisticService.getSelfStatistics(userDetail.getId()));
     }
+    @GetMapping("")
+    @PreAuthorize("hasRole(T(ecommerce.api.constants.AuthRoleConstants).ROLE_ADMIN)")
+    public ResponseEntity<?> getStatistics() {
+        return ResponseEntity.ok(statisticService.getDashboardStatistics());
+    }
+
+
     
 }
